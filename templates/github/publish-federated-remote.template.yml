@@ -1,0 +1,72 @@
+name: publish-federated-remote
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform_version:
+        description: Published platform package version to install.
+        required: false
+        type: string
+      remote_version:
+        description: Immutable remote version. Defaults to sha-<short-sha>.
+        required: false
+        type: string
+      dry_run:
+        description: Validate build, upload, and GitOps diff without mutating state.
+        required: true
+        default: true
+        type: boolean
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@go-go-golems'
+
+      - name: Build remote artifact
+        run: |
+          echo "Replace with repo-specific build:federation command"
+
+      - name: Publish immutable remote files
+        run: |
+          python3 scripts/publish_federation_remote.py \
+            --source-dir <source-dir> \
+            --remote-id <remote-id> \
+            --version "${{ inputs.remote_version || format('sha-{0}', github.sha) }}" \
+            --bucket "${HETZNER_OBJECT_STORAGE_BUCKET}" \
+            --endpoint "${HETZNER_OBJECT_STORAGE_ENDPOINT}" \
+            --region "${HETZNER_OBJECT_STORAGE_REGION}" \
+            --public-base-url "${FEDERATION_REMOTE_PUBLIC_BASE_URL}"
+
+      - name: Dry-run or open GitOps PR
+        env:
+          GH_TOKEN: ${{ secrets.GITOPS_PR_TOKEN }}
+        run: |
+          python3 scripts/federation/update_federation_gitops_target.py \
+            --config deploy/gitops-targets.json \
+            --all-targets \
+            --manifest-url "<computed-manifest-url>" \
+            --gitops-repo-dir "<optional-local-checkout-for-dry-run>"
