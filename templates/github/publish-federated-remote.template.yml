@@ -51,6 +51,13 @@ jobs:
           echo "Replace with repo-specific build:federation command"
 
       - name: Publish immutable remote files
+        env:
+          HETZNER_OBJECT_STORAGE_ACCESS_KEY_ID: ${{ secrets.HETZNER_OBJECT_STORAGE_ACCESS_KEY_ID }}
+          HETZNER_OBJECT_STORAGE_SECRET_ACCESS_KEY: ${{ secrets.HETZNER_OBJECT_STORAGE_SECRET_ACCESS_KEY }}
+          HETZNER_OBJECT_STORAGE_BUCKET: ${{ secrets.HETZNER_OBJECT_STORAGE_BUCKET }}
+          HETZNER_OBJECT_STORAGE_ENDPOINT: ${{ secrets.HETZNER_OBJECT_STORAGE_ENDPOINT }}
+          HETZNER_OBJECT_STORAGE_REGION: ${{ secrets.HETZNER_OBJECT_STORAGE_REGION }}
+          FEDERATION_REMOTE_PUBLIC_BASE_URL: ${{ vars.FEDERATION_REMOTE_PUBLIC_BASE_URL }}
         run: |
           python3 scripts/publish_federation_remote.py \
             --source-dir <source-dir> \
@@ -67,6 +74,6 @@ jobs:
         run: |
           python3 scripts/federation/update_federation_gitops_target.py \
             --config deploy/gitops-targets.json \
-            --all-targets \
-            --manifest-url "<computed-manifest-url>" \
+            --target <target-name> \
+            --manifest-url "${MANIFEST_URL}" \
             --gitops-repo-dir "<optional-local-checkout-for-dry-run>"

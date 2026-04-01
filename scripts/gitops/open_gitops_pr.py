@@ -180,6 +180,28 @@ def open_or_update_pr(repo_dir: Path, target: dict, branch_name: str, title: str
     )
 
 
+def get_existing_pr_number(repo_dir: Path, target: dict, branch_name: str) -> str:
+    return run(
+        [
+            "gh",
+            "pr",
+            "list",
+            "--repo",
+            target["gitops_repo"],
+            "--head",
+            branch_name,
+            "--state",
+            "open",
+            "--json",
+            "number",
+            "--jq",
+            ".[0].number // empty",
+        ],
+        cwd=repo_dir,
+        capture_output=True,
+    ).stdout.strip()
+
+
 def clone_repo(target: dict, token: str) -> Path:
     temp_dir = Path(tempfile.mkdtemp(prefix=f"gitops-{target['name']}-"))
     remote_url = f"https://x-access-token:{token}@github.com/{target['gitops_repo']}.git"
@@ -284,6 +306,14 @@ def main() -> int:
             branch_name = f"automation/{app_name}-{target['name']}-{tag_fragment}"
             title = f"Deploy {target['name']} using {args.image}"
             body = build_pr_body(target, args.image)
+
+            existing_pr = ""
+            if args.open_pr:
+                existing_pr = get_existing_pr_number(repo_dir, target, branch_name)
+                if existing_pr:
+                    print(f"PR already exists for {target['name']}: #{existing_pr}")
+                    if not args.gitops_repo_dir:
+                        continue
 
             run(["git", "checkout", "-b", branch_name], cwd=repo_dir)
             run(["git", "add", target["manifest_path"]], cwd=repo_dir)
