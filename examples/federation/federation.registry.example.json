@@ -1,0 +1,16 @@
+{
+  "remotes": [
+    {
+      "remoteId": "inventory",
+      "mode": "remote-manifest",
+      "enabled": true,
+      "manifestUrl": "https://assets.example.invalid/remotes/inventory/versions/sha-1234567/mf-manifest.json"
+    },
+    {
+      "remoteId": "sqlite",
+      "mode": "remote-manifest",
+      "enabled": false,
+      "manifestUrl": "https://assets.example.invalid/remotes/sqlite/versions/sha-7654321/mf-manifest.json"
+    }
+  ]
+}
