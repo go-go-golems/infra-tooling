@@ -48,6 +48,7 @@ scripts/gitops/
 ### Federation remote release
 
 - release model and secret bootstrap docs
+- shared immutable remote publish helper
 - `federation-manifest` target example
 - host-registry patch/update helpers
 - GitHub workflow template for remote publish + GitOps handoff

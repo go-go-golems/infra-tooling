@@ -33,6 +33,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Checkout infra-tooling
+        uses: actions/checkout@v6
+        with:
+          repository: go-go-golems/infra-tooling
+          path: .infra-tooling
+
+      - name: Checkout GitOps repo for dry-run validation
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        uses: actions/checkout@v6
+        with:
+          repository: wesen/2026-03-27--hetzner-k3s
+          path: .gitops
+          token: ${{ secrets.K3S_REPO_READ_TOKEN }}
+
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
@@ -59,7 +73,7 @@ jobs:
           HETZNER_OBJECT_STORAGE_REGION: ${{ secrets.HETZNER_OBJECT_STORAGE_REGION }}
           FEDERATION_REMOTE_PUBLIC_BASE_URL: ${{ vars.FEDERATION_REMOTE_PUBLIC_BASE_URL }}
         run: |
-          python3 scripts/publish_federation_remote.py \
+          python3 .infra-tooling/scripts/federation/publish_federation_remote.py \
             --source-dir <source-dir> \
             --remote-id <remote-id> \
             --version "${{ inputs.remote_version || format('sha-{0}', github.sha) }}" \
@@ -80,7 +94,7 @@ jobs:
             args+=("--push" "--open-pr")
           fi
 
-          python3 scripts/federation/open_federation_gitops_pr.py \
+          python3 .infra-tooling/scripts/federation/open_federation_gitops_pr.py \
             --config deploy/gitops-targets.json \
             --target <target-name> \
             --manifest-url "${MANIFEST_URL}" \

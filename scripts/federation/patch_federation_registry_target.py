@@ -9,12 +9,15 @@ from pathlib import Path
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Patch one remote entry inside an embedded federation.registry.json YAML literal block.",
+        description=(
+            "Patch one remote entry inside a federation registry target. "
+            "Supports direct JSON files and embedded federation.registry.json YAML literal blocks."
+        ),
     )
     parser.add_argument("--target-file", required=True)
     parser.add_argument("--remote-id", required=True)
     parser.add_argument("--manifest-url", required=True)
-    parser.add_argument("--config-key", default="federation.registry.json")
+    parser.add_argument("--config-key")
     parser.add_argument("--enabled", choices=("true", "false"), default="true")
     parser.add_argument("--mode", default=None)
     parser.add_argument("--dry-run", action="store_true")
@@ -105,11 +108,24 @@ def patch_registry(
     return registry
 
 
-def main() -> int:
-    args = parse_args()
-    target_file = Path(args.target_file).resolve()
-    original_lines = target_file.read_text(encoding="utf-8").splitlines(keepends=True)
+def patch_direct_json_registry(target_file: Path, args: argparse.Namespace) -> str:
+    before = target_file.read_text(encoding="utf-8")
+    registry = json.loads(before)
+    updated_registry = patch_registry(
+        registry=registry,
+        remote_id=args.remote_id,
+        manifest_url=args.manifest_url,
+        enabled=args.enabled == "true",
+        mode=args.mode,
+    )
+    return json.dumps(updated_registry, indent=2) + "\n"
 
+
+def patch_embedded_yaml_registry(target_file: Path, args: argparse.Namespace) -> str:
+    if not args.config_key:
+        raise ValueError("--config-key is required for non-JSON target files")
+
+    original_lines = target_file.read_text(encoding="utf-8").splitlines(keepends=True)
     key_line_index, block_end, block_indent = find_literal_block(original_lines, args.config_key)
     json_start = key_line_index + 1
     raw_json = extract_json_block(original_lines, json_start, block_end, block_indent)
@@ -129,7 +145,17 @@ def main() -> int:
         + render_json_block(updated_json, block_indent)
         + original_lines[block_end:]
     )
-    updated_text = "".join(updated_lines)
+    return "".join(updated_lines)
+
+
+def main() -> int:
+    args = parse_args()
+    target_file = Path(args.target_file).resolve()
+
+    if target_file.suffix == ".json":
+        updated_text = patch_direct_json_registry(target_file, args)
+    else:
+        updated_text = patch_embedded_yaml_registry(target_file, args)
 
     if args.dry_run:
         print(updated_text)

@@ -33,7 +33,6 @@ def load_targets(config_path: Path) -> list[dict]:
         "gitops_repo",
         "gitops_branch",
         "target_file",
-        "config_key",
     }
     for target in targets:
         missing = sorted(required - set(target))
@@ -80,22 +79,21 @@ def main() -> int:
 
     before = target_file.read_text(encoding="utf-8")
     patch_script = Path(__file__).resolve().parent / "patch_federation_registry_target.py"
-    run(
-        [
-            sys.executable,
-            str(patch_script),
-            "--target-file",
-            str(target_file),
-            "--remote-id",
-            target["remote_id"],
-            "--config-key",
-            target["config_key"],
-            "--manifest-url",
-            args.manifest_url,
-            "--enabled",
-            "true",
-        ]
-    )
+    cmd = [
+        sys.executable,
+        str(patch_script),
+        "--target-file",
+        str(target_file),
+        "--remote-id",
+        target["remote_id"],
+        "--manifest-url",
+        args.manifest_url,
+        "--enabled",
+        "true",
+    ]
+    if target.get("config_key"):
+        cmd.extend(["--config-key", target["config_key"]])
+    run(cmd)
 
     after = target_file.read_text(encoding="utf-8")
     target_file.write_text(before, encoding="utf-8")

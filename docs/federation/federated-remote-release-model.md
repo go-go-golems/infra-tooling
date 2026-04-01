@@ -46,6 +46,21 @@ source repo
 - example metadata
 - extracted operational docs
 
+## Shared Helpers
+
+The current shared helper split is:
+
+- immutable remote upload:
+  - [publish_federation_remote.py](../../scripts/federation/publish_federation_remote.py)
+- host registry patch + GitOps PR handoff:
+  - [open_federation_gitops_pr.py](../../scripts/federation/open_federation_gitops_pr.py)
+
+That means a source repo only needs to keep:
+
+- its app-specific build step
+- its repo-local `deploy/federation-gitops-targets.json`
+- its workflow wiring and secret/variable names
+
 ## Deployment Unit
 
 The deployment unit is the immutable manifest URL, for example:
