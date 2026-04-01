@@ -56,7 +56,6 @@ def load_targets(config_path: Path) -> list[dict]:
         "gitops_repo",
         "gitops_branch",
         "target_file",
-        "config_key",
     }
     for target in targets:
         missing = sorted(required - set(target))
@@ -129,25 +128,24 @@ def ensure_git_identity(repo_dir: Path) -> None:
     run(["git", "config", "user.email", author_email], cwd=repo_dir)
 
 
-def patch_target_file(target_file: Path, remote_id: str, config_key: str, manifest_url: str) -> tuple[str, str]:
+def patch_target_file(target_file: Path, remote_id: str, config_key: str | None, manifest_url: str) -> tuple[str, str]:
     before = target_file.read_text(encoding="utf-8")
     patch_script = Path(__file__).resolve().parent / "patch_federation_registry_target.py"
-    run(
-        [
-            sys.executable,
-            str(patch_script),
-            "--target-file",
-            str(target_file),
-            "--remote-id",
-            remote_id,
-            "--config-key",
-            config_key,
-            "--manifest-url",
-            manifest_url,
-            "--enabled",
-            "true",
-        ]
-    )
+    cmd = [
+        sys.executable,
+        str(patch_script),
+        "--target-file",
+        str(target_file),
+        "--remote-id",
+        remote_id,
+        "--manifest-url",
+        manifest_url,
+        "--enabled",
+        "true",
+    ]
+    if config_key:
+        cmd.extend(["--config-key", config_key])
+    run(cmd)
     after = target_file.read_text(encoding="utf-8")
     return before, after
 
@@ -211,8 +209,9 @@ def build_pr_body(target: dict, manifest_url: str) -> str:
         f"- Remote id: `{target['remote_id']}`",
         f"- Manifest URL: `{manifest_url}`",
         f"- Target file: `{target['target_file']}`",
-        f"- Config key: `{target['config_key']}`",
     ]
+    if target.get("config_key"):
+        lines.append(f"- Config key: `{target['config_key']}`")
     if source_repo and source_sha:
         lines.append(f"- Source commit: `{source_repo}@{source_sha}`")
     if source_repo and run_id:
@@ -252,7 +251,7 @@ def main() -> int:
         before, after = patch_target_file(
             target_file=target_file,
             remote_id=target["remote_id"],
-            config_key=target["config_key"],
+            config_key=target.get("config_key"),
             manifest_url=args.manifest_url,
         )
         diff = render_diff(target_file, before, after)
