@@ -104,7 +104,14 @@ def patch_registry(
         break
 
     if not matched:
-        raise ValueError(f"remoteId {remote_id!r} not found in registry")
+        remotes.append(
+            {
+                "remoteId": remote_id,
+                "mode": mode or "remote-manifest",
+                "enabled": enabled,
+                "manifestUrl": manifest_url,
+            }
+        )
     return registry
 
 
