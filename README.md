@@ -56,3 +56,15 @@ scripts/gitops/
 
 - generic GitOps PR opener for image-based deployments
 - extracted control-plane documentation from the Hetzner K3s repo
+- example image target metadata for `deploy/gitops-targets.json`
+- reusable GitHub Actions workflow template for GHCR publish + GitOps PR handoff
+
+## Current Recommended Reuse Points
+
+If a source repo is deploying a container image through the Hetzner K3s +
+Argo CD platform, start with:
+
+- `docs/platform/source-repo-to-gitops-pr.md`
+- `examples/platform/image-gitops-targets.example.json`
+- `templates/github/publish-image-ghcr.template.yml`
+- `scripts/gitops/open_gitops_pr.py`

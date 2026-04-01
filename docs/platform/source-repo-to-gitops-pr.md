@@ -75,3 +75,121 @@ This model is not specific to one host repo or one cluster repo. It is the reusa
 - Argo CD
 
 Future repo-specific docs should reference this file instead of re-explaining the entire chain from scratch.
+
+## Standard Image-Based Variant
+
+The most common K3s application path is not the federated-remote model. It is
+the simpler image-based model:
+
+```text
+source repo
+  -> run tests
+  -> build Docker image
+  -> publish immutable GHCR tag
+  -> patch image field in GitOps deployment manifest
+  -> open/update GitOps PR
+  -> merge PR
+  -> Argo CD reconciles
+```
+
+This repo now carries the reusable building blocks for that path:
+
+- workflow template:
+  - `templates/github/publish-image-ghcr.template.yml`
+- example target metadata:
+  - `examples/platform/image-gitops-targets.example.json`
+- GitOps PR helper:
+  - `scripts/gitops/open_gitops_pr.py`
+
+## Required Source-Repo Files For The Image Path
+
+An app repo using this model should normally have:
+
+- `Dockerfile`
+- `.github/workflows/publish-image.yaml`
+- `deploy/gitops-targets.json`
+- `scripts/open_gitops_pr.py`
+
+The workflow template in `templates/github/publish-image-ghcr.template.yml`
+assumes that the source repo keeps a local copy of `scripts/open_gitops_pr.py`.
+That duplication is intentional. GitHub Actions should not depend on another
+repository being cloned at runtime just to open the deployment PR.
+
+## The `deploy/gitops-targets.json` Contract
+
+For image-based deployments the target metadata should match the example in
+`examples/platform/image-gitops-targets.example.json`.
+
+Each target describes:
+
+- `name`
+  - human-readable deployment target name
+- `gitops_repo`
+  - destination GitOps repository
+- `gitops_branch`
+  - branch to patch and branch PRs against
+- `manifest_path`
+  - YAML file containing the image field to update
+- `container_name`
+  - exact Kubernetes container name inside that manifest
+
+Example:
+
+```json
+{
+  "targets": [
+    {
+      "name": "my-app-prod",
+      "gitops_repo": "wesen/2026-03-27--hetzner-k3s",
+      "gitops_branch": "main",
+      "manifest_path": "gitops/kustomize/my-app/deployment.yaml",
+      "container_name": "my-app"
+    }
+  ]
+}
+```
+
+## Private GHCR Boundary
+
+Publishing to GHCR is not enough if the package stays private.
+
+For a private package, the GitOps repo and cluster also need the image-pull
+side wired:
+
+- a Vault secret containing registry credentials
+- a `VaultStaticSecret` rendering a `kubernetes.io/dockerconfigjson` secret
+- a service account referencing that pull secret
+
+If those are missing, the GitOps PR can merge successfully and Argo can still
+end up in `ImagePullBackOff`.
+
+This is a cluster-side concern, not a source-repo workflow concern. Keep that
+boundary explicit.
+
+## Immutable Tag Rule
+
+The workflow should patch immutable image tags, not floating tags.
+
+Recommended tag shape:
+
+```text
+ghcr.io/<owner>/<repo>:sha-<short-sha>
+```
+
+Do not open GitOps PRs that point at `main` or `latest` for normal application
+rollouts. Those tags are useful for human debugging, but they weaken rollback
+and reviewability.
+
+## First-Rollout Reminder
+
+The bootstrap rule still applies to the image-based path.
+
+If the app is brand new in the cluster, someone still needs to create the Argo
+`Application` object once:
+
+```bash
+kubectl apply -f gitops/applications/<app>.yaml
+kubectl -n argocd annotate application <app> argocd.argoproj.io/refresh=hard --overwrite
+```
+
+After that, the normal image-bump PR flow is enough.
