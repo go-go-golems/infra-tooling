@@ -32,6 +32,11 @@ The first extracted toolkit in this repo is the federated remote release flow:
 - updates GitOps target
 - opens or updates a GitOps PR
 
+This path is now proven by:
+
+- `go-go-app-inventory`
+- `go-go-app-sqlite`
+
 ## Layout
 
 ```text
@@ -48,6 +53,7 @@ scripts/gitops/
 ### Federation remote release
 
 - release model and secret bootstrap docs
+- Terraform-backed bootstrap helper for object-storage repo setup
 - shared immutable remote publish helper
 - `federation-manifest` target example
 - host-registry patch/update helpers
