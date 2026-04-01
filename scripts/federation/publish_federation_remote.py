@@ -99,6 +99,18 @@ def main() -> int:
     if args.dry_run:
         return 0
 
+    aws_env = os.environ.copy()
+    if (
+        "AWS_ACCESS_KEY_ID" not in aws_env
+        and "HETZNER_OBJECT_STORAGE_ACCESS_KEY_ID" in aws_env
+    ):
+        aws_env["AWS_ACCESS_KEY_ID"] = aws_env["HETZNER_OBJECT_STORAGE_ACCESS_KEY_ID"]
+    if (
+        "AWS_SECRET_ACCESS_KEY" not in aws_env
+        and "HETZNER_OBJECT_STORAGE_SECRET_ACCESS_KEY" in aws_env
+    ):
+        aws_env["AWS_SECRET_ACCESS_KEY"] = aws_env["HETZNER_OBJECT_STORAGE_SECRET_ACCESS_KEY"]
+
     command = [
         "aws",
         "--endpoint-url",
@@ -113,7 +125,7 @@ def main() -> int:
         "--cache-control",
         "public,max-age=31536000,immutable",
     ]
-    subprocess.run(command, check=True)
+    subprocess.run(command, check=True, env=aws_env)
     return 0
 
 
