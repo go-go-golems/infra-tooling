@@ -72,8 +72,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITOPS_PR_TOKEN }}
         run: |
-          python3 scripts/federation/update_federation_gitops_target.py \
+          args=()
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
+            args+=("--gitops-repo-dir" "<optional-local-checkout-for-dry-run>")
+            args+=("--dry-run")
+          else
+            args+=("--push" "--open-pr")
+          fi
+
+          python3 scripts/federation/open_federation_gitops_pr.py \
             --config deploy/gitops-targets.json \
             --target <target-name> \
             --manifest-url "${MANIFEST_URL}" \
-            --gitops-repo-dir "<optional-local-checkout-for-dry-run>"
+            "${args[@]}"
