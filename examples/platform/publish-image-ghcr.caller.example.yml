@@ -23,9 +23,7 @@ jobs:
     with:
       dockerfile: ./Dockerfile
       build_context: .
-      test_command: |
-        echo "Replace with repo-appropriate test command"
-        go test ./...
+      test_command: go test ./...
       go_version_file: go.mod
       gitops_target_config: deploy/gitops-targets.json
       push_image: ${{ github.event_name != 'pull_request' }}

@@ -319,9 +319,9 @@ def append_github_outputs(
     pr_numbers = [result.pr_number for result in results if result.pr_number]
     with Path(output_path).open("a", encoding="utf-8") as handle:
         handle.write(f"changed={'true' if bool(changed_targets) else 'false'}\n")
-        handle.write(f"changed-targets={','.join(changed_targets)}\n")
-        handle.write(f"branch-names={','.join(branch_names)}\n")
-        handle.write(f"pr-numbers={','.join(pr_numbers)}\n")
+        handle.write(f"changed_targets={','.join(changed_targets)}\n")
+        handle.write(f"branch_names={','.join(branch_names)}\n")
+        handle.write(f"pr_numbers={','.join(pr_numbers)}\n")
 
 
 def process_target(

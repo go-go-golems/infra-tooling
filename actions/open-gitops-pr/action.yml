@@ -41,11 +41,11 @@ inputs:
 outputs:
   changed:
     description: True when at least one target manifest changed.
-  changed-targets:
+  changed_targets:
     description: Comma-separated list of target names whose manifests changed.
-  branch-names:
+  branch_names:
     description: Comma-separated list of generated Git branch names.
-  pr-numbers:
+  pr_numbers:
     description: Comma-separated list of opened or reused pull request numbers.
 runs:
   using: docker

@@ -1,0 +1,43 @@
+name: test-gitops-tooling
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Run unit tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Validate example GitOps targets
+        run: python3 scripts/gitops/validate_gitops_targets.py examples/platform/image-gitops-targets.example.json
+
+  docker-action-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Build open-gitops-pr action image
+        run: docker build -t open-gitops-pr-action ./actions/open-gitops-pr
+
+  reusable-workflow-smoke:
+    uses: ./.github/workflows/publish-ghcr-image.yml
+    with:
+      test_command: python3 -m unittest discover -s tests -v
+      image_name: ghcr.io/wesen/infra-tooling-smoke
+      gitops_target_config: examples/platform/image-gitops-targets.example.json
+      push_image: false
+      open_gitops_pr: false
+      tooling_repository: ${{ github.repository }}
+      tooling_ref: ${{ github.sha }}

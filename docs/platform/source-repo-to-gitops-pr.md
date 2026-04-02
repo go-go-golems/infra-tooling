@@ -94,12 +94,16 @@ source repo
 
 This repo now carries the reusable building blocks for that path:
 
+- reusable workflow:
+  - `.github/workflows/publish-ghcr-image.yml`
 - workflow template:
   - `templates/github/publish-image-ghcr.template.yml`
 - example target metadata:
   - `examples/platform/image-gitops-targets.example.json`
-- GitOps PR helper:
-  - `scripts/gitops/open_gitops_pr.py`
+- GitOps PR action:
+  - `actions/open-gitops-pr/`
+- local validator:
+  - `scripts/gitops/validate_gitops_targets.py`
 
 ## Required Source-Repo Files For The Image Path
 
@@ -108,12 +112,35 @@ An app repo using this model should normally have:
 - `Dockerfile`
 - `.github/workflows/publish-image.yaml`
 - `deploy/gitops-targets.json`
-- `scripts/open_gitops_pr.py`
 
-The workflow template in `templates/github/publish-image-ghcr.template.yml`
-assumes that the source repo keeps a local copy of `scripts/open_gitops_pr.py`.
-That duplication is intentional. GitHub Actions should not depend on another
-repository being cloned at runtime just to open the deployment PR.
+An app repo using the current shared model should not need to copy the GitOps
+PR helper script anymore. Instead, the caller workflow should invoke the
+reusable workflow in this repository, and that workflow checks out the
+versioned `infra-tooling` repo contents so it can call the packaged
+`open-gitops-pr` action.
+
+Recommended source-repo reuse points:
+
+- keep `deploy/gitops-targets.json` local
+- keep `Dockerfile` and test command local
+- call `wesen/corporate-headquarters/infra-tooling/.github/workflows/publish-ghcr-image.yml@<ref>`
+- use `examples/platform/publish-image-ghcr.caller.example.yml` as the caller reference
+
+## Secret Expectations
+
+The shared workflow depends on two different credential paths:
+
+- `GITHUB_TOKEN`
+  - used by `docker/login-action` to publish to GHCR
+  - automatically available in GitHub Actions workflows
+- `GITOPS_PR_TOKEN`
+  - used by the `open-gitops-pr` action to clone, push, and open pull requests
+  - should be provided by the caller repository when GitOps PR creation is enabled
+
+If `GITOPS_PR_TOKEN` is missing, the reusable workflow currently skips the
+GitOps PR step with a clear log message instead of failing the entire image
+build. That is intentional for incremental rollout, but operators should treat
+the missing token as an incomplete deployment contract rather than a success.
 
 ## The `deploy/gitops-targets.json` Contract
 
@@ -179,6 +206,18 @@ ghcr.io/<owner>/<repo>:sha-<short-sha>
 Do not open GitOps PRs that point at `main` or `latest` for normal application
 rollouts. Those tags are useful for human debugging, but they weaken rollback
 and reviewability.
+
+## Validation Before Publish
+
+The shared workflow assumes the repo-local `deploy/gitops-targets.json`
+contract is valid. For local verification or a lightweight lint step, run:
+
+```bash
+python3 scripts/gitops/validate_gitops_targets.py deploy/gitops-targets.json
+```
+
+That validator only checks the target metadata contract. It does not verify that
+the referenced GitOps manifest exists in a remote repository checkout.
 
 ## First-Rollout Reminder
 

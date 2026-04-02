@@ -9,6 +9,7 @@
 - Validated the ticket with `docmgr doctor` after adding the required topic vocabulary entries
 - Uploaded the final bundle to reMarkable as `INFRA-0001 infra-tooling reusable GitHub Actions toolkit` under `/ai/2026/04/02/INFRA-0001`
 - Implemented the first shared tooling slice: packaged `open-gitops-pr` as a reusable action, moved the canonical helper under the action source tree, added config validation, and added unit tests
+- Implemented the second shared tooling slice: added the reusable GHCR publish workflow, added a repo-local self-test workflow, updated the caller template/example, and updated platform docs to the versioned reuse model
 
 ## 2026-04-02
 

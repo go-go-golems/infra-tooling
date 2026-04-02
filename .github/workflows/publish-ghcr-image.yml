@@ -1,0 +1,180 @@
+name: publish-ghcr-image
+
+on:
+  workflow_call:
+    inputs:
+      dockerfile:
+        required: false
+        type: string
+        default: ./Dockerfile
+      build_context:
+        required: false
+        type: string
+        default: .
+      test_command:
+        required: false
+        type: string
+        default: go test ./...
+      go_version_file:
+        required: false
+        type: string
+        default: go.mod
+      image_name:
+        required: false
+        type: string
+        default: ""
+      platforms:
+        required: false
+        type: string
+        default: linux/amd64
+      gitops_target_config:
+        required: false
+        type: string
+        default: deploy/gitops-targets.json
+      gitops_target:
+        required: false
+        type: string
+        default: ""
+      gitops_all_targets:
+        required: false
+        type: boolean
+        default: true
+      push_image:
+        required: false
+        type: boolean
+        default: true
+      open_gitops_pr:
+        required: false
+        type: boolean
+        default: true
+      tooling_repository:
+        required: false
+        type: string
+        default: wesen/corporate-headquarters/infra-tooling
+      tooling_ref:
+        required: false
+        type: string
+        default: main
+    secrets:
+      GITOPS_PR_TOKEN:
+        required: false
+
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    outputs:
+      image_ref: ${{ steps.compute.outputs.image_ref }}
+      image_tag: ${{ steps.compute.outputs.image_tag }}
+      image_name: ${{ steps.compute.outputs.image_name }}
+
+    steps:
+      - name: Check out caller repository
+        uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: ${{ inputs.go_version_file }}
+          cache: true
+
+      - name: Run tests
+        shell: bash
+        run: ${{ inputs.test_command }}
+
+      - name: Compute image coordinates
+        id: compute
+        shell: bash
+        run: |
+          set -euo pipefail
+          image_name="${{ inputs.image_name }}"
+          if [ -z "${image_name}" ]; then
+            image_name="ghcr.io/${GITHUB_REPOSITORY}"
+          fi
+          image_tag="sha-${GITHUB_SHA::7}"
+          image_ref="${image_name}:${image_tag}"
+          echo "image_name=${image_name}" >> "$GITHUB_OUTPUT"
+          echo "image_tag=${image_tag}" >> "$GITHUB_OUTPUT"
+          echo "image_ref=${image_ref}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ steps.compute.outputs.image_name }}
+          tags: |
+            type=raw,value=${{ steps.compute.outputs.image_tag }}
+            type=raw,value=main,enable={{is_default_branch}}
+            type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+
+      - name: Log in to GHCR
+        if: inputs.push-image
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and optionally push image
+        uses: docker/build-push-action@v7
+        with:
+          context: ${{ inputs.build_context }}
+          file: ${{ inputs.dockerfile }}
+          platforms: ${{ inputs.platforms }}
+          push: ${{ inputs.push_image }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  gitops-pr:
+    name: Open GitOps PR
+    needs: publish
+    if: inputs.open_gitops_pr
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.open.outputs.changed }}
+      changed_targets: ${{ steps.open.outputs.changed_targets }}
+      branch_names: ${{ steps.open.outputs.branch_names }}
+      pr_numbers: ${{ steps.open.outputs.pr_numbers }}
+
+    steps:
+      - name: Check out caller repository
+        uses: actions/checkout@v5
+
+      - name: Check out infra-tooling repository
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ inputs.tooling_repository }}
+          ref: ${{ inputs.tooling_ref }}
+          path: .infra-tooling
+
+      - name: Skip GitOps PR creation when token is missing
+        if: ${{ !secrets.GITOPS_PR_TOKEN }}
+        shell: bash
+        run: |
+          echo "GITOPS_PR_TOKEN is not configured; skipping GitOps PR creation."
+
+      - name: Open GitOps pull requests for published image
+        id: open
+        if: ${{ secrets.GITOPS_PR_TOKEN != '' }}
+        uses: ./.infra-tooling/actions/open-gitops-pr
+        with:
+          config: ${{ inputs.gitops_target_config }}
+          image: ${{ needs.publish.outputs.image_ref }}
+          target: ${{ inputs.gitops_target }}
+          all-targets: ${{ inputs.gitops_all_targets }}
+          push: true
+          open-pr: true
+          github-token: ${{ secrets.GITOPS_PR_TOKEN }}
+          git-author-name: github-actions[bot]
+          git-author-email: 41898282+github-actions[bot]@users.noreply.github.com

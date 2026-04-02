@@ -11,8 +11,8 @@
 
 ## Phase 2: Productize the reusable workflow surface
 
-- [ ] Add `.github/workflows/publish-ghcr-image.yml` to `infra-tooling`
-- [ ] Use `on: workflow_call` and define explicit inputs/secrets for source repos
+- [x] Add `.github/workflows/publish-ghcr-image.yml` to `infra-tooling`
+- [x] Use `on: workflow_call` and define explicit inputs/secrets for source repos
 - [ ] Decide the minimal caller contract:
   - build context
   - Dockerfile path
@@ -20,7 +20,7 @@
   - image name override
   - target config path
   - whether to open GitOps PRs
-- [ ] Define stable outputs such as the published immutable image ref
+- [x] Define stable outputs such as the published immutable image ref
 - [ ] Document the caller example for Go repos and for non-Go repos
 
 ## Phase 3: Productize the GitOps PR helper as an action
@@ -35,17 +35,17 @@
 ## Phase 4: Tighten contracts and examples
 
 - [x] Add a JSON schema or equivalent validation for `deploy/gitops-targets.json`
-- [ ] Add an example caller workflow that uses the reusable workflow instead of copying a template
-- [ ] Add an example repo-local `deploy/gitops-targets.json`
-- [ ] Update platform docs to describe the versioned reuse model instead of the copy-local-script model
-- [ ] Document secret expectations for `GITHUB_TOKEN` and `GITOPS_PR_TOKEN`
+- [x] Add an example caller workflow that uses the reusable workflow instead of copying a template
+- [x] Add an example repo-local `deploy/gitops-targets.json`
+- [x] Update platform docs to describe the versioned reuse model instead of the copy-local-script model
+- [x] Document secret expectations for `GITHUB_TOKEN` and `GITOPS_PR_TOKEN`
 
 ## Phase 5: Testing and verification
 
 - [x] Add unit tests for target loading and manifest patch logic
 - [ ] Add fixture tests for single-target and multi-target updates
 - [ ] Add a dry-run integration test against a temporary Git repository
-- [ ] Add a self-test workflow inside `infra-tooling` that exercises the action and reusable workflow
+- [x] Add a self-test workflow inside `infra-tooling` that exercises the action and reusable workflow
 - [ ] Verify behavior for already-updated manifests and already-open PRs
 
 ## Phase 6: Migration of existing app repos

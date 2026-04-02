@@ -301,3 +301,64 @@ The key result from this step was that `infra-tooling` now has a reusable `open-
   - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/scripts/gitops/open_gitops_pr.py`
   - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/scripts/gitops/validate_gitops_targets.py`
   - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/tests/gitops/test_open_gitops_pr.py`
+
+## Step 4: Add the reusable workflow, caller examples, and repo-local self-test workflow
+
+With the action packaged, the next job was to make it usable by source repositories. That meant adding a real reusable workflow under `.github/workflows/`, updating the old template into a caller example instead of an inline implementation, and wiring a repo-local self-test workflow that exercises the reusable workflow surface.
+
+The key result from this step was that `infra-tooling` now exposes a real `publish-ghcr-image` reusable workflow, a caller example/template, updated platform docs, and a self-test workflow that builds the action image and calls the reusable workflow in smoke-test mode.
+
+### What I did
+
+- Added `.github/workflows/publish-ghcr-image.yml`.
+- Added `.github/workflows/test-gitops-tooling.yml`.
+- Added `examples/platform/publish-image-ghcr.caller.example.yml`.
+- Replaced `templates/github/publish-image-ghcr.template.yml` with a caller workflow that uses the reusable workflow.
+- Updated `docs/platform/source-repo-to-gitops-pr.md`.
+- Updated `README.md`.
+
+### Why
+
+- Without a reusable workflow, the packaged action still leaves every app repo to rebuild the same publish orchestration.
+- The old template had become the wrong abstraction because it embedded the implementation instead of calling a versioned shared surface.
+- A self-test workflow is necessary because reusable workflows are easy to write but hard to trust unless the repo itself exercises them.
+
+### What worked
+
+- The reusable workflow cleanly separates build/publish concerns from the GitOps PR step.
+- Checking out `infra-tooling` into `.infra-tooling` inside the reusable workflow creates a stable path for calling the packaged action.
+- Local validation stayed clean:
+  - unit tests passed
+  - `compileall` passed
+  - `bash -n` passed for the action entrypoint
+  - the action Docker image built successfully
+
+### What didn't work
+
+- I initially used hyphenated reusable-workflow input names and output names. That was mechanically awkward and easy to get wrong in expressions, so I normalized the workflow-facing contract to underscore-style names before proceeding.
+- The same review pass surfaced that workflow/job outputs should also use underscore-style names, not hyphenated names.
+
+### What I learned
+
+- Reusable workflow ergonomics matter. A slightly awkward input/output contract will create friction in every caller repo, so it is worth normalizing early.
+- The self-test workflow is useful not just for CI later, but as a design forcing function: it made the reusable workflow interface concrete enough to validate immediately.
+
+### Technical details
+
+- Commands run:
+  - `python3 -m unittest discover -s tests -v`
+  - `python3 -m compileall actions scripts tests`
+  - `bash -n actions/open-gitops-pr/entrypoint.sh`
+  - `python3 scripts/gitops/validate_gitops_targets.py examples/platform/image-gitops-targets.example.json`
+  - `git diff --check`
+  - `docker build -t infra-tooling-open-gitops-pr ./actions/open-gitops-pr`
+
+### Review instructions
+
+- Focus on these files for the workflow/documentation slice:
+  - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/.github/workflows/publish-ghcr-image.yml`
+  - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/.github/workflows/test-gitops-tooling.yml`
+  - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/examples/platform/publish-image-ghcr.caller.example.yml`
+  - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/templates/github/publish-image-ghcr.template.yml`
+  - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/docs/platform/source-repo-to-gitops-pr.md`
+  - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/README.md`
