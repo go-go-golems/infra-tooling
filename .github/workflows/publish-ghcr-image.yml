@@ -50,7 +50,7 @@ on:
       tooling_repository:
         required: false
         type: string
-        default: wesen/corporate-headquarters/infra-tooling
+        default: go-go-golems/infra-tooling
       tooling_ref:
         required: false
         type: string

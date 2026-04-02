@@ -123,7 +123,7 @@ Recommended source-repo reuse points:
 
 - keep `deploy/gitops-targets.json` local
 - keep `Dockerfile` and test command local
-- call `wesen/corporate-headquarters/infra-tooling/.github/workflows/publish-ghcr-image.yml@<ref>`
+- call `go-go-golems/infra-tooling/.github/workflows/publish-ghcr-image.yml@<ref>`
 - use `examples/platform/publish-image-ghcr.caller.example.yml` as the caller reference
 
 ## Secret Expectations
