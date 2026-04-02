@@ -362,3 +362,53 @@ The key result from this step was that `infra-tooling` now exposes a real `publi
   - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/templates/github/publish-image-ghcr.template.yml`
   - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/docs/platform/source-repo-to-gitops-pr.md`
   - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/README.md`
+
+## Step 5: Add fixture coverage and a dry-run integration test for the helper
+
+Once the reusable workflow existed, the next useful improvement was test depth instead of more surface area. I wanted the helper to prove three things reliably:
+
+1. it patches the correct container when there are multiple containers,
+2. it restores files correctly during dry-run local validation,
+3. it writes machine-readable outputs in the shape the action metadata expects.
+
+The key result from this step was that the helper test suite now covers the multi-container patch case, the action output file case, and a dry-run integration path against a temporary Git repository.
+
+### What I did
+
+- Extended `tests/gitops/test_open_gitops_pr.py` with:
+  - a multi-container manifest fixture test
+  - a dry-run integration test using `git init` in a temp repo
+  - a machine-readable output file test for `append_github_outputs`
+- Re-ran the unit test suite and `git diff --check`.
+
+### Why
+
+- The helper is now shared infrastructure, so "works on one happy-path manifest" is not enough.
+- The dry-run path is important because operators will use it to validate target config and manifest patch behavior before enabling push/PR creation.
+- Action outputs are part of the reusable contract and should be treated like code, not just like logging.
+
+### What worked
+
+- The dry-run integration test passed with a temporary Git repository and confirmed that the manifest file is restored after validation.
+- The multi-container fixture correctly verified that only the named container image changes.
+- The output-file helper wrote the expected `changed`, `changed_targets`, `branch_names`, and `pr_numbers` keys.
+
+### What didn't work
+
+- The dry-run integration test prints the unified diff emitted by `process_target`, so the `unittest` output is slightly noisier than a pure silent unit test run. That is acceptable for now because it also makes the tested behavior more obvious during failures.
+
+### What I learned
+
+- The dry-run path is a real behavior boundary, not just a flag. It deserved its own integration-style test once the helper became shared tooling.
+- Shared helper outputs should be tested explicitly because output key naming drift is easy to introduce during refactors.
+
+### Technical details
+
+- Commands run:
+  - `python3 -m unittest discover -s tests -v`
+  - `git diff --check`
+
+### Review instructions
+
+- Focus on:
+  - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/tests/gitops/test_open_gitops_pr.py`

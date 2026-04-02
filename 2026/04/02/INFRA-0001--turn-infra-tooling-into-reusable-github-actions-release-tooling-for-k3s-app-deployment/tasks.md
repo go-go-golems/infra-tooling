@@ -43,8 +43,8 @@
 ## Phase 5: Testing and verification
 
 - [x] Add unit tests for target loading and manifest patch logic
-- [ ] Add fixture tests for single-target and multi-target updates
-- [ ] Add a dry-run integration test against a temporary Git repository
+- [x] Add fixture tests for single-target and multi-target updates
+- [x] Add a dry-run integration test against a temporary Git repository
 - [x] Add a self-test workflow inside `infra-tooling` that exercises the action and reusable workflow
 - [ ] Verify behavior for already-updated manifests and already-open PRs
 
