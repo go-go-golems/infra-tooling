@@ -1,0 +1,52 @@
+name: open-gitops-pr
+description: Patch GitOps deployment manifests to a new immutable image and optionally open pull requests.
+inputs:
+  config:
+    description: Path to deploy/gitops-targets.json inside the checked-out caller repository.
+    required: true
+  image:
+    description: Fully qualified immutable image reference to patch into the target manifest.
+    required: true
+  target:
+    description: Optional single target name from the config file.
+    required: false
+  all-targets:
+    description: When true, process every target in the config file.
+    required: false
+    default: "true"
+  push:
+    description: When true, push the generated branch to the target GitOps repository.
+    required: false
+    default: "true"
+  open-pr:
+    description: When true, open or reuse a pull request for the pushed branch.
+    required: false
+    default: "true"
+  dry-run:
+    description: When true, patch manifests locally without pushing changes.
+    required: false
+    default: "false"
+  gitops-repo-dir:
+    description: Optional local GitOps checkout path for dry-run validation.
+    required: false
+  github-token:
+    description: Token used to clone/push/open PRs against the GitOps repository.
+    required: false
+  git-author-name:
+    description: Git author name used for generated commits.
+    required: false
+  git-author-email:
+    description: Git author email used for generated commits.
+    required: false
+outputs:
+  changed:
+    description: True when at least one target manifest changed.
+  changed-targets:
+    description: Comma-separated list of target names whose manifests changed.
+  branch-names:
+    description: Comma-separated list of generated Git branch names.
+  pr-numbers:
+    description: Comma-separated list of opened or reused pull request numbers.
+runs:
+  using: docker
+  image: Dockerfile
