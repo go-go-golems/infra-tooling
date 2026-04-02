@@ -10,7 +10,7 @@ inputs:
   target:
     description: Optional single target name from the config file.
     required: false
-  all-targets:
+  all_targets:
     description: When true, process every target in the config file.
     required: false
     default: "true"
@@ -18,24 +18,24 @@ inputs:
     description: When true, push the generated branch to the target GitOps repository.
     required: false
     default: "true"
-  open-pr:
+  open_pr:
     description: When true, open or reuse a pull request for the pushed branch.
     required: false
     default: "true"
-  dry-run:
+  dry_run:
     description: When true, patch manifests locally without pushing changes.
     required: false
     default: "false"
-  gitops-repo-dir:
+  gitops_repo_dir:
     description: Optional local GitOps checkout path for dry-run validation.
     required: false
-  github-token:
+  github_token:
     description: Token used to clone/push/open PRs against the GitOps repository.
     required: false
-  git-author-name:
+  git_author_name:
     description: Git author name used for generated commits.
     required: false
-  git-author-email:
+  git_author_email:
     description: Git author email used for generated commits.
     required: false
 outputs:

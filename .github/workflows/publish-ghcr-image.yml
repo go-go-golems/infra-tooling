@@ -184,9 +184,9 @@ jobs:
           config: ${{ inputs.gitops_target_config }}
           image: ${{ needs.publish.outputs.image_ref }}
           target: ${{ inputs.gitops_target }}
-          all-targets: ${{ inputs.gitops_all_targets }}
+          all_targets: ${{ inputs.gitops_all_targets }}
           push: true
-          open-pr: true
-          github-token: ${{ secrets.GITOPS_PR_TOKEN }}
-          git-author-name: github-actions[bot]
-          git-author-email: 41898282+github-actions[bot]@users.noreply.github.com
+          open_pr: true
+          github_token: ${{ secrets.GITOPS_PR_TOKEN }}
+          git_author_name: github-actions[bot]
+          git_author_email: 41898282+github-actions[bot]@users.noreply.github.com
