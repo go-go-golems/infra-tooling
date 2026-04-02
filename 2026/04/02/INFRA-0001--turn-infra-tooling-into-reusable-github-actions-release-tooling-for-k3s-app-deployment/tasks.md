@@ -52,13 +52,14 @@
 
 - [x] Identify the first pilot repo to migrate to the reusable workflow
 - [x] Replace its copied workflow/script path with a call into `infra-tooling`
-- [ ] Verify the GitOps PR path still works end to end
-  Local dry-run validation now passes against the real `smailnail` target and real `wesen/2026-03-27--hetzner-k3s` checkout. Live `smailnail` run `23910489369` also completed the publish phase successfully after the Dockerfile Go-version fix, but the GitOps handoff still skipped because `GITOPS_PR_TOKEN` is not configured for the repo.
+- [x] Verify the GitOps PR path still works end to end
+  The live `smailnail` workflow opened PR `#28` in `wesen/2026-03-27--hetzner-k3s`, and that PR was merged.
 - [ ] Migrate the remaining image-based repos incrementally
 - [ ] Remove unnecessary copied local scripts once the shared action is trusted
-- [ ] Push the `smailnail` pilot branches and observe a live GitHub Actions run plus GitOps PR creation
-  A live `publish-image` run now exists and succeeds through image build/push. The remaining missing piece is enabling `GITOPS_PR_TOKEN` so the second job opens a real PR instead of intentionally skipping.
-- [ ] Apply `gitops/applications/smailnail.yaml` in-cluster once Vault runtime secrets and the Keycloak `k3s-parallel` environment exist
+- [x] Push the `smailnail` pilot branches and observe a live GitHub Actions run plus GitOps PR creation
+  The live workflow path now covers build, push, and GitOps PR creation successfully.
+- [x] Apply `gitops/applications/smailnail.yaml` in-cluster once Vault runtime secrets and the Keycloak `k3s-parallel` environment exist
+  The `smailnail` application now reaches `Healthy Synced` in Argo CD after applying the K3s Keycloak env, seeding Vault, bootstrapping Vault Kubernetes auth, and creating the `Application`.
 
 ## Phase 7: Delivery and follow-up
 

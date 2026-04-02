@@ -716,3 +716,79 @@ The key outcome from this step was that the repo now passes the real compile/tes
   - `docker build -t smailnail-ci-check .`
 - Fix commit:
   - `f52bf01 fix(docker): align builder go version with module`
+
+## Step 9: Complete the first real smailnail rollout and feed the operator lessons back into the stable docs
+
+The final step was to stop treating `smailnail` as only a CI and GitOps PR pilot and actually run the cluster-side operator sequence. That meant applying the new `smailnail` `k3s-parallel` Keycloak environment against the live in-cluster Keycloak host, seeding the runtime and GHCR pull secrets in Vault, re-running the shared Vault Kubernetes auth bootstrap with the new `smailnail` roles, and then letting Argo create the workload for real.
+
+The key outcome from this step was that the system is now proven end to end. `smailnail` is deployed on K3s, `https://smailnail.yolo.scapegoat.dev/readyz` returns `200`, the `smailnail` realm is live on `https://auth.yolo.scapegoat.dev`, and the rollout surfaced a small set of operator gotchas that are now important enough to document explicitly in the stable playbooks.
+
+### What I did
+
+- Confirmed the live GitOps PR created by the shared workflow had already been merged:
+  - `https://github.com/wesen/2026-03-27--hetzner-k3s/pull/28`
+- Applied the Terraform environment:
+  - `/home/manuel/code/wesen/terraform/keycloak/apps/smailnail/envs/k3s-parallel`
+- Read the K3s Keycloak bootstrap admin credentials from:
+  - `kubectl -n keycloak get secret keycloak-bootstrap-admin`
+- Generated a new browser client secret during the live apply and reused it immediately to seed:
+  - `kv/apps/smailnail/prod/runtime`
+- Seeded the private GHCR pull secret path:
+  - `kv/apps/smailnail/prod/image-pull`
+- Re-ran:
+  - `/home/manuel/code/wesen/2026-03-27--hetzner-k3s/scripts/bootstrap-vault-kubernetes-auth.sh`
+- Applied and refreshed the Argo application:
+  - `kubectl apply -f gitops/applications/smailnail.yaml`
+  - `kubectl -n argocd annotate application smailnail argocd.argoproj.io/refresh=hard --overwrite`
+- Verified:
+  - Argo `Healthy Synced`
+  - pod `Ready`
+  - db bootstrap job `Complete`
+  - ingress present
+  - `curl -I https://smailnail.yolo.scapegoat.dev/readyz`
+  - `curl https://auth.yolo.scapegoat.dev/realms/smailnail/.well-known/openid-configuration`
+- Updated the stable playbooks with the concrete lessons from this run.
+
+### What worked
+
+- The shared workflow and action got `smailnail` all the way to a merged GitOps PR without repo-local helper copies.
+- The new `k3s-parallel` Keycloak env applied cleanly once Terraform used the correct AWS profile and the in-cluster bootstrap-admin credentials.
+- Vault Secrets Operator synced all three secret surfaces successfully:
+  - runtime
+  - image-pull
+  - shared Postgres admin
+- The DB bootstrap job completed on the first run.
+- The deployment pulled the private GHCR image successfully and became `Ready`.
+- Argo ended in the expected state:
+  - `Healthy Synced Succeeded`
+
+### What didn't work
+
+- The first live Terraform apply failed with:
+  - `Backend initialization required, please run "terraform init"`
+- The second pass still failed until the shell explicitly exported:
+  - `AWS_PROFILE=manuel`
+- I briefly prepared a local Vault role rename to `smailnail-prod`, then confirmed that `origin/main` still reconciled the role as `smailnail`. That was a useful reminder that Argo follows the merged remote manifest contract, not local aspirational cleanup.
+- `bootstrap-vault-kubernetes-auth.sh` prints warnings that older roles do not have an audience configured. Those warnings did not block rollout, but they are real platform-hardening debt.
+
+### What I learned
+
+- The Terraform backend and the Terraform provider are separate credential boundaries. The Keycloak apply can fail for AWS reasons even when the Keycloak admin credentials are fine.
+- Using the K3s `keycloak-bootstrap-admin` secret is the cleanest operator path for first-time `k3s-parallel` app-realm applies against `auth.yolo.scapegoat.dev`.
+- The stable playbooks were missing two operational truths:
+  - export `AWS_PROFILE` in the exact Terraform shell
+  - check `origin/main` before changing Vault role names locally
+
+### Technical details
+
+- Successful Argo state:
+  - `Healthy Synced Succeeded successfully synced (all tasks run)`
+- External readiness check:
+  - `curl -I https://smailnail.yolo.scapegoat.dev/readyz`
+  - `HTTP/2 200`
+- OIDC discovery check:
+  - issuer `https://auth.yolo.scapegoat.dev/realms/smailnail`
+- New code commits involved in the operator pass:
+  - `cf64b73 docs(platform): link gitops handoff to cluster prerequisites`
+  - `afc4a76 feat(smailnail): add k3s parallel keycloak env`
+  - `7685e64 feat(smailnail): add k3s provisioning playbook and bootstrap assets`

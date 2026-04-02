@@ -16,6 +16,8 @@
 - Fixed a reusable-workflow bug in `publish-ghcr-image.yml` where the GHCR login step referenced `inputs.push-image` instead of `inputs.push_image`
 - Fixed the `smailnail` Docker build by aligning its builder image with `go.mod` (`golang:1.26.1-bookworm` instead of `golang:1.25.8-bookworm`)
 - Verified the live `smailnail` `publish-image` run `23910489369` now completes the compile, test, and image publish path successfully; the remaining end-to-end blocker is missing `GITOPS_PR_TOKEN`, which causes the GitOps PR job to skip by design
+- Completed the first real end-to-end pilot by opening and merging the live `smailnail` GitOps PR, applying the `smailnail` `k3s-parallel` Keycloak env, seeding Vault, bootstrapping Vault Kubernetes auth, and bringing the Argo application to `Healthy Synced`
+- Updated the stable playbooks with the live rollout lessons: export `AWS_PROFILE` explicitly for backend-backed Terraform applies, use the in-cluster `keycloak-bootstrap-admin` secret for K3s-side Keycloak admin access, and check `origin/main` before renaming Vault role names locally
 
 ## 2026-04-02
 
