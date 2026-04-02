@@ -24,6 +24,12 @@ source repo
 
 Do not collapse these steps mentally. Each arrow is a contract boundary with its own failure modes.
 
+This document only covers the release and GitOps handoff portion of the
+system. If the target app needs identity, Vault-backed runtime secrets, VSO, or
+private-image pull credentials, the cluster-side prerequisites live elsewhere:
+
+- [app-runtime-secrets-and-identity-provisioning-playbook.md](/home/manuel/code/wesen/2026-03-27--hetzner-k3s/docs/app-runtime-secrets-and-identity-provisioning-playbook.md)
+
 ## Ownership Boundaries
 
 ### Source repo owns
@@ -104,6 +110,15 @@ This repo now carries the reusable building blocks for that path:
   - `actions/open-gitops-pr/`
 - local validator:
   - `scripts/gitops/validate_gitops_targets.py`
+
+The release chain is only one half of the onboarding story. The K3s repo still
+needs:
+
+- a GitOps package and Argo `Application`
+- Vault auth and VSO wiring
+- seeded runtime and image-pull secrets
+- any DB bootstrap resources
+- matching Keycloak configuration in Terraform when the app uses OIDC
 
 ## Required Source-Repo Files For The Image Path
 
