@@ -39,7 +39,7 @@ ExternalSources:
     - https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action
     - https://docs.github.com/en/actions/tutorials/use-containerized-services/create-a-docker-container-action
 Summary: Chronological investigation log for designing reusable GitHub Actions automation in infra-tooling for K3s app deployment.
-LastUpdated: 2026-04-02T10:27:44.403924503-04:00
+LastUpdated: 2026-04-02T11:42:58-04:00
 WhatFor: Use this diary to understand how the design was derived, which evidence informed it, and how the final bundle was delivered.
 WhenToUse: Read this when reviewing the design doc or continuing the reusable tooling implementation later.
 ---
@@ -461,3 +461,153 @@ The key result from this step was a low-risk first adoption: `smailnail` now has
 
 - Focus on:
   - `/home/manuel/code/wesen/corporate-headquarters/smailnail/.github/workflows/publish-image.yaml`
+
+## Step 7: Complete the local smailnail pilot wiring and validate the shared handoff contract
+
+The next slice was the first real integration pass across three repositories instead of one. The goal was to move `smailnail` from "publish-only pilot" to "locally validated full pilot" by adding the K3s target package, adding the source-repo target metadata, and proving that the shared updater can patch the real manifest without collateral edits.
+
+This step also surfaced one useful shared-workflow bug that would have made the pilot look broken for the wrong reason. Fixing that before pushing anything kept the remaining validation signal clean: if the live pilot fails later, it will not be because the reusable workflow ignored its own `push_image` input.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok, 1, 2, 3 , 4"
+
+**Assistant interpretation:** Execute the previously proposed next four migration steps: add the `smailnail` GitOps package in the K3s repo, add the repo-local target config in `smailnail`, enable the shared GitOps PR handoff, and validate the pilot path.
+
+**Inferred user intent:** Stop discussing the migration as a plan and turn the `smailnail` pilot into a concrete, testable end-to-end contract across the shared tooling repo, the source repo, and the K3s GitOps repo.
+
+**Commit (code):** `4562c9e` — "feat(smailnail): add k3s gitops manifests"; `7a0cd58` — "ci: enable smailnail gitops handoff"; `3b6b7a6` — "fix(workflows): honor push_image input"
+
+### What I did
+
+- Created `/home/manuel/code/wesen/2026-03-27--hetzner-k3s/gitops/kustomize/smailnail/` with:
+  - namespace, service account, Vault connection/auth, runtime secret, image-pull secret
+  - Postgres bootstrap service account/auth/configmap/job
+  - deployment, service, ingress
+- Added `/home/manuel/code/wesen/2026-03-27--hetzner-k3s/gitops/applications/smailnail.yaml`.
+- Used the merged `smailnaild` deployment shape:
+  - web UI and `/api/*`
+  - OIDC browser login
+  - `/.well-known/oauth-protected-resource`
+  - `/mcp`
+- Wired the deployment for:
+  - Postgres via `SMAILNAILD_DSN`
+  - encryption key material from Vault
+  - web OIDC against `https://auth.yolo.scapegoat.dev/realms/smailnail`
+  - MCP bearer auth against the same issuer
+- Added `/home/manuel/code/wesen/corporate-headquarters/smailnail/deploy/gitops-targets.json`.
+- Updated `/home/manuel/code/wesen/corporate-headquarters/smailnail/.github/workflows/publish-image.yaml` to:
+  - set `image_name: ghcr.io/go-go-golems/smailnail`
+  - point at `deploy/gitops-targets.json`
+  - enable `open_gitops_pr` only for pushes to `refs/heads/main`
+- Fixed `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/.github/workflows/publish-ghcr-image.yml` so the GHCR login step actually honors `inputs.push_image`.
+- Validated the contract with:
+  - `kubectl kustomize gitops/kustomize/smailnail`
+  - `python3 /home/manuel/code/wesen/corporate-headquarters/infra-tooling/scripts/gitops/validate_gitops_targets.py /home/manuel/code/wesen/corporate-headquarters/smailnail/deploy/gitops-targets.json`
+  - `python3 /home/manuel/code/wesen/corporate-headquarters/infra-tooling/actions/open-gitops-pr/src/gitops_pr_action/open_gitops_pr.py --config /home/manuel/code/wesen/corporate-headquarters/smailnail/deploy/gitops-targets.json --target smailnail-prod --image ghcr.io/go-go-golems/smailnail:sha-deadbee --gitops-repo-dir /home/manuel/code/wesen/2026-03-27--hetzner-k3s --dry-run`
+  - `python3 -m unittest discover -s tests -v` in `infra-tooling`
+  - `go generate ./... && go test ./...` in `smailnail`
+
+### Why
+
+- The shared action was not meaningfully proven until it patched a real target in a real GitOps checkout.
+- `smailnail` is the first app that exercises the full merged-hosted shape:
+  - browser OIDC
+  - shared application DB
+  - encrypted stored IMAP credentials
+  - mounted MCP bearer-auth surface
+- The K3s repo needed a stable deployment target before the source repo could safely enable GitOps PR creation.
+- The workflow bug fix belonged in the same implementation window because it directly affected pilot correctness.
+
+### What worked
+
+- `kubectl kustomize gitops/kustomize/smailnail` succeeded, so the package is structurally sound.
+- The shared validator accepted the new `deploy/gitops-targets.json`.
+- The shared updater dry-run patched only `gitops/kustomize/smailnail/deployment.yaml` and then restored it cleanly.
+- `infra-tooling` unit tests still passed after the reusable-workflow fix.
+- After installing the locked frontend dependencies, `go generate ./... && go test ./...` passed in `smailnail`.
+- The repo boundaries are now clean and intentional:
+  - `infra-tooling` owns shared release orchestration
+  - `smailnail` owns its target metadata and caller workflow
+  - `2026-03-27--hetzner-k3s` owns the deployment package and Argo app
+
+### What didn't work
+
+- The first `go generate ./... && go test ./...` run in `smailnail` failed because the frontend toolchain was not installed locally. The exact failure was:
+  - `sh: 1: tsc: not found`
+  - `WARN  Local package.json exists, but node_modules missing, did you mean to install?`
+  - `pkg/smailnaild/web/generate.go:1: running "go": exit status 1`
+- That was not a product bug in `smailnail`; it was a local environment precondition for the workflow’s UI build step. I resolved it by running `corepack enable && pnpm install --frozen-lockfile` in `ui/`, then reran the workflow test command successfully.
+- The pilot is still only locally validated. I did not push branches yet, so there is not yet a live GitHub Actions run or a real opened GitOps PR to inspect.
+
+### What I learned
+
+- The first serious pilot should always include a real dry-run against the actual GitOps repo checkout, not just unit tests or example fixtures.
+- `smailnail` is a stronger pilot than simpler apps because it forces the platform model to account for:
+  - web auth
+  - MCP auth
+  - shared database bootstrapping
+  - encrypted runtime secrets
+- Even with a good shared design, one mismatched reusable-workflow input expression can spoil the pilot signal. Small workflow bugs deserve the same scrutiny as Python helper code.
+- The source workflow contract benefits from an explicit `image_name` override instead of relying entirely on `github.repository`, because the local repo has multiple remotes and the intended registry image is clearer when stated directly.
+
+### What was tricky to build
+
+- The sharp edge was not the YAML volume; it was deciding the minimum viable K3s package that is honest about runtime needs without dragging in speculative extras. `smailnail` looks like "just a web app" at first glance, but its real runtime contract includes Postgres bootstrapping, OIDC, MCP bearer auth, and encryption-key material. Copying a lighter app package would have produced a deployment that synced under Argo but failed immediately when `smailnaild` started.
+- The second sharp edge was validation order. If I had enabled `open_gitops_pr` in `smailnail` before adding the target manifest and before fixing the reusable-workflow input typo, a later failure would have been ambiguous. Building the target package first, then the source config, then the dry-run patch, made it much easier to trust the result.
+
+### What warrants a second pair of eyes
+
+- The exact Vault runtime secret contract for `apps/smailnail/prod/runtime`:
+  - `database`
+  - `username`
+  - `password`
+  - `dsn`
+  - `encryption_key_id`
+  - `encryption_key_base64`
+  - `oidc_client_secret`
+- The initial K3s hostname and issuer assumptions:
+  - `https://smailnail.yolo.scapegoat.dev`
+  - `https://auth.yolo.scapegoat.dev/realms/smailnail`
+- Whether the initial deployment should also require `SMAILNAILD_MCP_OIDC_AUDIENCE` or `SMAILNAILD_MCP_OIDC_REQUIRED_SCOPES` from day one, or whether that tightening should wait until the `k3s-parallel` Keycloak environment is applied.
+- Whether the bootstrap image baseline in `gitops/kustomize/smailnail/deployment.yaml` should stay on `:main` until the first live pilot publish lands, or whether we should replace it immediately with the first immutable tag once the source branch is pushed.
+
+### What should be done in the future
+
+- Push the `smailnail`, `infra-tooling`, and K3s branches.
+- Observe one live `publish-image` run in `smailnail` on `main`.
+- Confirm that the live run opens a GitOps PR against `wesen/2026-03-27--hetzner-k3s`.
+- Create `terraform/keycloak/apps/smailnail/envs/k3s-parallel/` before first production cutover.
+- Populate the Vault runtime and image-pull secret paths before applying `gitops/applications/smailnail.yaml` to the cluster.
+
+### Code review instructions
+
+- Start in the shared repo:
+  - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/.github/workflows/publish-ghcr-image.yml`
+- Then inspect the source repo caller contract:
+  - `/home/manuel/code/wesen/corporate-headquarters/smailnail/.github/workflows/publish-image.yaml`
+  - `/home/manuel/code/wesen/corporate-headquarters/smailnail/deploy/gitops-targets.json`
+- Then inspect the GitOps target:
+  - `/home/manuel/code/wesen/2026-03-27--hetzner-k3s/gitops/kustomize/smailnail/deployment.yaml`
+  - `/home/manuel/code/wesen/2026-03-27--hetzner-k3s/gitops/kustomize/smailnail/runtime-secret.yaml`
+  - `/home/manuel/code/wesen/2026-03-27--hetzner-k3s/gitops/kustomize/smailnail/db-bootstrap-job.yaml`
+  - `/home/manuel/code/wesen/2026-03-27--hetzner-k3s/gitops/applications/smailnail.yaml`
+- Re-run these checks:
+  - `kubectl kustomize gitops/kustomize/smailnail`
+  - `python3 scripts/gitops/validate_gitops_targets.py /home/manuel/code/wesen/corporate-headquarters/smailnail/deploy/gitops-targets.json`
+  - `python3 -m unittest discover -s tests -v`
+  - `go generate ./... && go test ./...`
+
+### Technical details
+
+- K3s implementation commit:
+  - `4562c9e feat(smailnail): add k3s gitops manifests`
+- Source-repo implementation commit:
+  - `7a0cd58 ci: enable smailnail gitops handoff`
+- Shared-workflow fix commit:
+  - `3b6b7a6 fix(workflows): honor push_image input`
+- The local dry-run manifest patch produced the expected one-line image diff:
+  - `gitops/kustomize/smailnail/deployment.yaml`
+  - `ghcr.io/go-go-golems/smailnail:main -> ghcr.io/go-go-golems/smailnail:sha-deadbee`
+- Local environment remediation command:
+  - `cd /home/manuel/code/wesen/corporate-headquarters/smailnail/ui && corepack enable && pnpm install --frozen-lockfile`

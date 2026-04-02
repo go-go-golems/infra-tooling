@@ -12,6 +12,8 @@
 - Implemented the second shared tooling slice: added the reusable GHCR publish workflow, added a repo-local self-test workflow, updated the caller template/example, and updated platform docs to the versioned reuse model
 - Hardened the helper tests with multi-container fixture coverage, machine-readable output coverage, and a dry-run integration test against a temporary Git repository
 - Started the first pilot adoption in `smailnail` by adding a caller workflow that uses the shared publish pipeline with GitOps PR creation intentionally disabled until the K3s target manifests exist
+- Completed the local `smailnail` pilot wiring by adding K3s manifests in `wesen/2026-03-27--hetzner-k3s`, adding `deploy/gitops-targets.json` in `smailnail`, enabling the shared GitOps PR path on `main`, and validating the contract with `kubectl kustomize`, the shared config validator, a local dry-run manifest patch, and the `smailnail`/`infra-tooling` test suites
+- Fixed a reusable-workflow bug in `publish-ghcr-image.yml` where the GHCR login step referenced `inputs.push-image` instead of `inputs.push_image`
 
 ## 2026-04-02
 

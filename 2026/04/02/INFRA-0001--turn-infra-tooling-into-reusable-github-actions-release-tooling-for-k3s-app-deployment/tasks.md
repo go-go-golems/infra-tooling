@@ -13,7 +13,7 @@
 
 - [x] Add `.github/workflows/publish-ghcr-image.yml` to `infra-tooling`
 - [x] Use `on: workflow_call` and define explicit inputs/secrets for source repos
-- [ ] Decide the minimal caller contract:
+- [x] Decide the minimal caller contract:
   - build context
   - Dockerfile path
   - test command
@@ -28,7 +28,7 @@
 - [x] Add `actions/open-gitops-pr/action.yml`
 - [x] Add a Dockerfile or equivalent packaged runner for the action
 - [x] Move the canonical PR helper implementation behind the action entrypoint
-- [ ] Define inputs for config path, image ref, target selection, push/open-pr flags, author identity, and dry-run mode
+- [x] Define inputs for config path, image ref, target selection, push/open-pr flags, author identity, and dry-run mode
 - [x] Define action outputs such as branch name, PR number, and whether a manifest changed
 - [ ] Decide whether the action should keep the current line-oriented YAML patcher or switch to a YAML-aware implementation
 
@@ -51,10 +51,13 @@
 ## Phase 6: Migration of existing app repos
 
 - [x] Identify the first pilot repo to migrate to the reusable workflow
-- [ ] Replace its copied workflow/script path with a call into `infra-tooling`
+- [x] Replace its copied workflow/script path with a call into `infra-tooling`
 - [ ] Verify the GitOps PR path still works end to end
+  Local dry-run validation now passes against the real `smailnail` target and real `wesen/2026-03-27--hetzner-k3s` checkout. The remaining step is a pushed GitHub Actions run that opens a real GitOps PR.
 - [ ] Migrate the remaining image-based repos incrementally
 - [ ] Remove unnecessary copied local scripts once the shared action is trusted
+- [ ] Push the `smailnail` pilot branches and observe a live GitHub Actions run plus GitOps PR creation
+- [ ] Apply `gitops/applications/smailnail.yaml` in-cluster once Vault runtime secrets and the Keycloak `k3s-parallel` environment exist
 
 ## Phase 7: Delivery and follow-up
 
