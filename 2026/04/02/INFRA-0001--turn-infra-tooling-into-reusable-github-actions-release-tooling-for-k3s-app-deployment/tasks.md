@@ -53,10 +53,11 @@
 - [x] Identify the first pilot repo to migrate to the reusable workflow
 - [x] Replace its copied workflow/script path with a call into `infra-tooling`
 - [ ] Verify the GitOps PR path still works end to end
-  Local dry-run validation now passes against the real `smailnail` target and real `wesen/2026-03-27--hetzner-k3s` checkout. The remaining step is a pushed GitHub Actions run that opens a real GitOps PR.
+  Local dry-run validation now passes against the real `smailnail` target and real `wesen/2026-03-27--hetzner-k3s` checkout. Live `smailnail` run `23910489369` also completed the publish phase successfully after the Dockerfile Go-version fix, but the GitOps handoff still skipped because `GITOPS_PR_TOKEN` is not configured for the repo.
 - [ ] Migrate the remaining image-based repos incrementally
 - [ ] Remove unnecessary copied local scripts once the shared action is trusted
 - [ ] Push the `smailnail` pilot branches and observe a live GitHub Actions run plus GitOps PR creation
+  A live `publish-image` run now exists and succeeds through image build/push. The remaining missing piece is enabling `GITOPS_PR_TOKEN` so the second job opens a real PR instead of intentionally skipping.
 - [ ] Apply `gitops/applications/smailnail.yaml` in-cluster once Vault runtime secrets and the Keycloak `k3s-parallel` environment exist
 
 ## Phase 7: Delivery and follow-up

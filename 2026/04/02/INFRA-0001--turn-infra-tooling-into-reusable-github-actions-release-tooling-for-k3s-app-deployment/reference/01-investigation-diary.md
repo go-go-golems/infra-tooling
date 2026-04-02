@@ -39,7 +39,7 @@ ExternalSources:
     - https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action
     - https://docs.github.com/en/actions/tutorials/use-containerized-services/create-a-docker-container-action
 Summary: Chronological investigation log for designing reusable GitHub Actions automation in infra-tooling for K3s app deployment.
-LastUpdated: 2026-04-02T11:42:58-04:00
+LastUpdated: 2026-04-02T12:35:00-04:00
 WhatFor: Use this diary to understand how the design was derived, which evidence informed it, and how the final bundle was delivered.
 WhenToUse: Read this when reviewing the design doc or continuing the reusable tooling implementation later.
 ---
@@ -611,3 +611,108 @@ This step also surfaced one useful shared-workflow bug that would have made the 
   - `ghcr.io/go-go-golems/smailnail:main -> ghcr.io/go-go-golems/smailnail:sha-deadbee`
 - Local environment remediation command:
   - `cd /home/manuel/code/wesen/corporate-headquarters/smailnail/ui && corepack enable && pnpm install --frozen-lockfile`
+
+## Step 8: Fix the smailnail pilot compilation and container-build drift
+
+Once the pilot branches were pushed, the first live `smailnail` `publish-image` runs finally stopped failing on reusable-workflow wiring and started failing on real repo issues. That was the point where the pilot became useful. The compilation problem turned out to be two separate mismatches that only show up in different contexts: the local/CI `go generate` path assumed frontend dependencies might not exist, while the Docker image build assumed the Go builder image version still matched `go.mod`.
+
+The key outcome from this step was that the repo now passes the real compile/test path locally, the fallback `go generate` path works even when frontend dependencies are absent, and the live GitHub Actions `publish-image` workflow completes successfully through image build and push. The remaining blocker is not compilation anymore. It is that the GitOps PR job intentionally skips because `GITOPS_PR_TOKEN` is missing.
+
+### What I did
+
+- Reproduced the local `smailnail` validation path:
+  - `go generate ./...`
+  - `go test ./...`
+- Re-ran the CI-like fallback generation path with frontend dependencies intentionally removed:
+  - move `ui/node_modules` aside
+  - remove `ui/dist`
+  - run `go generate ./pkg/smailnaild/web`
+- Inspected the failed live run logs for `smailnail` run `23910254814`.
+- Confirmed the compile/test phase had moved past the earlier TypeScript and `go generate` failures, then isolated the new failure to Docker build stage:
+  - `go.mod requires go >= 1.26.1 (running go 1.25.8; GOTOOLCHAIN=local)`
+- Updated `/home/manuel/code/wesen/corporate-headquarters/smailnail/Dockerfile` to use:
+  - `FROM golang:1.26.1-bookworm AS builder`
+- Reproduced the exact Docker path locally with:
+  - `docker build -t smailnail-ci-check .`
+- Committed and pushed the Dockerfile fix:
+  - `f52bf01 fix(docker): align builder go version with module`
+- Watched the next live workflow run:
+  - `https://github.com/go-go-golems/smailnail/actions/runs/23910489369`
+
+### Why
+
+- A successful `go test ./...` is not enough if the production image build uses a different Go toolchain than the repo declares.
+- The pilot needed to prove that the shared workflow is good enough to surface real application issues instead of only workflow wiring mistakes.
+- Fixing the Docker builder version in the app repo is the correct boundary. This is app-owned build configuration, not shared infra-tooling logic.
+
+### What worked
+
+- Local `go generate ./...` and `go test ./...` both passed.
+- The fallback `go generate ./pkg/smailnaild/web` path also passed with `ui/node_modules` and `ui/dist` missing, reusing the committed embedded assets as intended.
+- The local container build completed successfully after the Dockerfile update.
+- Live GitHub Actions run `23910489369` completed successfully:
+  - `release / publish` passed in about 5 minutes 31 seconds
+  - `release / Open GitOps PR` ran and exited successfully
+
+### What didn't work
+
+- The previous live run `23910254814` failed in Docker build because the repo had drifted:
+  - `go.mod` required Go `1.26.1`
+  - `Dockerfile` still used `golang:1.25.8-bookworm`
+- The GitOps PR job on the successful run did not open a PR because the repo does not currently expose `GITOPS_PR_TOKEN`. The job output showed:
+  - `Detect GitOps PR token availability`
+  - `Skip GitOps PR creation when token is missing`
+
+### What I learned
+
+- The pilot is now at a healthier stage. Shared workflow and action wiring are good enough that the remaining failures are ordinary repo issues rather than framework issues.
+- The fastest way to debug these rollouts is to separate three paths explicitly:
+  - repo-local `go generate` and tests
+  - local Docker build
+  - live workflow handoff to GitOps
+- The final missing piece for true end-to-end verification is secret provisioning, not more release-engineering code.
+
+### What was tricky to build
+
+- The subtlety here was that there were two "compilation" failures with different scopes:
+  - frontend/tooling assumptions during `go generate`
+  - Go toolchain mismatch inside Docker build
+- It would have been easy to stop after the first local green run and miss the real production failure. The live publish workflow was necessary to expose the Dockerfile drift.
+
+### What warrants a second pair of eyes
+
+- Whether `smailnail` should pin the Go builder version in one more centralized way so `go.mod`, local toolchain, and Dockerfile cannot drift apart again.
+- Whether the `publish-image` caller in `smailnail` should fail hard when `open_gitops_pr` is enabled but `GITOPS_PR_TOKEN` is absent, or whether the current skip behavior is the right default for rollout safety.
+
+### What should be done in the future
+
+- Configure `GITOPS_PR_TOKEN` for `go-go-golems/smailnail`.
+- Re-run `publish-image` on `main`.
+- Confirm that the second job opens a real PR against `wesen/2026-03-27--hetzner-k3s`.
+- After that, decide whether to harden the shared workflow so an enabled GitOps handoff without token provisioning fails loudly instead of skipping.
+
+### Code review instructions
+
+- Start with the app build drift fix:
+  - `/home/manuel/code/wesen/corporate-headquarters/smailnail/Dockerfile`
+- Then review the app repo’s declared toolchain:
+  - `/home/manuel/code/wesen/corporate-headquarters/smailnail/go.mod`
+- Then inspect the successful live run:
+  - `https://github.com/go-go-golems/smailnail/actions/runs/23910489369`
+- Finally confirm the remaining handoff gate in the reusable workflow:
+  - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/.github/workflows/publish-ghcr-image.yml`
+
+### Technical details
+
+- Failed live run caused by Docker build drift:
+  - `23910254814`
+- Successful live run after the fix:
+  - `23910489369`
+- Docker build failure from the earlier run:
+  - `go.mod requires go >= 1.26.1 (running go 1.25.8; GOTOOLCHAIN=local)`
+- Local verification commands:
+  - `go generate ./...`
+  - `go test ./...`
+  - `docker build -t smailnail-ci-check .`
+- Fix commit:
+  - `f52bf01 fix(docker): align builder go version with module`

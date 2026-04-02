@@ -14,6 +14,8 @@
 - Started the first pilot adoption in `smailnail` by adding a caller workflow that uses the shared publish pipeline with GitOps PR creation intentionally disabled until the K3s target manifests exist
 - Completed the local `smailnail` pilot wiring by adding K3s manifests in `wesen/2026-03-27--hetzner-k3s`, adding `deploy/gitops-targets.json` in `smailnail`, enabling the shared GitOps PR path on `main`, and validating the contract with `kubectl kustomize`, the shared config validator, a local dry-run manifest patch, and the `smailnail`/`infra-tooling` test suites
 - Fixed a reusable-workflow bug in `publish-ghcr-image.yml` where the GHCR login step referenced `inputs.push-image` instead of `inputs.push_image`
+- Fixed the `smailnail` Docker build by aligning its builder image with `go.mod` (`golang:1.26.1-bookworm` instead of `golang:1.25.8-bookworm`)
+- Verified the live `smailnail` `publish-image` run `23910489369` now completes the compile, test, and image publish path successfully; the remaining end-to-end blocker is missing `GITOPS_PR_TOKEN`, which causes the GitOps PR job to skip by design
 
 ## 2026-04-02
 
