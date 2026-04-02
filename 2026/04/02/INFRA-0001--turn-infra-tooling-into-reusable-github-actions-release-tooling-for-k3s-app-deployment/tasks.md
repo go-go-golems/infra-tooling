@@ -50,7 +50,7 @@
 
 ## Phase 6: Migration of existing app repos
 
-- [ ] Identify the first pilot repo to migrate to the reusable workflow
+- [x] Identify the first pilot repo to migrate to the reusable workflow
 - [ ] Replace its copied workflow/script path with a call into `infra-tooling`
 - [ ] Verify the GitOps PR path still works end to end
 - [ ] Migrate the remaining image-based repos incrementally

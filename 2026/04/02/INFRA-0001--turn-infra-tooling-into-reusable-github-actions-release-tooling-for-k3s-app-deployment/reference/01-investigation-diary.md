@@ -412,3 +412,52 @@ The key result from this step was that the helper test suite now covers the mult
 
 - Focus on:
   - `/home/manuel/code/wesen/corporate-headquarters/infra-tooling/tests/gitops/test_open_gitops_pr.py`
+
+## Step 6: Start the first pilot adoption in smailnail
+
+With the shared workflow in place, I wanted at least one real caller repository to depend on it immediately. `smailnail` was the obvious candidate because it is the next K3s migration target and already has a production Dockerfile, but it does not yet have the K3s GitOps package or `deploy/gitops-targets.json`.
+
+The key result from this step was a low-risk first adoption: `smailnail` now has a `publish-image` workflow that uses the shared reusable workflow for build and GHCR publish, while deliberately keeping `open_gitops_pr: false` until the target manifests exist. That exercises the shared publish path without pretending the GitOps rollout path is already ready.
+
+### What I did
+
+- Added `/home/manuel/code/wesen/corporate-headquarters/smailnail/.github/workflows/publish-image.yaml`.
+- Pointed that workflow at `wesen/corporate-headquarters/infra-tooling/.github/workflows/publish-ghcr-image.yml@main`.
+- Reused the repo's existing `go generate ./...` and `go test ./...` checks as the test command.
+- Left GitOps PR creation disabled with an explicit comment explaining why.
+
+### Why
+
+- A shared workflow is more credible once a real application repository depends on it.
+- `smailnail` is the migration target we were already analyzing, so it is a useful pilot even before its GitOps manifests are in place.
+- Enabling image publish before GitOps handoff is a safe partial rollout because it exercises the build and registry parts of the contract without breaking on a nonexistent manifest target.
+
+### What worked
+
+- The caller workflow fits cleanly into `smailnail` without touching its existing release/tag workflows.
+- `git diff --check` in `smailnail` stayed clean.
+- The partial rollout constraint is explicit in the workflow comment instead of being hidden in assumptions.
+
+### What didn't work
+
+- `smailnail` still lacks `deploy/gitops-targets.json`, which means it cannot yet enable the GitOps PR half of the contract.
+- The repo also has unrelated untracked `README.md.orig` and `go.mod.orig` files, so I needed to be careful not to include or disturb them.
+
+### What I learned
+
+- The shared workflow is usable before full GitOps adoption, which gives us a staged migration path:
+  - adopt image publish first
+  - add target metadata and K3s manifests later
+  - then turn on GitOps PR creation
+- `smailnail` is a good pilot repo for the publish half of the contract, but not yet for the full GitOps handoff path.
+
+### Technical details
+
+- Commands run:
+  - `git diff --check && git status --short --branch`
+  - `sed -n '1,220p' .github/workflows/publish-image.yaml`
+
+### Review instructions
+
+- Focus on:
+  - `/home/manuel/code/wesen/corporate-headquarters/smailnail/.github/workflows/publish-image.yaml`

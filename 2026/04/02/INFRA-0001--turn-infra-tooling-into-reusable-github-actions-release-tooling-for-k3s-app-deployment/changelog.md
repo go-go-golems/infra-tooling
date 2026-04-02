@@ -11,6 +11,7 @@
 - Implemented the first shared tooling slice: packaged `open-gitops-pr` as a reusable action, moved the canonical helper under the action source tree, added config validation, and added unit tests
 - Implemented the second shared tooling slice: added the reusable GHCR publish workflow, added a repo-local self-test workflow, updated the caller template/example, and updated platform docs to the versioned reuse model
 - Hardened the helper tests with multi-container fixture coverage, machine-readable output coverage, and a dry-run integration test against a temporary Git repository
+- Started the first pilot adoption in `smailnail` by adding a caller workflow that uses the shared publish pipeline with GitOps PR creation intentionally disabled until the K3s target manifests exist
 
 ## 2026-04-02
 
