@@ -148,14 +148,44 @@ The shared workflow depends on two different credential paths:
 - `GITHUB_TOKEN`
   - used by `docker/login-action` to publish to GHCR
   - automatically available in GitHub Actions workflows
-- `GITOPS_PR_TOKEN`
-  - used by the `open-gitops-pr` action to clone, push, and open pull requests
-  - should be provided by the caller repository when GitOps PR creation is enabled
+- GitHub Actions OIDC token
+  - requested by the caller workflow through `permissions.id-token: write`
+  - presented to Vault through `hashicorp/vault-action@v3`
+  - exchanged at Vault `auth/github-actions` for a short-lived Vault token
+- Vault-stored GitOps PR token
+  - read from a repo-specific KV v2 data path such as `kv/data/ci/github/my-app/gitops-pr-token`
+  - exported as `GITOPS_PR_TOKEN` for the packaged `open-gitops-pr` action
+  - used by the action to clone, push, and open pull requests
 
-If `GITOPS_PR_TOKEN` is missing, the reusable workflow currently skips the
-GitOps PR step with a clear log message instead of failing the entire image
-build. That is intentional for incremental rollout, but operators should treat
-the missing token as an incomplete deployment contract rather than a success.
+The default shared workflow path is now `gitops_pr_token_source: vault`. When
+`open_gitops_pr` is true, callers must provide `vault_role` and
+`vault_secret_path`. The legacy `gitops_pr_token_source: secret` mode still
+exists only for deliberate migration work; new repositories should not store a
+long-lived `GITOPS_PR_TOKEN` directly as a source-repo GitHub secret.
+
+Caller workflows must grant OIDC permission:
+
+```yaml
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+  id-token: write
+```
+
+Caller workflow example:
+
+```yaml
+jobs:
+  release:
+    uses: go-go-golems/infra-tooling/.github/workflows/publish-ghcr-image.yml@main
+    secrets: inherit
+    with:
+      gitops_pr_token_source: vault
+      vault_role: my-app-gitops-pr
+      vault_secret_path: kv/data/ci/github/my-app/gitops-pr-token
+      open_gitops_pr: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+```
 
 ## The `deploy/gitops-targets.json` Contract
 

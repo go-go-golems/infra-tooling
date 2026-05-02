@@ -35,6 +35,8 @@ fi
 
 if [[ -n "${INPUT_GITHUB_TOKEN:-}" ]]; then
   export GH_TOKEN="${INPUT_GITHUB_TOKEN}"
+elif [[ -n "${GITOPS_PR_TOKEN:-}" ]]; then
+  export GH_TOKEN="${GITOPS_PR_TOKEN}"
 fi
 
 if [[ -n "${INPUT_GIT_AUTHOR_NAME:-}" ]]; then

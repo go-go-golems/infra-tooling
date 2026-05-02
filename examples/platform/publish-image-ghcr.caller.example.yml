@@ -11,6 +11,7 @@ permissions:
   contents: read
   packages: write
   pull-requests: write
+  id-token: write
 
 concurrency:
   group: publish-image-${{ github.ref }}
@@ -28,5 +29,8 @@ jobs:
       gitops_target_config: deploy/gitops-targets.json
       push_image: ${{ github.event_name != 'pull_request' }}
       open_gitops_pr: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+      gitops_pr_token_source: vault
+      vault_role: my-app-gitops-pr
+      vault_secret_path: kv/data/ci/github/my-app/gitops-pr-token
       tooling_repository: go-go-golems/infra-tooling
       tooling_ref: main
