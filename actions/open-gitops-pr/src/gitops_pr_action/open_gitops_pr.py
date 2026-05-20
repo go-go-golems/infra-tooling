@@ -24,6 +24,18 @@ REQUIRED_TARGET_KEYS = {
     "container_name",
 }
 
+OPTIONAL_TARGET_KEYS = {
+    "patch_strategy",
+}
+
+SUPPORTED_PATCH_STRATEGIES = {
+    "container-image",
+    "static-publisher-job",
+}
+
+SHA_RE = re.compile(r"^(?:sha-)?[0-9a-fA-F]{7,40}$")
+RELEASE_RE = re.compile(r"sha-[0-9a-fA-F]{7,40}")
+
 
 @dataclass
 class TargetResult:
@@ -66,11 +78,25 @@ def load_targets(config_path: Path) -> list[dict[str, str]]:
             raise ValueError(f"target {raw_target!r} is missing keys: {', '.join(missing)}")
 
         target = {key: str(raw_target[key]).strip() for key in REQUIRED_TARGET_KEYS}
+        for key in OPTIONAL_TARGET_KEYS:
+            if key in raw_target:
+                target[key] = str(raw_target[key]).strip()
+
         empty_values = sorted(key for key, value in target.items() if not value)
         if empty_values:
             raise ValueError(
                 f"target {raw_target!r} has empty values for keys: {', '.join(empty_values)}"
             )
+
+        patch_strategy = target.get("patch_strategy", "container-image")
+        if patch_strategy not in SUPPORTED_PATCH_STRATEGIES:
+            supported = ", ".join(sorted(SUPPORTED_PATCH_STRATEGIES))
+            raise ValueError(
+                f"target {raw_target!r} has unsupported patch_strategy {patch_strategy!r}; "
+                f"supported values: {supported}"
+            )
+        target["patch_strategy"] = patch_strategy
+
         if target["name"] in seen_names:
             raise ValueError(f"duplicate target name {target['name']!r} in {config_path}")
         seen_names.add(target["name"])
@@ -125,12 +151,12 @@ def build_commit_title(target_name: str, image: str) -> str:
     return f"Deploy {target_name} using {image}"
 
 
-def patch_manifest_image(
+def replace_manifest_image_text(
     manifest_path: Path,
+    original: str,
     container_name: str,
     image: str,
-) -> tuple[bool, str, str]:
-    original = manifest_path.read_text(encoding="utf-8")
+) -> tuple[bool, str]:
     lines = original.splitlines(keepends=True)
 
     containers_indent = None
@@ -172,7 +198,7 @@ def patch_manifest_image(
             suffix = "\n" if line.endswith("\n") else ""
             existing = stripped.split(":", 1)[1].strip()
             if existing == image:
-                return False, original, original
+                return False, original
             lines[idx] = f"{prefix}image: {image}{suffix}"
             replaced = True
             break
@@ -182,9 +208,88 @@ def patch_manifest_image(
             f"could not find image field for container {container_name!r} in {manifest_path}"
         )
 
-    updated = "".join(lines)
+    return True, "".join(lines)
+
+
+def patch_manifest_image(
+    manifest_path: Path,
+    container_name: str,
+    image: str,
+) -> tuple[bool, str, str]:
+    original = manifest_path.read_text(encoding="utf-8")
+    image_changed, updated = replace_manifest_image_text(
+        manifest_path=manifest_path,
+        original=original,
+        container_name=container_name,
+        image=image,
+    )
+    if not image_changed:
+        return False, original, original
     manifest_path.write_text(updated, encoding="utf-8")
     return True, original, updated
+
+
+def normalize_release(value: str) -> str:
+    if not SHA_RE.match(value):
+        raise ValueError(
+            f"invalid static publisher release {value!r}; expected a git SHA or sha-<git-sha> "
+            "with 7-40 hexadecimal characters"
+        )
+    suffix = value[4:] if value.lower().startswith("sha-") else value
+    return f"sha-{suffix.lower()}"
+
+
+def release_from_image(image: str) -> str:
+    if ":" not in image:
+        raise ValueError(
+            f"static-publisher-job strategy requires an image tag in {image!r}; "
+            "expected an immutable sha-<git-sha> tag"
+        )
+    return normalize_release(image.rsplit(":", 1)[1])
+
+
+def patch_static_publisher_job(
+    manifest_path: Path,
+    container_name: str,
+    image: str,
+) -> tuple[bool, str, str]:
+    original = manifest_path.read_text(encoding="utf-8")
+    new_release = release_from_image(image)
+    _, with_image = replace_manifest_image_text(
+        manifest_path=manifest_path,
+        original=original,
+        container_name=container_name,
+        image=image,
+    )
+    releases = sorted(set(RELEASE_RE.findall(with_image)))
+    if not releases:
+        raise ValueError(f"no sha-* release token found in static publisher manifest {manifest_path}")
+    updated = RELEASE_RE.sub(new_release, with_image)
+    if updated == original:
+        return False, original, original
+    manifest_path.write_text(updated, encoding="utf-8")
+    return True, original, updated
+
+
+def patch_target_manifest(
+    manifest_path: Path,
+    target: dict[str, str],
+    image: str,
+) -> tuple[bool, str, str]:
+    strategy = target.get("patch_strategy", "container-image")
+    if strategy == "container-image":
+        return patch_manifest_image(
+            manifest_path=manifest_path,
+            container_name=target["container_name"],
+            image=image,
+        )
+    if strategy == "static-publisher-job":
+        return patch_static_publisher_job(
+            manifest_path=manifest_path,
+            container_name=target["container_name"],
+            image=image,
+        )
+    raise ValueError(f"unsupported patch_strategy {strategy!r}")
 
 
 def ensure_git_identity(repo_dir: Path) -> None:
@@ -342,9 +447,9 @@ def process_target(
         if not manifest_path.exists():
             raise FileNotFoundError(f"manifest not found: {manifest_path}")
 
-        changed, original, updated = patch_manifest_image(
+        changed, original, updated = patch_target_manifest(
             manifest_path=manifest_path,
-            container_name=target["container_name"],
+            target=target,
             image=image,
         )
         diff = render_diff(manifest_path, original, updated)
