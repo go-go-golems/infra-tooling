@@ -17,6 +17,7 @@ from gitops_pr_action.open_gitops_pr import (  # noqa: E402
     build_branch_name,
     load_targets,
     patch_manifest_image,
+    patch_static_publisher_job,
     process_target,
     select_targets,
 )
@@ -140,6 +141,88 @@ spec:
             )
             self.assertIn("ghcr.io/wesen/sidecar:old", updated)
             self.assertIn("ghcr.io/wesen/demo:sha-1234567", updated)
+
+    def test_patch_static_publisher_job_updates_image_and_release_tokens(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            manifest_path = Path(tmp_dir) / "publish-job.yaml"
+            manifest_path.write_text(
+                """
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: publish-demo-sha-1111111
+  labels:
+    static.wesen.dev/release: sha-1111111
+spec:
+  template:
+    spec:
+      containers:
+        - name: publish
+          image: ghcr.io/wesen/demo-static:sha-1111111
+          command:
+            - sh
+            - -c
+            - |
+              release="sha-1111111"
+""".lstrip(),
+                encoding="utf-8",
+            )
+            changed, original, updated = patch_static_publisher_job(
+                manifest_path,
+                container_name="publish",
+                image="ghcr.io/wesen/demo-static:sha-2222222",
+            )
+            self.assertTrue(changed)
+            self.assertIn("sha-1111111", original)
+            self.assertNotIn("sha-1111111", updated)
+            self.assertEqual(updated.count("sha-2222222"), 4)
+            self.assertIn("image: ghcr.io/wesen/demo-static:sha-2222222", updated)
+            self.assertIn("name: publish-demo-sha-2222222", updated)
+
+    def test_patch_static_publisher_job_noop_when_release_matches(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            manifest_path = Path(tmp_dir) / "publish-job.yaml"
+            original = """
+spec:
+  template:
+    spec:
+      containers:
+        - name: publish
+          image: ghcr.io/wesen/demo-static:sha-2222222
+metadata:
+  name: publish-demo-sha-2222222
+""".lstrip()
+            manifest_path.write_text(original, encoding="utf-8")
+            changed, _, updated = patch_static_publisher_job(
+                manifest_path,
+                container_name="publish",
+                image="ghcr.io/wesen/demo-static:sha-2222222",
+            )
+            self.assertFalse(changed)
+            self.assertEqual(updated, original)
+
+    def test_patch_static_publisher_job_requires_sha_tag(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            manifest_path = Path(tmp_dir) / "publish-job.yaml"
+            manifest_path.write_text(
+                """
+spec:
+  template:
+    spec:
+      containers:
+        - name: publish
+          image: ghcr.io/wesen/demo-static:sha-1111111
+metadata:
+  name: publish-demo-sha-1111111
+""".lstrip(),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "requires an image tag|invalid static publisher"):
+                patch_static_publisher_job(
+                    manifest_path,
+                    container_name="publish",
+                    image="ghcr.io/wesen/demo-static:latest",
+                )
 
     def test_build_branch_name_uses_image_and_target(self) -> None:
         branch = build_branch_name(

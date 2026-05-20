@@ -204,6 +204,9 @@ Each target describes:
   - YAML file containing the image field to update
 - `container_name`
   - exact Kubernetes container name inside that manifest
+- `patch_strategy` (optional)
+  - `container-image` by default; updates only the named container's `image:` field
+  - `static-publisher-job`; updates the named container image and rewrites every `sha-*` release token in the manifest to match the new immutable image tag
 
 Example:
 
@@ -220,6 +223,40 @@ Example:
   ]
 }
 ```
+
+### Static publisher Job variant
+
+Static site releases often use a one-shot Kubernetes `Job` that copies `/site`
+from an artifact image into a shared content volume. These manifests usually
+encode the same immutable release token in multiple places:
+
+- Job name
+- release label
+- container image tag
+- shell `release="sha-..."` variable
+
+Kubernetes Job pod templates are immutable, so patching only `image:` can leave
+Argo CD unable to apply the change. Use `patch_strategy: static-publisher-job`
+for this pattern:
+
+```json
+{
+  "targets": [
+    {
+      "name": "my-static-site-prod",
+      "gitops_repo": "wesen/2026-03-27--hetzner-k3s",
+      "gitops_branch": "main",
+      "manifest_path": "gitops/kustomize/my-static-site/publish-job.yaml",
+      "container_name": "publish",
+      "patch_strategy": "static-publisher-job"
+    }
+  ]
+}
+```
+
+The published image must use a `sha-<git-sha>` tag. The action derives the new
+release token from that tag and rewrites all `sha-*` tokens in the target
+manifest together.
 
 ## Private GHCR Boundary
 
