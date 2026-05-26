@@ -139,11 +139,13 @@ Check many PRs without blocking on one PR:
 scripts/05-batch-pr-ready.sh /tmp/prs.txt
 ```
 
-Watch many PRs until all are ready or one reaches a terminal operator-action state:
+Watch many PRs until there is something for the operator to do:
 
 ```bash
 scripts/05-batch-pr-ready.sh /tmp/prs.txt --watch --interval 30 --timeout 1800
 ```
+
+Watch mode keeps polling only while every PR is still waiting. It stops when all PRs are ready, when any PR reaches a terminal operator-action state (`codex_feedback`, `failed_checks`, or `error`), or when some PR becomes `ready` while others are still waiting. The partial-ready stop exits with code `5` so release-train operators can merge/release in dependency order instead of sleeping through an actionable state.
 
 ## Implementation notes
 

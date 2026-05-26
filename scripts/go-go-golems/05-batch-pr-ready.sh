@@ -6,7 +6,9 @@ set -euo pipefail
 #   05-batch-pr-ready.sh <prs-file> [--trigger-missing-codex] [--watch] [--interval SECONDS] [--timeout SECONDS]
 #
 # The PR file contains one PR URL or owner/repo#number per line. Blank lines and
-# lines beginning with # are ignored.
+# lines beginning with # are ignored. In watch mode, the script keeps polling only
+# while every PR is still waiting; it stops as soon as any PR becomes ready or
+# reaches a terminal not-ready state so the operator can act on the new signal.
 
 if [[ $# -lt 1 ]]; then
   echo "usage: $0 <prs-file> [--trigger-missing-codex] [--watch] [--interval SECONDS] [--timeout SECONDS]" >&2
@@ -101,11 +103,15 @@ run_once() {
   printf '\nsummary: ready=%d not_ready=%d codex_feedback=%d failed_checks=%d errors=%d\n' \
     "$ready" "$not_ready" "$codex_feedback" "$failed_checks" "$errors"
 
+  if (( not_ready == 0 )); then return 0; fi
   if (( errors > 0 )); then return 2; fi
   if (( codex_feedback > 0 )); then return 3; fi
   if (( failed_checks > 0 )); then return 4; fi
-  if (( not_ready > 0 )); then return 1; fi
-  return 0
+  # Some PRs became ready while others are still waiting. Stop watch mode so the
+  # operator can merge/release in dependency order instead of sleeping through an
+  # actionable state.
+  if (( ready > 0 )); then return 5; fi
+  return 1
 }
 
 START="$(date +%s)"
@@ -122,7 +128,7 @@ while true; do
   if [[ "$WATCH" != "true" ]]; then
     exit "$code"
   fi
-  if [[ "$code" == "0" || "$code" == "2" || "$code" == "3" || "$code" == "4" ]]; then
+  if [[ "$code" == "0" || "$code" == "2" || "$code" == "3" || "$code" == "4" || "$code" == "5" ]]; then
     exit "$code"
   fi
   ELAPSED=$(( $(date +%s) - START ))

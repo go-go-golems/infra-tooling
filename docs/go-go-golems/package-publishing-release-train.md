@@ -49,6 +49,8 @@ scripts/go-go-golems/05-batch-pr-ready.sh /tmp/prs.txt
 scripts/go-go-golems/05-batch-pr-ready.sh /tmp/prs.txt --watch --interval 30 --timeout 1800
 ```
 
+Batch watch mode stops as soon as there is operator work: a terminal failure, a Codex feedback state, all PRs ready, or even one ready PR while others are still waiting. Treat exit code `5` as “partial progress is actionable”; inspect the table and proceed with the next dependency-order merge/release step.
+
 ## Per-repository workflow
 
 ### 1. Land and publish the upstream package
