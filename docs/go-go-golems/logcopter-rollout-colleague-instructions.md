@@ -147,7 +147,14 @@ Open a PR. Trigger Codex if needed:
 /path/to/infra-tooling/scripts/go-go-golems/02-trigger-codex-review.sh https://github.com/go-go-golems/<repo>/pull/<n>
 ```
 
-Wait until CI and Codex are ready:
+For many PRs, put the URLs in a file and trigger/check them as a batch:
+
+```bash
+/path/to/infra-tooling/scripts/go-go-golems/06-batch-trigger-codex-review.sh /tmp/prs.txt
+/path/to/infra-tooling/scripts/go-go-golems/05-batch-pr-ready.sh /tmp/prs.txt
+```
+
+Wait until CI and Codex are ready for one PR:
 
 ```bash
 /path/to/infra-tooling/scripts/go-go-golems/04-wait-pr-ready.sh https://github.com/go-go-golems/<repo>/pull/<n> 30 1800

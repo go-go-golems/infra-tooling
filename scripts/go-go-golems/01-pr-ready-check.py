@@ -220,6 +220,45 @@ def codex_findings(pr: dict[str, Any], codex_re: re.Pattern[str]) -> list[Findin
     return findings
 
 
+def classify_findings(findings: list[Finding]) -> tuple[str, bool, list[str]]:
+    if all(f.ok for f in findings):
+        return "ready", True, []
+
+    failed = [f.message for f in findings if not f.ok]
+    failed_check_kinds: list[str] = []
+    for msg in failed:
+        if "pending checks:" in msg:
+            failed_check_kinds.append("pending_checks")
+        if "failing/non-success checks:" in msg:
+            details = msg.split(":", 1)[1] if ":" in msg else msg
+            lower = details.lower()
+            if "test" in lower:
+                failed_check_kinds.append("test")
+            if "lint" in lower:
+                failed_check_kinds.append("lint")
+            if "vulnerability" in lower or "govuln" in lower:
+                failed_check_kinds.append("govulncheck")
+            if "gosec" in lower or "security scan" in lower:
+                failed_check_kinds.append("gosec")
+            if "dependency review" in lower:
+                failed_check_kinds.append("dependency_review")
+            failed_check_kinds.append("checks")
+
+    failed_check_kinds = sorted(set(failed_check_kinds))
+
+    if any("latest Codex-authored body contains substantive comments" in msg for msg in failed):
+        return "codex_feedback", True, failed_check_kinds
+    if any("failing/non-success checks:" in msg for msg in failed):
+        return "failed_checks", True, failed_check_kinds
+    if any("pending checks:" in msg for msg in failed):
+        return "waiting_checks", False, failed_check_kinds
+    if any("no Codex-authored review/comment signal found" in msg for msg in failed):
+        return "no_codex", False, failed_check_kinds
+    if any("eyes reaction" in msg or "no thumbs-up reaction" in msg for msg in failed):
+        return "waiting_codex", False, failed_check_kinds
+    return "not_ready", False, failed_check_kinds
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("pr", help="PR URL or owner/repo#number")
@@ -238,11 +277,15 @@ def main() -> int:
     pr = data["data"]["repository"]["pullRequest"]
     codex_re = re.compile(args.codex_author_regex)
     findings = checks_findings(pr) + codex_findings(pr, codex_re)
-    ok = all(f.ok for f in findings)
+    state, terminal, failed_check_kinds = classify_findings(findings)
+    ok = state == "ready"
 
     if args.json:
         print(json.dumps({
             "ok": ok,
+            "state": state,
+            "terminal": terminal,
+            "failedCheckKinds": failed_check_kinds,
             "url": pr.get("url"),
             "mergeStateStatus": pr.get("mergeStateStatus"),
             "reviewDecision": pr.get("reviewDecision"),
@@ -251,6 +294,10 @@ def main() -> int:
     else:
         print(f"PR: {pr.get('url')}")
         print(f"READY: {'yes' if ok else 'no'}")
+        print(f"STATE: {state}")
+        print(f"TERMINAL: {'yes' if terminal else 'no'}")
+        if failed_check_kinds:
+            print(f"FAILED_CHECK_KINDS: {', '.join(failed_check_kinds)}")
         for f in findings:
             print(f"{'OK' if f.ok else 'FAIL'}: {f.message}")
     return 0 if ok else 1

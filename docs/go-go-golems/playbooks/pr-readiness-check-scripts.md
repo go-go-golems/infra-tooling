@@ -59,10 +59,13 @@ A reusable script should therefore answer four questions:
 
 ```text
 scripts/
-  00-pr-ready-check.sh       # bash entry point for operators
-  01-pr-ready-check.py       # non-mutating readiness check implementation
-  02-trigger-codex-review.sh # posts '@codex review'
-  03-watch-codex-reactions.py# polls until a Codex signal appears
+  00-pr-ready-check.sh          # bash entry point for operators
+  01-pr-ready-check.py          # non-mutating readiness check implementation
+  02-trigger-codex-review.sh    # posts '@codex review'
+  03-watch-codex-reactions.py   # polls until a Codex signal appears
+  04-wait-pr-ready.sh           # waits on one PR; stops on terminal feedback/failures
+  05-batch-pr-ready.sh          # one-shot or watch-mode readiness table for many PRs
+  06-batch-trigger-codex-review.sh # posts '@codex review' to many PRs
 ```
 
 ### Readiness model
@@ -99,16 +102,47 @@ Machine-readable output:
 scripts/00-pr-ready-check.sh https://github.com/go-go-golems/pinocchio/pull/158 --json
 ```
 
+The JSON output includes automation-friendly fields:
+
+```json
+{
+  "ok": false,
+  "state": "waiting_checks",
+  "terminal": false,
+  "failedCheckKinds": ["pending_checks"]
+}
+```
+
+Known `state` values are `ready`, `waiting_checks`, `waiting_codex`, `no_codex`, `failed_checks`, `codex_feedback`, `not_ready`, and `error`. `terminal=true` means a human/code change is required before waiting can succeed.
+
 Trigger Codex review:
 
 ```bash
 scripts/02-trigger-codex-review.sh https://github.com/go-go-golems/pinocchio/pull/158
 ```
 
+Trigger Codex review for a batch:
+
+```bash
+scripts/06-batch-trigger-codex-review.sh /tmp/prs.txt
+```
+
 Watch for a Codex reaction signal:
 
 ```bash
 scripts/03-watch-codex-reactions.py https://github.com/go-go-golems/pinocchio/pull/158 --interval 30 --timeout 900
+```
+
+Check many PRs without blocking on one PR:
+
+```bash
+scripts/05-batch-pr-ready.sh /tmp/prs.txt
+```
+
+Watch many PRs until all are ready or one reaches a terminal operator-action state:
+
+```bash
+scripts/05-batch-pr-ready.sh /tmp/prs.txt --watch --interval 30 --timeout 1800
 ```
 
 ## Implementation notes

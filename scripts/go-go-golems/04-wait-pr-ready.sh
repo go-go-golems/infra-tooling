@@ -19,22 +19,36 @@ CHECK="$SCRIPT_DIR/00-pr-ready-check.sh"
 START="$(date +%s)"
 ATTEMPT=1
 
+json_field() {
+  python3 -c 'import json,sys; data=json.load(open(sys.argv[1])); print(data.get(sys.argv[2], ""))' "$1" "$2"
+}
+
 while true; do
   NOW="$(date +%s)"
   ELAPSED=$((NOW - START))
   echo "--- attempt ${ATTEMPT} elapsed=${ELAPSED}s $(date -Is) ---"
-  CHECK_OUTPUT="$(mktemp)"
-  if "$CHECK" "$PR" | tee "$CHECK_OUTPUT"; then
-    rm -f "$CHECK_OUTPUT"
+
+  CHECK_JSON="$(mktemp)"
+  if "$CHECK" "$PR" --json >"$CHECK_JSON"; then
+    "$CHECK" "$PR"
+    rm -f "$CHECK_JSON"
     echo "PR ready: $PR"
     exit 0
   fi
-  if grep -q "latest Codex-authored body contains substantive comments" "$CHECK_OUTPUT"; then
-    rm -f "$CHECK_OUTPUT"
+
+  "$CHECK" "$PR" || true
+  STATE="$(json_field "$CHECK_JSON" state)"
+  rm -f "$CHECK_JSON"
+
+  if [[ "$STATE" == "codex_feedback" ]]; then
     echo "Codex posted substantive review comments; stopping wait for operator action: $PR" >&2
     exit 3
   fi
-  rm -f "$CHECK_OUTPUT"
+  if [[ "$STATE" == "failed_checks" ]]; then
+    echo "Status checks failed; stopping wait for operator action: $PR" >&2
+    exit 4
+  fi
+
   NOW="$(date +%s)"
   ELAPSED=$((NOW - START))
   if (( ELAPSED >= TIMEOUT )); then

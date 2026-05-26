@@ -10,7 +10,9 @@ Scripts:
 - `scripts/go-go-golems/01-pr-ready-check.py` — GitHub GraphQL implementation for checks + Codex signals.
 - `scripts/go-go-golems/02-trigger-codex-review.sh` — posts `@codex review`.
 - `scripts/go-go-golems/03-watch-codex-reactions.py` — watches for Codex reaction transitions.
-- `scripts/go-go-golems/04-wait-pr-ready.sh` — polls until the readiness check succeeds or times out.
+- `scripts/go-go-golems/04-wait-pr-ready.sh` — polls one PR until ready, terminal feedback/failure, or timeout.
+- `scripts/go-go-golems/05-batch-pr-ready.sh` — checks or watches a file of PR URLs without blocking on one PR.
+- `scripts/go-go-golems/06-batch-trigger-codex-review.sh` — posts `@codex review` to a file of PR URLs.
 
 Playbooks and snippets:
 
@@ -30,6 +32,22 @@ logcopter -> glazed/clay -> geppetto -> pinocchio -> leaf applications
 ```
 
 The exact order depends on the current `go.mod` graph. Inspect direct dependencies rather than relying on memory.
+
+## Early downstream PRs
+
+You may open downstream PRs before every upstream release is published in order to get CI and Codex feedback early. This is useful for large release trains with many leaf repositories.
+
+Rules for early PRs:
+
+1. It is fine if a downstream PR temporarily fails because an upstream package has not been tagged yet.
+2. Do not merge a downstream PR until its required upstream tags are visible and `GOWORK=off` validation passes.
+3. Use the batch readiness scripts to monitor all open PRs while still merging/releasing in dependency order.
+
+```bash
+scripts/go-go-golems/06-batch-trigger-codex-review.sh /tmp/prs.txt
+scripts/go-go-golems/05-batch-pr-ready.sh /tmp/prs.txt
+scripts/go-go-golems/05-batch-pr-ready.sh /tmp/prs.txt --watch --interval 30 --timeout 1800
+```
 
 ## Per-repository workflow
 
@@ -153,3 +171,7 @@ Then retry the merge.
 - A merged upstream PR is not the same as a published upstream module version. Check tags/module versions before bumping downstream.
 - Codex `EYES` reactions mean review may still be running; do not merge until the readiness checker accepts the latest signal.
 - If Codex leaves substantive review text, treat the PR as not ready even when Actions are green. The wait script exits immediately with status `3` in this case so the operator can inspect and address the review instead of looping until timeout.
+- If `govulncheck` reports standard-library vulnerabilities, bump the repo's Go directive/toolchain to the fixed Go version and rerun `GOWORK=off govulncheck ./...`.
+- If `golangci-lint-action` fails because its binary was built with an older Go version than the repo target, bump the action version or switch to a repo-managed lint install after `actions/setup-go`.
+- If `securego/gosec@master` runs with an older Go than `actions/setup-go`, prefer installing `gosec` with `go install` after setup and running the binary directly.
+- If Dependency Review is unsupported because the repository dependency graph is disabled, either enable the dependency graph in repository settings or mark that workflow step `continue-on-error: true` until settings are fixed.
