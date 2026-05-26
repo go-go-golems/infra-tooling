@@ -204,8 +204,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error '${{ inputs.verify_packages_url }}' \
-            | jq --arg package '${{ steps.settings.outputs.package_name }}' \
-                 --arg version '${{ steps.settings.outputs.package_version }}' \
-                 '(.packages // .) | map(select(.name == $package and ((.version? == $version) or ((.versions? // []) | index($version))))) | length > 0' \
-            | grep true
+          for attempt in $(seq 1 10); do
+            if curl --fail --silent --show-error '${{ inputs.verify_packages_url }}' \
+              | jq --arg package '${{ steps.settings.outputs.package_name }}' \
+                   --arg version '${{ steps.settings.outputs.package_version }}' \
+                   '(.packages // .) | map(select(.name == $package and ((.version? == $version) or ((.versions? // []) | index($version))))) | length > 0' \
+              | grep true; then
+              exit 0
+            fi
+            echo "package ${{ steps.settings.outputs.package_name }}@${{ steps.settings.outputs.package_version }} not visible yet (attempt ${attempt}/10); retrying..." >&2
+            sleep 10
+          done
+
+          echo "package ${{ steps.settings.outputs.package_name }}@${{ steps.settings.outputs.package_version }} did not appear in docs API" >&2
+          exit 1
