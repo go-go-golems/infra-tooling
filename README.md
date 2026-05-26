@@ -84,6 +84,7 @@ For go-go-golems package publishing and dependency release trains, start with:
 - `docs/go-go-golems/package-publishing-release-train.md`
 - `docs/go-go-golems/playbooks/logcopter-package-rollout-playbook.md`
 - `docs/go-go-golems/playbooks/pr-readiness-check-scripts.md`
+- `docs/go-go-golems/glazed-linting-rollout-playbook.md`
 - `scripts/go-go-golems/04-wait-pr-ready.sh`
 - `examples/go-go-golems/Makefile.bump-go-go-golems.snippet.mk`
 
