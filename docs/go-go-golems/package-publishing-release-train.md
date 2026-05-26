@@ -152,4 +152,4 @@ Then retry the merge.
 - `go generate ./...` is mutating. For generated-file drift checks, run the non-mutating checker first.
 - A merged upstream PR is not the same as a published upstream module version. Check tags/module versions before bumping downstream.
 - Codex `EYES` reactions mean review may still be running; do not merge until the readiness checker accepts the latest signal.
-- If Codex leaves substantive review text, treat the PR as not ready even when Actions are green.
+- If Codex leaves substantive review text, treat the PR as not ready even when Actions are green. The wait script exits immediately with status `3` in this case so the operator can inspect and address the review instead of looping until timeout.

@@ -79,6 +79,8 @@ A PR is ready when all of the following are true:
 - The latest Codex signal has no `EYES` reaction.
 - If the latest signal is Codex-authored, its body is empty/benign/satisfied; substantive body text with suggestions means the review likely requested changes or left comments.
 
+`04-wait-pr-ready.sh` treats substantive Codex review text as a terminal wait condition. It exits immediately with status `3` instead of polling until timeout, because those comments require an operator/code change before the PR can become ready.
+
 ### Why trigger comments are signals
 
 Initial testing on Pinocchio PR 158 showed that after posting `@codex review`, the PR comment received an `EYES` reaction while Codex was running. That means the relevant in-progress state may be attached to the human trigger comment rather than a bot-authored review object. The script treats the latest exact `@codex review` comment as a Codex signal and checks its reactions.
