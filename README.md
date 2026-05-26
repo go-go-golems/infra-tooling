@@ -24,6 +24,13 @@ This repo is the neutral home for reusable mechanics that should not live:
 
 ## Current Focus
 
+This repo now also contains a reusable go-go-golems package publishing toolkit:
+
+- release-train and downstream dependency bump playbook
+- generic `bump-go-go-golems` Makefile snippets
+- PR readiness scripts for GitHub Actions + Codex review signals
+- logcopter package rollout playbook copied from Glazed documentation
+
 The first extracted toolkit in this repo is the federated remote release flow:
 
 - source repo builds remote artifact
@@ -42,10 +49,13 @@ This path is now proven by:
 ```text
 docs/federation/
 docs/platform/
+docs/go-go-golems/
 examples/federation/
+examples/go-go-golems/
 templates/github/
 scripts/federation/
 scripts/gitops/
+scripts/go-go-golems/
 ```
 
 ## First Extracted Toolkits
@@ -68,6 +78,14 @@ scripts/gitops/
 - reusable action for opening GitOps PRs from published immutable images
 
 ## Current Recommended Reuse Points
+
+For go-go-golems package publishing and dependency release trains, start with:
+
+- `docs/go-go-golems/package-publishing-release-train.md`
+- `docs/go-go-golems/playbooks/logcopter-package-rollout-playbook.md`
+- `docs/go-go-golems/playbooks/pr-readiness-check-scripts.md`
+- `scripts/go-go-golems/04-wait-pr-ready.sh`
+- `examples/go-go-golems/Makefile.bump-go-go-golems.snippet.mk`
 
 If a source repo is deploying a container image through the Hetzner K3s +
 Argo CD platform, start with:
