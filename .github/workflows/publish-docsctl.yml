@@ -1,0 +1,211 @@
+name: publish-docsctl
+
+on:
+  workflow_call:
+    inputs:
+      package_name:
+        required: true
+        type: string
+      package_version:
+        required: false
+        type: string
+        default: ""
+      export_command:
+        required: true
+        type: string
+      sqlite_path:
+        required: false
+        type: string
+        default: .docsctl/help.sqlite
+      docsctl_install_command:
+        required: false
+        type: string
+        default: go install github.com/go-go-golems/glazed/cmd/docsctl@latest
+      go_version_file:
+        required: false
+        type: string
+        default: go.mod
+      registry_url:
+        required: false
+        type: string
+        default: https://docs-registry.yolo.scapegoat.dev
+      verify_packages_url:
+        required: false
+        type: string
+        default: https://docs.yolo.scapegoat.dev/api/packages
+      vault_addr:
+        required: false
+        type: string
+        default: https://vault.yolo.scapegoat.dev
+      vault_auth_path:
+        required: false
+        type: string
+        default: github-actions
+      vault_role:
+        required: false
+        type: string
+        default: ""
+      vault_audience:
+        required: false
+        type: string
+        default: https://vault.yolo.scapegoat.dev
+      vault_token_role:
+        required: false
+        type: string
+        default: ""
+      verify_publish:
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out caller repository
+        uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: ${{ inputs.go_version_file }}
+          cache: true
+
+      - name: Compute publish settings
+        id: settings
+        shell: bash
+        env:
+          INPUT_PACKAGE_NAME: ${{ inputs.package_name }}
+          INPUT_PACKAGE_VERSION: ${{ inputs.package_version }}
+          INPUT_VAULT_ROLE: ${{ inputs.vault_role }}
+          INPUT_VAULT_TOKEN_ROLE: ${{ inputs.vault_token_role }}
+        run: |
+          set -euo pipefail
+
+          package_name="${INPUT_PACKAGE_NAME}"
+          if [ -z "${package_name}" ]; then
+            echo "package_name is required" >&2
+            exit 1
+          fi
+
+          package_version="${INPUT_PACKAGE_VERSION}"
+          if [ -z "${package_version}" ]; then
+            if [ -n "${GITHUB_REF_NAME:-}" ]; then
+              package_version="${GITHUB_REF_NAME}"
+            else
+              package_version="sha-${GITHUB_SHA::7}"
+            fi
+          fi
+
+          vault_role="${INPUT_VAULT_ROLE}"
+          if [ -z "${vault_role}" ]; then
+            vault_role="docsctl-${package_name}-publisher"
+          fi
+
+          vault_token_role="${INPUT_VAULT_TOKEN_ROLE}"
+          if [ -z "${vault_token_role}" ]; then
+            vault_token_role="docsctl-${package_name}-publisher"
+          fi
+
+          echo "package_name=${package_name}" >> "$GITHUB_OUTPUT"
+          echo "package_version=${package_version}" >> "$GITHUB_OUTPUT"
+          echo "vault_role=${vault_role}" >> "$GITHUB_OUTPUT"
+          echo "vault_token_role=${vault_token_role}" >> "$GITHUB_OUTPUT"
+
+      - name: Install docsctl
+        shell: bash
+        run: ${{ inputs.docsctl_install_command }}
+
+      - name: Export Glazed help SQLite database
+        shell: bash
+        env:
+          SQLITE_PATH: ${{ inputs.sqlite_path }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "${SQLITE_PATH}")"
+          ${{ inputs.export_command }}
+          test -s "${SQLITE_PATH}"
+
+      - name: Login to Vault with GitHub OIDC
+        uses: hashicorp/vault-action@v3
+        with:
+          url: ${{ inputs.vault_addr }}
+          method: jwt
+          path: ${{ inputs.vault_auth_path }}
+          role: ${{ steps.settings.outputs.vault_role }}
+          jwtGithubAudience: ${{ inputs.vault_audience }}
+          exportToken: true
+
+      - name: Mint docs-registry publish JWT
+        id: mint
+        shell: bash
+        env:
+          VAULT_ADDR: ${{ inputs.vault_addr }}
+          VAULT_TOKEN_ROLE: ${{ steps.settings.outputs.vault_token_role }}
+        run: |
+          set -euo pipefail
+          token_file="${RUNNER_TEMP}/docsctl-publish.jwt"
+          response_file="${RUNNER_TEMP}/docsctl-publish-token-response.json"
+
+          curl --fail-with-body --silent --show-error \
+            --header "X-Vault-Token: ${VAULT_TOKEN}" \
+            "${VAULT_ADDR}/v1/identity/oidc/token/${VAULT_TOKEN_ROLE}" \
+            > "${response_file}"
+
+          jq -r '.data.token' "${response_file}" > "${token_file}"
+          test -s "${token_file}"
+          echo "::add-mask::$(cat "${token_file}")"
+          echo "token_file=${token_file}" >> "$GITHUB_OUTPUT"
+
+      - name: Decode non-sensitive publish JWT claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          token='${{ steps.mint.outputs.token_file }}'
+          python - <<'PY'
+          import base64
+          import json
+          import os
+          from pathlib import Path
+
+          token_path = Path(os.environ["TOKEN_FILE"])
+          parts = token_path.read_text().strip().split(".")
+          if len(parts) != 3:
+              raise SystemExit("publish token is not a JWT")
+          payload = parts[1] + "=" * (-len(parts[1]) % 4)
+          claims = json.loads(base64.urlsafe_b64decode(payload.encode()))
+          allowed = {
+              "iss", "aud", "sub", "iat", "exp", "token_use", "package",
+              "repository", "repository_id", "workflow_ref", "job_workflow_ref", "run_id",
+          }
+          print(json.dumps({k: claims.get(k) for k in sorted(allowed) if k in claims}, indent=2, sort_keys=True))
+          PY
+        env:
+          TOKEN_FILE: ${{ steps.mint.outputs.token_file }}
+
+      - name: Publish docs to docs-registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          docsctl publish \
+            --server '${{ inputs.registry_url }}' \
+            --package '${{ steps.settings.outputs.package_name }}' \
+            --version '${{ steps.settings.outputs.package_version }}' \
+            --file '${{ inputs.sqlite_path }}' \
+            --token-file '${{ steps.mint.outputs.token_file }}'
+
+      - name: Verify package appears in docs API
+        if: inputs.verify_publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error '${{ inputs.verify_packages_url }}' \
+            | jq --arg package '${{ steps.settings.outputs.package_name }}' \
+                 --arg version '${{ steps.settings.outputs.package_version }}' \
+                 'map(select(.name == $package and .version == $version)) | length > 0' \
+            | grep true
