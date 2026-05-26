@@ -207,5 +207,5 @@ jobs:
           curl --fail --silent --show-error '${{ inputs.verify_packages_url }}' \
             | jq --arg package '${{ steps.settings.outputs.package_name }}' \
                  --arg version '${{ steps.settings.outputs.package_version }}' \
-                 'map(select(.name == $package and .version == $version)) | length > 0' \
+                 '(.packages // .) | map(select(.name == $package and ((.version? == $version) or ((.versions? // []) | index($version))))) | length > 0' \
             | grep true
