@@ -48,3 +48,14 @@ Added implementation guide and tasks for docsctl rollout playbook and ggg automa
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/reference/01-investigation-diary.md — Recorded Step 5 planning
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/tasks.md — Added Phase 5 implementation tasks
 
+
+## 2026-05-27
+
+Patched docsctl publishing playbook with package/version validation, job-level OIDC guidance, package identity checklist, and workflow filename warnings.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/docs/go-go-golems/playbooks/docsctl-docs-publishing-rollout-playbook.md — Updated docsctl rollout guidance
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/reference/01-investigation-diary.md — Recorded Step 6
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/tasks.md — Marked playbook task complete
+

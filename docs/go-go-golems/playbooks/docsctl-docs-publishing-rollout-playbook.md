@@ -37,7 +37,7 @@ The target pattern is release-only and package-scoped. A repository publishes do
 A completed repository has these properties:
 
 1. Its command can export Glazed help as SQLite in CI.
-2. Its release workflow has `id-token: write` permission.
+2. Its release workflow grants `id-token: write` only to the `publish-docs` job.
 3. Its release workflow has a `publish-docs` job that calls the reusable workflow:
    `go-go-golems/infra-tooling/.github/workflows/publish-docsctl.yml@main`.
 4. The publish job runs only for release tags, normally `refs/tags/v*`.
@@ -88,21 +88,42 @@ Collect these facts for the repository:
 
 | Fact | How to find it | Example |
 |---|---|---|
-| Package name | Usually the binary/repo name | `pinocchio` |
+| Package name | Usually the docs URL/repo name, not necessarily the binary name | `pinocchio` |
 | GitHub repository | `gh repo view --json nameWithOwner` | `go-go-golems/pinocchio` |
-| Numeric repository ID | `gh repo view --json databaseId` | `802670903` |
-| Release workflow path | `.github/workflows/release.yaml` or similar | `.github/workflows/release.yaml` |
+| Numeric repository ID | GitHub GraphQL `repository.databaseId` | `802670903` |
+| Release workflow path | Exact file name under `.github/workflows/` | `.github/workflows/release.yml` |
 | Release tag pattern | Inspect workflow `on.push.tags` | `v*` |
-| Export command | Run command help locally | `go run ./cmd/pinocchio help export --format sqlite --output-path .docsctl/help.sqlite` |
+| Export command | Run command help locally | `GOWORK=off go run ./cmd/pinocchio help export --format sqlite --output-path .docsctl/help.sqlite` |
 | Go version source | Usually `go.mod` | `go.mod` |
 
-Run this from the target repo:
+Run this from the target repo or with explicit owner/name:
 
 ```bash
-gh repo view --json nameWithOwner,databaseId,defaultBranchRef
+gh repo view --json nameWithOwner,defaultBranchRef
+
+gh api graphql \
+  -f owner=go-go-golems \
+  -f name=<repo> \
+  -f query='query($owner:String!, $name:String!) { repository(owner:$owner, name:$name) { nameWithOwner databaseId defaultBranchRef { name } } }'
 ```
 
 Record the numeric `databaseId`. Vault roles should bind `repository_id`, not only the mutable repository name.
+
+Before editing Terraform or workflows, fill out this package identity checklist:
+
+| Decision | Value |
+|---|---|
+| Public docs package name |  |
+| Exporting binary / command directory |  |
+| Export command |  |
+| Release workflow path |  |
+| Numeric GitHub repository ID |  |
+| Vault auth role name | `docsctl-<package>-publisher` |
+| Vault token role name | `docsctl-<package>-publisher` |
+| Should examples/demo CLIs be excluded? |  |
+| Does the package already appear in `/api/packages`? |  |
+
+For multi-CLI repositories, do not let automation silently choose the first command that validates. Decide the public docs package name and canonical export command first.
 
 ## Step 1: prove the package can export help locally
 
@@ -119,21 +140,27 @@ Try the export command locally:
 
 ```bash
 mkdir -p .docsctl
-go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
+GOWORK=off go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
 test -s .docsctl/help.sqlite
 ```
 
 Then validate the generated database if `docsctl` is available:
 
 ```bash
-docsctl validate --file .docsctl/help.sqlite
+docsctl validate \
+  --file .docsctl/help.sqlite \
+  --package <package> \
+  --version v0.0.0-local
 ```
 
 If `docsctl` is not installed:
 
 ```bash
 go install github.com/go-go-golems/glazed/cmd/docsctl@latest
-docsctl validate --file .docsctl/help.sqlite
+docsctl validate \
+  --file .docsctl/help.sqlite \
+  --package <package> \
+  --version v0.0.0-local
 ```
 
 If the command does not support `help export`, first update that package to use the Glazed help command wiring. Do not add the publish workflow until export is reliable locally and in CI.
@@ -146,6 +173,9 @@ Prefer publishing from the existing release workflow after release artifacts hav
 # Disabled template for publishing Glazed help docs to docs.yolo.scapegoat.dev.
 publish-docs:
   name: Publish docs
+  permissions:
+    contents: read
+    id-token: write
   needs:
     - goreleaser-merge
   if: ${{ startsWith(github.ref, 'refs/tags/v') }}
@@ -153,7 +183,7 @@ publish-docs:
   with:
     package_name: <package>
     package_version: ${{ github.ref_name }}
-    export_command: go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
+    export_command: GOWORK=off go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
     sqlite_path: .docsctl/help.sqlite
     docsctl_install_command: go install github.com/go-go-golems/glazed/cmd/docsctl@latest
     vault_role: docsctl-<package>-publisher
@@ -163,23 +193,23 @@ publish-docs:
     verify_publish: true
 ```
 
-Also ensure the workflow has OIDC permission:
+Scope OIDC permission to the docs publishing job. Do not add `id-token: write` at workflow root unless every release job truly needs OIDC. The caller workflow may keep its existing top-level release permissions, for example:
 
 ```yaml
 permissions:
   contents: write
-  id-token: write
 ```
 
-If the workflow already has a more restrictive `permissions:` block, add only what the publish job needs. The reusable workflow requires:
+The `publish-docs` job itself should request only what the reusable workflow needs:
 
 ```yaml
-permissions:
-  contents: read
-  id-token: write
+publish-docs:
+  permissions:
+    contents: read
+    id-token: write
 ```
 
-At the caller workflow level, `id-token: write` is the important addition. Without it, `hashicorp/vault-action` cannot request a GitHub OIDC token.
+Without job-level `id-token: write`, `hashicorp/vault-action` cannot request a GitHub OIDC token. With workflow-level `id-token: write`, unrelated release jobs can mint OIDC tokens unnecessarily.
 
 ## Step 3: choose the right `needs:` dependency
 
@@ -284,9 +314,12 @@ Checklist before opening:
 
 ```bash
 go test ./...
-go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
+GOWORK=off go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
 test -s .docsctl/help.sqlite
-docsctl validate --file .docsctl/help.sqlite
+docsctl validate \
+  --file .docsctl/help.sqlite \
+  --package <package> \
+  --version v0.0.0-local
 rm -rf .docsctl
 ```
 
@@ -414,10 +447,11 @@ Use this table for each repository:
 | Identify package name and command path |  |  |
 | Record GitHub numeric repository ID |  |  |
 | Prove local `help export --format sqlite` |  |  |
-| Validate SQLite with `docsctl validate` |  |  |
+| Validate SQLite with `docsctl validate --package <package> --version v0.0.0-local --file .docsctl/help.sqlite` |  |  |
+| Confirm exact release workflow filename (`release.yaml` vs `release.yml`) |  |  |
 | Add Terraform Vault publisher role |  |  |
 | Apply Terraform and confirm clean plan |  |  |
-| Enable release workflow `id-token: write` |  |  |
+| Add job-level `id-token: write` to `publish-docs` only |  |  |
 | Add `publish-docs` job using reusable workflow |  |  |
 | Merge package PR |  |  |
 | Create release tag |  |  |
@@ -433,11 +467,13 @@ Use this as the starting patch for a repository that already has a release workf
 ```yaml
 permissions:
   contents: write
-  id-token: write
 
 jobs:
   publish-docs:
     name: Publish docs
+    permissions:
+      contents: read
+      id-token: write
     needs:
       - goreleaser-merge
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
@@ -445,7 +481,7 @@ jobs:
     with:
       package_name: <package>
       package_version: ${{ github.ref_name }}
-      export_command: go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
+      export_command: GOWORK=off go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
       sqlite_path: .docsctl/help.sqlite
       docsctl_install_command: go install github.com/go-go-golems/glazed/cmd/docsctl@latest
       vault_role: docsctl-<package>-publisher
@@ -463,7 +499,7 @@ If the command path or binary name differs from the package name, change only `e
 
 Symptom: Vault login fails because GitHub cannot provide an OIDC token.
 
-Fix: add `id-token: write` to the caller workflow permissions.
+Fix: add `id-token: write` to the `publish-docs` job permissions. Prefer job-level permissions over workflow-level permissions.
 
 ### Vault login fails with claim mismatch
 
@@ -472,7 +508,7 @@ Symptom: `hashicorp/vault-action` fails during JWT login.
 Likely causes:
 
 - Terraform role has the wrong numeric `repository_id`.
-- Workflow path in `workflow_ref` is wrong.
+- Workflow path in `workflow_ref` is wrong. `release.yaml` and `release.yml` are different strings in GitHub OIDC claims.
 - The role expects a tag ref but the workflow ran on a branch or manual dispatch.
 - The release workflow calls the reusable workflow from a ref not allowed by `job_workflow_ref`.
 

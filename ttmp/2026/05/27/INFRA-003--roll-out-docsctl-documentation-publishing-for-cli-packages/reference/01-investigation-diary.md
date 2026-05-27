@@ -363,3 +363,52 @@ This step also records that the rollout implementation has already progressed be
   - `internal/cli/pr/codex_comments.go`
   - `internal/cli/rollout/root.go`
   - `docs/go-go-golems/playbooks/docsctl-docs-publishing-rollout-playbook.md`
+
+## Step 6: Patch the docsctl publishing playbook with rollout lessons
+
+I updated the docsctl publishing playbook before changing more `ggg` code because it contained two pieces of stale or unsafe guidance discovered during the active rollout. The validation examples did not include the now-required `--package` and `--version` flags, and the workflow examples granted `id-token: write` too broadly at workflow root.
+
+The playbook now tells operators to make package identity decisions up front, use `GOWORK=off` for local export validation, validate with package/version identity, scope OIDC permission to the `publish-docs` job, and treat `release.yaml` versus `release.yml` as an exact Vault OIDC claim input.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 5)
+
+**Assistant interpretation:** Execute improvement 1 by patching the docsctl publishing playbook.
+
+**Inferred user intent:** Make the next docsctl rollout safer and less error-prone before more package workflow PRs are created.
+
+**Commit (code):** pending — "Update docsctl publishing playbook"
+
+### What I did
+- Updated `docs/go-go-golems/playbooks/docsctl-docs-publishing-rollout-playbook.md`.
+- Added a package identity checklist.
+- Replaced stale `docsctl validate --file ...` examples with package/version-aware validation.
+- Changed workflow templates to use job-level `permissions: contents: read, id-token: write` on `publish-docs`.
+- Added an exact workflow filename warning for Vault `workflow_ref` claims.
+- Marked the playbook task complete.
+
+### Why
+- Codex correctly flagged broad workflow-level OIDC permissions during this rollout.
+- The playbook should match the current `docsctl validate` command contract.
+
+### What worked
+- The playbook now reflects the implementation pattern used in the amended package PRs.
+
+### What didn't work
+- A first multi-edit attempt failed because the export command snippet appeared more than once. I split the edits into smaller unique replacements.
+
+### What I learned
+- The playbook had multiple copies of the same export command, so future playbook changes should search for all stale examples after editing.
+
+### What was tricky to build
+- The important nuance is that caller workflows can keep top-level `contents: write` for release jobs while granting `id-token: write` only to `publish-docs`.
+
+### What warrants a second pair of eyes
+- Confirm the reusable workflow call is valid with job-level permissions on a job that uses another workflow.
+
+### What should be done in the future
+- Consider adding a `ggg rollout docsctl patch-workflows` command after inventory/plan commands stabilize.
+
+### Code review instructions
+- Review the “Before you start”, Step 1, Step 2, checklist, minimal workflow template, and troubleshooting sections of the docsctl playbook.

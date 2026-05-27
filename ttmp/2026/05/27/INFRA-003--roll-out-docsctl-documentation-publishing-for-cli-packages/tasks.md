@@ -61,7 +61,7 @@ WhenToUse: Before editing package release workflows or Terraform/Vault docsctl p
 ## Phase 5: Improve `ggg` and playbooks for the next docsctl rollout
 
 - [x] Add implementation guide for playbook and `ggg` improvements 1-4.
-- [ ] Patch the docsctl publishing playbook: validation flags, job-level OIDC, package identity checklist, exact workflow filename warning.
+- [x] Patch the docsctl publishing playbook: validation flags, job-level OIDC, package identity checklist, exact workflow filename warning.
 - [ ] Add `ggg batch ready --summary-only` and `--markdown-report`.
 - [ ] Add `ggg batch codex-comments --group-by-message`.
 - [ ] Add `ggg rollout docsctl inventory`, `validate`, and `plan`.
