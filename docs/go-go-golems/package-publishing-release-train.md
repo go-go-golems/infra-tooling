@@ -4,20 +4,20 @@ This playbook captures the reusable operational workflow used during the logcopt
 
 ## Tooling in this repo
 
-Scripts:
+Installed CLI:
 
-- `scripts/go-go-golems/00-pr-ready-check.sh` — one-shot PR readiness check.
-- `scripts/go-go-golems/01-pr-ready-check.py` — GitHub GraphQL implementation for checks + Codex signals.
-- `scripts/go-go-golems/02-trigger-codex-review.sh` — posts `@codex review`.
-- `scripts/go-go-golems/03-watch-codex-reactions.py` — watches for Codex reaction transitions.
-- `scripts/go-go-golems/04-wait-pr-ready.sh` — polls one PR until ready, terminal feedback/failure, or timeout.
-- `scripts/go-go-golems/05-batch-pr-ready.sh` — checks or watches a file of PR URLs without blocking on one PR.
-- `scripts/go-go-golems/06-batch-trigger-codex-review.sh` — posts `@codex review` to a file of PR URLs.
+- `ggg pr ready` — one-shot PR readiness check with optional `--findings` and Glazed structured output.
+- `ggg pr codex-trigger` — posts `@codex review` when it is safe to do so; supports `--file prs.yaml`, `--dry-run`, and `--force`.
+- `ggg pr codex-comments` — lists Codex-authored review bodies and inline review comments.
+- `ggg batch ready` — checks or watches a YAML PR list without blocking on one PR.
+- `ggg release tag-patch`, `ggg release tag-minor`, and `ggg release tag-major` — compute, create, push, and proxy-verify Go module release tags.
+
+Historical scripts remain under `scripts/go-go-golems/`, but new operator workflows should use the installed `ggg` binary.
 
 Playbooks and snippets:
 
 - `docs/go-go-golems/playbooks/logcopter-package-rollout-playbook.md` — detailed logcopter package-logger rollout guide.
-- `docs/go-go-golems/playbooks/pr-readiness-check-scripts.md` — design notes for the readiness scripts.
+- `docs/go-go-golems/playbooks/pr-readiness-check-scripts.md` — design and usage notes for `ggg` PR readiness commands.
 - `examples/go-go-golems/Makefile.bump-go-go-golems.snippet.mk` — generic dependency bump target.
 - `examples/go-go-golems/Makefile.bump-go-go-golems-gowork-off.snippet.mk` — dependency bump target that forces published-module resolution.
 
@@ -41,12 +41,24 @@ Rules for early PRs:
 
 1. It is fine if a downstream PR temporarily fails because an upstream package has not been tagged yet.
 2. Do not merge a downstream PR until its required upstream tags are visible and `GOWORK=off` validation passes.
-3. Use the batch readiness scripts to monitor all open PRs while still merging/releasing in dependency order.
+3. Use `ggg batch ready` to monitor all open PRs while still merging/releasing in dependency order.
+
+Store PRs as YAML:
+
+```yaml
+prs:
+  - https://github.com/go-go-golems/<repo-a>/pull/<n>
+  - repo: go-go-golems/<repo-b>
+    number: <n>
+  - ref: go-go-golems/<repo-c>#<n>
+```
+
+Then trigger and watch them with `ggg`:
 
 ```bash
-scripts/go-go-golems/06-batch-trigger-codex-review.sh /tmp/prs.txt
-scripts/go-go-golems/05-batch-pr-ready.sh /tmp/prs.txt
-scripts/go-go-golems/05-batch-pr-ready.sh /tmp/prs.txt --watch --interval 30 --timeout 1800
+ggg pr codex-trigger --file /tmp/prs.yaml
+ggg batch ready /tmp/prs.yaml
+ggg batch ready /tmp/prs.yaml --watch --interval-seconds 30 --timeout-seconds 1800
 ```
 
 Batch watch mode stops as soon as there is operator work: a terminal failure, a Codex feedback state, all PRs ready, or even one ready PR while others are still waiting. Treat exit code `5` as “partial progress is actionable”; inspect the table and proceed with the next dependency-order merge/release step.
@@ -132,13 +144,21 @@ git push <remote> <branch>
 If a PR needs a fresh Codex review after the push:
 
 ```bash
-scripts/go-go-golems/02-trigger-codex-review.sh https://github.com/go-go-golems/<repo>/pull/<n>
+ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<n>
 ```
 
-Wait for readiness:
+Check readiness once, or include detailed findings when debugging:
 
 ```bash
-scripts/go-go-golems/04-wait-pr-ready.sh https://github.com/go-go-golems/<repo>/pull/<n> 30 1800
+ggg pr ready https://github.com/go-go-golems/<repo>/pull/<n>
+ggg pr ready https://github.com/go-go-golems/<repo>/pull/<n> --findings
+```
+
+For watch behavior, put the PR in a YAML list and use batch watch:
+
+```bash
+printf "prs:\n  - https://github.com/go-go-golems/<repo>/pull/<n>\n" > /tmp/prs.yaml
+ggg batch ready /tmp/prs.yaml --watch --interval-seconds 30 --timeout-seconds 1800
 ```
 
 A PR is considered ready when:
@@ -152,7 +172,7 @@ A PR is considered ready when:
 
 ### 6. Merge only after readiness succeeds
 
-After the wait script exits successfully, merge using the normal repository policy:
+After `ggg pr ready` or `ggg batch ready` exits successfully for the target PR, merge using the normal repository policy:
 
 ```bash
 gh pr merge <n> --squash --delete-branch=false
@@ -172,7 +192,7 @@ Then retry the merge.
 - `go generate ./...` is mutating. For generated-file drift checks, run the non-mutating checker first.
 - A merged upstream PR is not the same as a published upstream module version. Check tags/module versions before bumping downstream.
 - Codex `EYES` reactions mean review may still be running; do not merge until the readiness checker accepts the latest signal.
-- If Codex leaves substantive review text, treat the PR as not ready even when Actions are green. The wait script exits immediately with status `3` in this case so the operator can inspect and address the review instead of looping until timeout.
+- If Codex leaves substantive review text, treat the PR as not ready even when Actions are green. `ggg pr ready` and `ggg batch ready` exit immediately with status `3` in this case so the operator can inspect and address the review instead of looping until timeout.
 - If `govulncheck` reports standard-library vulnerabilities, bump the repo's Go directive/toolchain to the fixed Go version and rerun `GOWORK=off govulncheck ./...`.
 - If `golangci-lint-action` fails because its binary was built with an older Go version than the repo target, bump the action version or switch to a repo-managed lint install after `actions/setup-go`.
 - If `securego/gosec@master` runs with an older Go than `actions/setup-go`, prefer installing `gosec` with `go install` after setup and running the binary directly.

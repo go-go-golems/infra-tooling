@@ -144,20 +144,28 @@ git push <remote> <branch>
 Open a PR. Trigger Codex if needed:
 
 ```bash
-/path/to/infra-tooling/scripts/go-go-golems/02-trigger-codex-review.sh https://github.com/go-go-golems/<repo>/pull/<n>
+ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<n>
 ```
 
-For many PRs, put the URLs in a file and trigger/check them as a batch:
+For many PRs, put the URLs in a YAML file and trigger/check them as a batch:
+
+```yaml
+prs:
+  - https://github.com/go-go-golems/<repo-a>/pull/<n>
+  - repo: go-go-golems/<repo-b>
+    number: <n>
+```
 
 ```bash
-/path/to/infra-tooling/scripts/go-go-golems/06-batch-trigger-codex-review.sh /tmp/prs.txt
-/path/to/infra-tooling/scripts/go-go-golems/05-batch-pr-ready.sh /tmp/prs.txt
+ggg pr codex-trigger --file /tmp/prs.yaml
+ggg batch ready /tmp/prs.yaml
 ```
 
 Wait until CI and Codex are ready for one PR:
 
 ```bash
-/path/to/infra-tooling/scripts/go-go-golems/04-wait-pr-ready.sh https://github.com/go-go-golems/<repo>/pull/<n> 30 1800
+printf "prs:\n  - https://github.com/go-go-golems/<repo>/pull/<n>\n" > /tmp/prs.yaml
+ggg batch ready /tmp/prs.yaml --watch --interval-seconds 30 --timeout-seconds 1800
 ```
 
 Merge only after readiness succeeds.
@@ -174,10 +182,10 @@ git commit -m "Bump go-go-golems dependencies"
 git push <remote> <branch>
 ```
 
-Then rerun PR readiness and merge.
+Then rerun `ggg pr ready` or `ggg batch ready` and merge only after readiness succeeds.
 
 ## 10. Reference docs
 
 - Full rollout playbook: `docs/go-go-golems/playbooks/logcopter-package-rollout-playbook.md`
 - Release train playbook: `docs/go-go-golems/package-publishing-release-train.md`
-- PR readiness scripts: `docs/go-go-golems/playbooks/pr-readiness-check-scripts.md`
+- PR readiness with `ggg`: `docs/go-go-golems/playbooks/pr-readiness-check-scripts.md`

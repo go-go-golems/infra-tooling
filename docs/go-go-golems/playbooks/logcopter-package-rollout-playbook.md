@@ -369,30 +369,36 @@ If the bump changes too many unrelated dependencies, split the update into a sep
 
 ## Step 11: submit the PR and wait for Actions plus Codex review
 
-After pushing a repository's logcopter branch, create or update the PR and trigger Codex review:
+After pushing a repository's logcopter branch, create or update the PR and use the installed `ggg` CLI for Codex and readiness work:
 
 ```bash
 gh pr create --fill --base main --head task/logcopter
-# or, for an existing PR:
-gh pr comment <pr-number-or-url> --body '@codex review'
+# then trigger Codex when needed:
+ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<number>
 ```
 
-Use the PR readiness scripts stored with the `PR-REVIEW-READY-001` ticket to avoid manually inspecting every repository:
+Check readiness without manually inspecting every repository:
 
 ```bash
-READY_SCRIPTS=/home/manuel/workspaces/2026-05-25/logcopter/logcopter/ttmp/2026/05/26/PR-REVIEW-READY-001--automate-pr-readiness-checks-for-codex-reviews/scripts
-$READY_SCRIPTS/00-pr-ready-check.sh https://github.com/go-go-golems/<repo>/pull/<number>
+ggg pr ready https://github.com/go-go-golems/<repo>/pull/<number>
+ggg pr ready https://github.com/go-go-golems/<repo>/pull/<number> --findings
 ```
 
-The script returns success only when:
+`ggg pr ready` returns success only when:
 
 - Actions/status checks exist and have completed successfully;
 - a Codex signal exists;
-- the latest Codex signal has a thumbs-up reaction;
+- the latest Codex signal has a thumbs-up reaction or a satisfied Codex body;
 - the latest Codex signal has no eyes reaction;
-- Codex did not leave substantive review comments in the latest Codex-authored body.
+- Codex did not leave current-head substantive body feedback or inline review comments.
 
-If it reports an eyes reaction, Codex is still reviewing. If it reports a substantive Codex body, fix the review comments, push, and trigger another `@codex review`.
+If it reports an eyes reaction, Codex is still reviewing. If it reports `codex_feedback`, inspect the feedback with:
+
+```bash
+ggg pr codex-comments https://github.com/go-go-golems/<repo>/pull/<number>
+```
+
+Fix the review comments, push, and trigger another Codex review with `ggg pr codex-trigger`.
 
 For a large dependency-order rollout, keep a simple queue:
 
@@ -405,7 +411,7 @@ geppetto    glazed/clay/logcopter release #...    blocked on clay
 pinocchio   geppetto/glazed/clay release  #...    blocked on geppetto
 ```
 
-Only move to the next row when the required upstream release is available and the current PR is ready by script.
+Only move to the next row when the required upstream release is available and `ggg pr ready` reports the current PR ready.
 
 ## Step 12: commit in layers
 
@@ -431,8 +437,8 @@ This makes generated-file diffs easier to review and lets downstream repositorie
 | `--log-level debug` shows logs without `area` | Those records are emitted through the global zerolog logger, not a generated logcopter package logger. | This is expected. Only generated package loggers include `area`. Convert package diagnostics if they should be area-scoped. |
 | `GOWORK=off` fails but workspace tests pass | The repo relies on a local checkout that has symbols not present in the required published version. | Publish the dependency version first, run `make bump-go-go-golems`, then rerun `GOWORK=off` smoke tests. |
 | `make bump-go-go-golems` updates an unexpected module | The module is already a direct `github.com/go-go-golems/...` requirement in `go.mod`, so the target treats it as part of the repo family. | Inspect the diff. If the update is unrelated to logcopter, split it into a dependency-only PR. |
-| Codex review has an eyes reaction | Codex is still reviewing the PR. | Wait and rerun `00-pr-ready-check.sh`; do not merge while eyes is present. |
-| Codex review has a substantive body | Codex left review comments or suggestions. | Fix the comments, push, and trigger another `@codex review`. |
+| Codex review has an eyes reaction | Codex is still reviewing the PR. | Wait and rerun `ggg pr ready`; do not merge while eyes is present. |
+| Codex review has substantive feedback | Codex left review comments or suggestions on the current head. | Inspect with `ggg pr codex-comments`, fix the comments, push, and rerun `ggg pr codex-trigger`. |
 | Same-package tests fail after generation | Test files import standard library `log` in the same package. | Alias the import as `stdlog`. |
 
 ## Review checklist
@@ -451,7 +457,7 @@ Before merging a conversion, verify:
 - Area field visibility is verified with JSON output or by checking `area=...` in text output from a generated package logger.
 - The Makefile has `bump-go-go-golems`, not a hand-maintained `bump-glazed` list.
 - `make bump-go-go-golems` was run after any upstream go-go-golems release needed by this repository.
-- The PR readiness checker reports Actions complete, Codex thumbs-up present, no Codex eyes reaction, and no substantive Codex review body.
+- `ggg pr ready` reports Actions complete, Codex satisfied, no Codex eyes reaction, and no current-head substantive Codex body or inline review comments.
 - The ticket diary records failures and exact validation commands.
 
 ## See Also
