@@ -1,0 +1,827 @@
+===== scripts/go-go-golems/01-pr-ready-check.py =====
+     1	#!/usr/bin/env python3
+     2	"""Check whether a GitHub PR is ready based on CI and Codex review signals.
+     3	
+     4	Criteria implemented for go-go-golems rollout PRs:
+     5	  1. GitHub Actions/status checks have run and every check is completed with an
+     6	     acceptable conclusion.
+     7	  2. A Codex signal exists. This can be a Codex-authored review/comment, or
+     8	     the newest human '@codex review' trigger comment that Codex reacts to.
+     9	  3. The newest Codex signal has a thumbs-up reaction and no eyes reaction.
+    10	  4. Codex-authored bodies do not contain substantive review comments.
+    11	
+    12	The script intentionally exits non-zero when a PR is not ready so it can be used
+    13	in batch automation.
+    14	"""
+    15	
+    16	from __future__ import annotations
+    17	
+    18	import argparse
+    19	import json
+    20	import re
+    21	import subprocess
+    22	import sys
+    23	from dataclasses import dataclass
+    24	from typing import Any
+    25	
+    26	ACCEPTABLE_CHECK_CONCLUSIONS = {"SUCCESS", "SKIPPED", "NEUTRAL"}
+    27	DEFAULT_CODEX_RE = r"(?i)(^|[-_])(codex|openai-codex|chatgpt)([-_]|$)|codex|openai"
+    28	BENIGN_CODEX_BODY_RE = re.compile(
+    29	    r"^\s*(?:approved|looks good|lgtm|no issues found|✅|👍|:\+1:|:thumbsup:|thumbs up|nit:)?\s*$",
+    30	    re.IGNORECASE,
+    31	)
+    32	SATISFIED_CODEX_BODY_RE = re.compile(
+    33	    r"(?is)(didn'?t find (?:any )?major issues|no major issues|looks good|lgtm).*(?:👍|:\+1:|:thumbsup:|thumbs up)",
+    34	)
+    35	
+    36	QUERY = r"""
+    37	query($owner: String!, $repo: String!, $number: Int!) {
+    38	  repository(owner: $owner, name: $repo) {
+    39	    pullRequest(number: $number) {
+    40	      url
+    41	      number
+    42	      title
+    43	      mergeStateStatus
+    44	      reviewDecision
+    45	      headRefOid
+    46	      statusCheckRollup {
+    47	        contexts(first: 100) {
+    48	          nodes {
+    49	            __typename
+    50	            ... on CheckRun {
+    51	              name
+    52	              status
+    53	              conclusion
+    54	              detailsUrl
+    55	            }
+    56	            ... on StatusContext {
+    57	              context
+    58	              state
+    59	              targetUrl
+    60	            }
+    61	          }
+    62	        }
+    63	      }
+    64	      reviews(last: 100) {
+    65	        nodes {
+    66	          databaseId
+    67	          author { login }
+    68	          state
+    69	          body
+    70	          submittedAt
+    71	          url
+    72	          reactionGroups {
+    73	            content
+    74	            users(first: 20) { totalCount nodes { login } }
+    75	          }
+    76	          comments(first: 100) {
+    77	            nodes {
+    78	              path
+    79	              line
+    80	              body
+    81	              url
+    82	            }
+    83	          }
+    84	        }
+    85	      }
+    86	      comments(last: 100) {
+    87	        nodes {
+    88	          databaseId
+    89	          author { login }
+    90	          body
+    91	          createdAt
+    92	          url
+    93	          reactionGroups {
+    94	            content
+    95	            users(first: 20) { totalCount nodes { login } }
+    96	          }
+    97	        }
+    98	      }
+    99	    }
+   100	  }
+   101	}
+   102	"""
+   103	
+   104	@dataclass
+   105	class Finding:
+   106	    ok: bool
+   107	    message: str
+   108	
+   109	
+   110	def run_gh_json(args: list[str]) -> Any:
+   111	    p = subprocess.run(args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   112	    if p.returncode != 0:
+   113	        print(p.stderr, file=sys.stderr)
+   114	        raise SystemExit(p.returncode)
+   115	    return json.loads(p.stdout)
+   116	
+   117	
+   118	def parse_pr(pr: str) -> tuple[str, str, int]:
+   119	    if pr.startswith("http://") or pr.startswith("https://"):
+   120	        m = re.search(r"github\.com/([^/]+)/([^/]+)/pull/(\d+)", pr)
+   121	        if not m:
+   122	            raise SystemExit(f"could not parse PR URL: {pr}")
+   123	        return m.group(1), m.group(2), int(m.group(3))
+   124	    if "#" in pr:
+   125	        repo, num = pr.split("#", 1)
+   126	        owner, name = repo.split("/", 1)
+   127	        return owner, name, int(num)
+   128	    raise SystemExit("PR must be a GitHub PR URL or owner/repo#number")
+   129	
+   130	
+   131	def reaction_count(node: dict[str, Any], content: str) -> int:
+   132	    for group in node.get("reactionGroups") or []:
+   133	        if group.get("content") == content:
+   134	            return int(((group.get("users") or {}).get("totalCount")) or 0)
+   135	    return 0
+   136	
+   137	
+   138	def codex_body_is_satisfied(body: str) -> bool:
+   139	    return bool(SATISFIED_CODEX_BODY_RE.search(body or ""))
+   140	
+   141	
+   142	def codex_body_is_benign(body: str) -> bool:
+   143	    stripped = (body or "").strip()
+   144	    return not stripped or bool(BENIGN_CODEX_BODY_RE.match(stripped)) or codex_body_is_satisfied(stripped)
+   145	
+   146	
+   147	def reviewed_commit_from_body(body: str) -> str:
+   148	    match = re.search(r"Reviewed commit:\*\*\s*`([0-9a-fA-F]+)`", body or "")
+   149	    return match.group(1).lower() if match else ""
+   150	
+   151	
+   152	def body_reviewed_current_head(body: str, head_oid: str) -> bool:
+   153	    reviewed = reviewed_commit_from_body(body)
+   154	    head = (head_oid or "").lower()
+   155	    return bool(reviewed and head.startswith(reviewed))
+   156	
+   157	
+   158	def code_review_comments(signal: dict[str, Any]) -> list[dict[str, Any]]:
+   159	    nodes = (((signal.get("comments") or {}).get("nodes")) or [])
+   160	    return [n for n in nodes if (n.get("body") or "").strip()]
+   161	
+   162	
+   163	def format_code_review_comment(comment: dict[str, Any]) -> str:
+   164	    location = comment.get("path") or "<unknown file>"
+   165	    if comment.get("line") is not None:
+   166	        location += f":{comment.get('line')}"
+   167	    body = re.sub(r"\s+", " ", (comment.get("body") or "").strip())[:240]
+   168	    url = comment.get("url") or ""
+   169	    suffix = f" ({url})" if url else ""
+   170	    return f"{location}: {body}{suffix}"
+   171	
+   172	
+   173	def checks_findings(pr: dict[str, Any]) -> list[Finding]:
+   174	    nodes = (((pr.get("statusCheckRollup") or {}).get("contexts") or {}).get("nodes")) or []
+   175	    findings: list[Finding] = []
+   176	    if not nodes:
+   177	        return [Finding(False, "no status checks found; actions may not have run")]
+   178	    bad = []
+   179	    pending = []
+   180	    for n in nodes:
+   181	        typ = n.get("__typename")
+   182	        if typ == "CheckRun":
+   183	            name = n.get("name") or "<unnamed check>"
+   184	            status = n.get("status")
+   185	            conclusion = n.get("conclusion")
+   186	            if status != "COMPLETED":
+   187	                pending.append(f"{name}: status={status}")
+   188	            elif conclusion not in ACCEPTABLE_CHECK_CONCLUSIONS:
+   189	                bad.append(f"{name}: conclusion={conclusion}")
+   190	        elif typ == "StatusContext":
+   191	            name = n.get("context") or "<unnamed status>"
+   192	            state = n.get("state")
+   193	            if state != "SUCCESS":
+   194	                bad.append(f"{name}: state={state}")
+   195	    if pending:
+   196	        findings.append(Finding(False, "pending checks: " + "; ".join(pending)))
+   197	    if bad:
+   198	        findings.append(Finding(False, "failing/non-success checks: " + "; ".join(bad)))
+   199	    if not pending and not bad:
+   200	        findings.append(Finding(True, f"all {len(nodes)} status checks completed successfully"))
+   201	    return findings
+   202	
+   203	
+   204	def collect_codex_signals(pr: dict[str, Any], codex_re: re.Pattern[str]) -> list[dict[str, Any]]:
+   205	    signals: list[dict[str, Any]] = []
+   206	    for kind, connection, time_key in (
+   207	        ("review", "reviews", "submittedAt"),
+   208	        ("comment", "comments", "createdAt"),
+   209	    ):
+   210	        for n in ((pr.get(connection) or {}).get("nodes") or []):
+   211	            login = ((n.get("author") or {}).get("login")) or ""
+   212	            body = n.get("body") or ""
+   213	            is_codex_authored = bool(codex_re.search(login))
+   214	            is_codex_trigger = kind == "comment" and bool(re.search(r"(?im)^\s*@codex\s+review\s*$", body))
+   215	            if is_codex_authored or is_codex_trigger:
+   216	                nn = dict(n)
+   217	                nn["kind"] = "codex-trigger" if is_codex_trigger and not is_codex_authored else kind
+   218	                nn["login"] = login
+   219	                nn["time"] = n.get(time_key) or ""
+   220	                nn["codexAuthored"] = is_codex_authored
+
+===== scripts/go-go-golems/05-batch-pr-ready.sh =====
+     1	#!/usr/bin/env bash
+     2	set -euo pipefail
+     3	
+     4	# Check readiness for multiple PRs without blocking on a single PR.
+     5	# Usage:
+     6	#   05-batch-pr-ready.sh <prs-file> [--trigger-missing-codex] [--watch] [--interval SECONDS] [--timeout SECONDS]
+     7	#
+     8	# The PR file contains one PR URL or owner/repo#number per line. Blank lines and
+     9	# lines beginning with # are ignored. In watch mode, the script keeps polling only
+    10	# while every PR is still waiting; it stops as soon as any PR becomes ready or
+    11	# reaches a terminal not-ready state so the operator can act on the new signal.
+    12	
+    13	if [[ $# -lt 1 ]]; then
+    14	  echo "usage: $0 <prs-file> [--trigger-missing-codex] [--watch] [--interval SECONDS] [--timeout SECONDS]" >&2
+    15	  exit 2
+    16	fi
+    17	
+    18	PRS_FILE="$1"
+    19	shift
+    20	TRIGGER_MISSING="false"
+    21	WATCH="false"
+    22	INTERVAL=30
+    23	TIMEOUT=1800
+    24	
+    25	while [[ $# -gt 0 ]]; do
+    26	  case "$1" in
+    27	    --trigger-missing-codex) TRIGGER_MISSING="true"; shift ;;
+    28	    --watch) WATCH="true"; shift ;;
+    29	    --interval) INTERVAL="$2"; shift 2 ;;
+    30	    --timeout) TIMEOUT="$2"; shift 2 ;;
+    31	    *) echo "unknown option: $1" >&2; exit 2 ;;
+    32	  esac
+    33	done
+    34	
+    35	SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+    36	CHECK="$SCRIPT_DIR/00-pr-ready-check.sh"
+    37	TRIGGER="$SCRIPT_DIR/02-trigger-codex-review.sh"
+    38	
+    39	if [[ ! -f "$PRS_FILE" ]]; then
+    40	  echo "PR file not found: $PRS_FILE" >&2
+    41	  exit 2
+    42	fi
+    43	
+    44	json_get() {
+    45	  python3 -c 'import json,sys; data=json.load(open(sys.argv[1])); v=data.get(sys.argv[2], ""); print(",".join(v) if isinstance(v, list) else v)' "$1" "$2"
+    46	}
+    47	
+    48	read_prs() {
+    49	  while IFS= read -r pr || [[ -n "$pr" ]]; do
+    50	    pr="${pr%%#*}"
+    51	    pr="$(printf '%s' "$pr" | xargs)"
+    52	    [[ -z "$pr" ]] && continue
+    53	    printf '%s\n' "$pr"
+    54	  done < "$PRS_FILE"
+    55	}
+    56	
+    57	run_once() {
+    58	  local tmpdir ready not_ready codex_feedback failed_checks errors terminal_not_ready
+    59	  tmpdir="$(mktemp -d)"
+    60	  ready=0; not_ready=0; codex_feedback=0; failed_checks=0; errors=0; terminal_not_ready=0
+    61	
+    62	  printf '%-18s %-20s %s\n' STATUS FAILED_CHECKS PR
+    63	  printf '%-18s %-20s %s\n' '------' '-------------' '--'
+    64	
+    65	  while IFS= read -r pr; do
+    66	    out="$tmpdir/out.$RANDOM.json"
+    67	    err="$tmpdir/err.$RANDOM.txt"
+    68	    if "$CHECK" "$pr" --json >"$out" 2>"$err"; then
+    69	      status="ready"
+    70	    elif [[ -s "$out" ]]; then
+    71	      status="$(json_get "$out" state)"
+    72	    else
+    73	      status="error"
+    74	      errors=$((errors + 1))
+    75	    fi
+    76	
+    77	    failed_kinds=""
+    78	    if [[ -s "$out" ]]; then
+    79	      failed_kinds="$(json_get "$out" failedCheckKinds)"
+    80	    fi
+    81	
+    82	    if [[ "$status" == "no_codex" && "$TRIGGER_MISSING" == "true" ]]; then
+    83	      if "$TRIGGER" "$pr" >/dev/null 2>&1; then
+    84	        status="codex_triggered"
+    85	      else
+    86	        status="codex_trigger_failed"
+    87	        errors=$((errors + 1))
+    88	      fi
+    89	    fi
+    90	
+    91	    case "$status" in
+    92	      ready) ready=$((ready + 1)) ;;
+    93	      codex_feedback) codex_feedback=$((codex_feedback + 1)); not_ready=$((not_ready + 1)); terminal_not_ready=$((terminal_not_ready + 1)) ;;
+    94	      failed_checks) failed_checks=$((failed_checks + 1)); not_ready=$((not_ready + 1)); terminal_not_ready=$((terminal_not_ready + 1)) ;;
+    95	      error|codex_trigger_failed) not_ready=$((not_ready + 1)); terminal_not_ready=$((terminal_not_ready + 1)) ;;
+    96	      *) not_ready=$((not_ready + 1)) ;;
+    97	    esac
+    98	
+    99	    printf '%-18s %-20s %s\n' "$(echo "$status" | tr '[:lower:]' '[:upper:]')" "${failed_kinds:--}" "$pr"
+   100	  done < <(read_prs)
+   101	
+   102	  rm -rf "$tmpdir"
+   103	  printf '\nsummary: ready=%d not_ready=%d codex_feedback=%d failed_checks=%d errors=%d\n' \
+   104	    "$ready" "$not_ready" "$codex_feedback" "$failed_checks" "$errors"
+   105	
+   106	  if (( not_ready == 0 )); then return 0; fi
+   107	  if (( errors > 0 )); then return 2; fi
+   108	  if (( codex_feedback > 0 )); then return 3; fi
+   109	  if (( failed_checks > 0 )); then return 4; fi
+   110	  # Some PRs became ready while others are still waiting. Stop watch mode so the
+   111	  # operator can merge/release in dependency order instead of sleeping through an
+   112	  # actionable state.
+   113	  if (( ready > 0 )); then return 5; fi
+   114	  return 1
+   115	}
+   116	
+   117	START="$(date +%s)"
+   118	ATTEMPT=1
+   119	while true; do
+   120	  if [[ "$WATCH" == "true" ]]; then
+   121	    echo "--- batch attempt ${ATTEMPT} elapsed=$(( $(date +%s) - START ))s $(date -Is) ---"
+   122	  fi
+   123	  set +e
+   124	  run_once
+   125	  code=$?
+   126	  set -e
+   127	
+   128	  if [[ "$WATCH" != "true" ]]; then
+   129	    exit "$code"
+   130	  fi
+   131	  if [[ "$code" == "0" || "$code" == "2" || "$code" == "3" || "$code" == "4" || "$code" == "5" ]]; then
+   132	    exit "$code"
+   133	  fi
+   134	  ELAPSED=$(( $(date +%s) - START ))
+   135	  if (( ELAPSED >= TIMEOUT )); then
+   136	    echo "timed out after ${ELAPSED}s waiting for batch readiness" >&2
+   137	    exit 1
+   138	  fi
+   139	  ATTEMPT=$((ATTEMPT + 1))
+   140	  sleep "$INTERVAL"
+   141	done
+
+===== scripts/go-go-golems/04-wait-pr-ready.sh =====
+     1	#!/usr/bin/env bash
+     2	set -euo pipefail
+     3	
+     4	# Poll a PR until 00-pr-ready-check.sh reports ready, until timeout, or until
+     5	# Codex has posted substantive review comments that require operator action.
+     6	# Usage:
+     7	#   ./04-wait-pr-ready.sh <pr-url-or-owner/repo#number> [interval-seconds] [timeout-seconds]
+     8	
+     9	if [[ $# -lt 1 || $# -gt 3 ]]; then
+    10	  echo "usage: $0 <pr-url-or-owner/repo#number> [interval-seconds] [timeout-seconds]" >&2
+    11	  exit 2
+    12	fi
+    13	
+    14	PR="$1"
+    15	INTERVAL="${2:-30}"
+    16	TIMEOUT="${3:-1800}"
+    17	SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+    18	CHECK="$SCRIPT_DIR/00-pr-ready-check.sh"
+    19	START="$(date +%s)"
+    20	ATTEMPT=1
+    21	
+    22	json_field() {
+    23	  python3 -c 'import json,sys; data=json.load(open(sys.argv[1])); print(data.get(sys.argv[2], ""))' "$1" "$2"
+    24	}
+    25	
+    26	while true; do
+    27	  NOW="$(date +%s)"
+    28	  ELAPSED=$((NOW - START))
+    29	  echo "--- attempt ${ATTEMPT} elapsed=${ELAPSED}s $(date -Is) ---"
+    30	
+    31	  CHECK_JSON="$(mktemp)"
+    32	  if "$CHECK" "$PR" --json >"$CHECK_JSON"; then
+    33	    "$CHECK" "$PR"
+    34	    rm -f "$CHECK_JSON"
+    35	    echo "PR ready: $PR"
+    36	    exit 0
+    37	  fi
+    38	
+    39	  "$CHECK" "$PR" || true
+    40	  STATE="$(json_field "$CHECK_JSON" state)"
+    41	  rm -f "$CHECK_JSON"
+    42	
+    43	  if [[ "$STATE" == "codex_feedback" ]]; then
+    44	    echo "Codex posted substantive review comments; stopping wait for operator action: $PR" >&2
+    45	    exit 3
+    46	  fi
+    47	  if [[ "$STATE" == "failed_checks" ]]; then
+    48	    echo "Status checks failed; stopping wait for operator action: $PR" >&2
+    49	    exit 4
+    50	  fi
+    51	
+    52	  NOW="$(date +%s)"
+    53	  ELAPSED=$((NOW - START))
+    54	  if (( ELAPSED >= TIMEOUT )); then
+    55	    echo "timed out after ${ELAPSED}s waiting for PR readiness: $PR" >&2
+    56	    exit 1
+    57	  fi
+    58	  ATTEMPT=$((ATTEMPT + 1))
+    59	  sleep "$INTERVAL"
+    60	done
+
+===== docs/go-go-golems/package-publishing-release-train.md =====
+     1	# go-go-golems package publishing and dependency rollout playbook
+     2	
+     3	This playbook captures the reusable operational workflow used during the logcopter rollout across Glazed, Clay, Geppetto, and Pinocchio. It is for publishing upstream go-go-golems packages, bumping downstream modules, validating against published dependencies, and merging PRs only after CI and Codex review are satisfied.
+     4	
+     5	## Tooling in this repo
+     6	
+     7	Scripts:
+     8	
+     9	- `scripts/go-go-golems/00-pr-ready-check.sh` — one-shot PR readiness check.
+    10	- `scripts/go-go-golems/01-pr-ready-check.py` — GitHub GraphQL implementation for checks + Codex signals.
+    11	- `scripts/go-go-golems/02-trigger-codex-review.sh` — posts `@codex review`.
+    12	- `scripts/go-go-golems/03-watch-codex-reactions.py` — watches for Codex reaction transitions.
+    13	- `scripts/go-go-golems/04-wait-pr-ready.sh` — polls one PR until ready, terminal feedback/failure, or timeout.
+    14	- `scripts/go-go-golems/05-batch-pr-ready.sh` — checks or watches a file of PR URLs without blocking on one PR.
+    15	- `scripts/go-go-golems/06-batch-trigger-codex-review.sh` — posts `@codex review` to a file of PR URLs.
+    16	
+    17	Playbooks and snippets:
+    18	
+    19	- `docs/go-go-golems/playbooks/logcopter-package-rollout-playbook.md` — detailed logcopter package-logger rollout guide.
+    20	- `docs/go-go-golems/playbooks/pr-readiness-check-scripts.md` — design notes for the readiness scripts.
+    21	- `examples/go-go-golems/Makefile.bump-go-go-golems.snippet.mk` — generic dependency bump target.
+    22	- `examples/go-go-golems/Makefile.bump-go-go-golems-gowork-off.snippet.mk` — dependency bump target that forces published-module resolution.
+    23	
+    24	## Release train principle
+    25	
+    26	Rollouts must follow dependency order. Do not bump and merge downstream repositories until the upstream repositories they need have been merged and published.
+    27	
+    28	Typical order for core go-go-golems packages:
+    29	
+    30	```text
+    31	logcopter -> glazed/clay -> geppetto -> pinocchio -> leaf applications
+    32	```
+    33	
+    34	The exact order depends on the current `go.mod` graph. Inspect direct dependencies rather than relying on memory.
+    35	
+    36	## Early downstream PRs
+    37	
+    38	You may open downstream PRs before every upstream release is published in order to get CI and Codex feedback early. This is useful for large release trains with many leaf repositories.
+    39	
+    40	Rules for early PRs:
+    41	
+    42	1. It is fine if a downstream PR temporarily fails because an upstream package has not been tagged yet.
+    43	2. Do not merge a downstream PR until its required upstream tags are visible and `GOWORK=off` validation passes.
+    44	3. Use the batch readiness scripts to monitor all open PRs while still merging/releasing in dependency order.
+    45	
+    46	```bash
+    47	scripts/go-go-golems/06-batch-trigger-codex-review.sh /tmp/prs.txt
+    48	scripts/go-go-golems/05-batch-pr-ready.sh /tmp/prs.txt
+    49	scripts/go-go-golems/05-batch-pr-ready.sh /tmp/prs.txt --watch --interval 30 --timeout 1800
+    50	```
+    51	
+    52	Batch watch mode stops as soon as there is operator work: a terminal failure, a Codex feedback state, all PRs ready, or even one ready PR while others are still waiting. Treat exit code `5` as “partial progress is actionable”; inspect the table and proceed with the next dependency-order merge/release step.
+    53	
+    54	## Per-repository workflow
+    55	
+    56	### 1. Land and publish the upstream package
+    57	
+    58	In the upstream repository:
+    59	
+    60	1. Ensure the PR is merged.
+    61	2. Ensure the release/tag/published module version exists.
+    62	3. Confirm what downstream should consume:
+    63	
+    64	```bash
+    65	go list -m -versions github.com/go-go-golems/<upstream>
+    66	git fetch --tags
+    67	git describe origin/main --tags --always
+    68	```
+    69	
+    70	If `origin/main` is ahead of the latest tag and downstream needs those commits, publish a new release before proceeding downstream.
+    71	
+    72	### 2. Bump downstream go-go-golems dependencies
+    73	
+    74	In the downstream repository, use the generic target:
+    75	
+    76	```bash
+    77	make bump-go-go-golems
+    78	```
+    79	
+    80	If there is any chance a local `go.work` can hide missing releases, use a `GOWORK=off` variant or run the equivalent commands manually:
+    81	
+    82	```bash
+    83	deps="$(awk '/^require[[:space:]]+github\.com\/go-go-golems\// { print $2 } /^[[:space:]]*github\.com\/go-go-golems\// { print $1 }' go.mod | sort -u)"
+    84	for dep in $deps; do GOWORK=off go get "${dep}@latest"; done
+    85	GOWORK=off go mod tidy
+    86	```
+    87	
+    88	Review the result:
+    89	
+    90	```bash
+    91	git diff -- go.mod go.sum
+    92	go list -m github.com/go-go-golems/...
+    93	```
+    94	
+    95	### 3. Validate without local workspace assumptions
+    96	
+    97	Prefer `GOWORK=off` for smoke tests that prove the published dependency graph works:
+    98	
+    99	```bash
+   100	GOWORK=off go test ./...
+   101	```
+   102	
+   103	For logcopter-enabled repositories, run the non-mutating generated-file freshness check before any mutating generation command:
+   104	
+   105	```bash
+   106	make logcopter-check
+   107	# only when intentionally refreshing generated files:
+   108	# go generate ./...
+   109	```
+   110	
+   111	Run repo-specific checks too, for example:
+   112	
+   113	```bash
+   114	make test
+   115	make lint
+   116	make ci
+   117	```
+   118	
+   119	### 4. Commit and push
+   120	
+   121	Commit only the intended dependency changes and related generated/check artifacts:
+   122	
+   123	```bash
+   124	git status --short
+   125	git add go.mod go.sum
+   126	git commit -m "Bump go-go-golems dependencies"
+   127	git push <remote> <branch>
+   128	```
+   129	
+   130	### 5. Trigger or wait for Codex review
+   131	
+   132	If a PR needs a fresh Codex review after the push:
+   133	
+   134	```bash
+   135	scripts/go-go-golems/02-trigger-codex-review.sh https://github.com/go-go-golems/<repo>/pull/<n>
+   136	```
+   137	
+   138	Wait for readiness:
+   139	
+   140	```bash
+   141	scripts/go-go-golems/04-wait-pr-ready.sh https://github.com/go-go-golems/<repo>/pull/<n> 30 1800
+   142	```
+   143	
+   144	A PR is considered ready when:
+   145	
+   146	- status checks exist;
+   147	- every status check is completed successfully, skipped, or neutral;
+   148	- a Codex signal exists;
+   149	- the latest Codex signal has a thumbs-up reaction or a satisfied body such as `Didn't find any major issues. :+1:`;
+   150	- the latest Codex signal has no `EYES` reaction;
+   151	- the latest Codex-authored body is empty, benign, or satisfied rather than substantive review feedback.
+   152	
+   153	### 6. Merge only after readiness succeeds
+   154	
+   155	After the wait script exits successfully, merge using the normal repository policy:
+   156	
+   157	```bash
+   158	gh pr merge <n> --squash --delete-branch=false
+   159	```
+   160	
+   161	If the PR touches `.github/workflows/*`, the GitHub CLI token needs `workflow` scope. If merge fails with a workflow-scope error, refresh auth:
+   162	
+   163	```bash
+   164	gh auth refresh -h github.com -s workflow
+   165	```
+   166	
+   167	Then retry the merge.
+   168	
+   169	## Common gotchas
+   170	
+   171	- Local `go.work` can hide missing published upstream symbols. Use `GOWORK=off` for downstream readiness checks.
+   172	- `go generate ./...` is mutating. For generated-file drift checks, run the non-mutating checker first.
+   173	- A merged upstream PR is not the same as a published upstream module version. Check tags/module versions before bumping downstream.
+   174	- Codex `EYES` reactions mean review may still be running; do not merge until the readiness checker accepts the latest signal.
+   175	- If Codex leaves substantive review text, treat the PR as not ready even when Actions are green. The wait script exits immediately with status `3` in this case so the operator can inspect and address the review instead of looping until timeout.
+   176	- If `govulncheck` reports standard-library vulnerabilities, bump the repo's Go directive/toolchain to the fixed Go version and rerun `GOWORK=off govulncheck ./...`.
+   177	- If `golangci-lint-action` fails because its binary was built with an older Go version than the repo target, bump the action version or switch to a repo-managed lint install after `actions/setup-go`.
+   178	- If `securego/gosec@master` runs with an older Go than `actions/setup-go`, prefer installing `gosec` with `go install` after setup and running the binary directly.
+   179	- If Dependency Review is unsupported because the repository dependency graph is disabled, either enable the dependency graph in repository settings or mark that workflow step `continue-on-error: true` until settings are fixed.
+
+===== docs/go-go-golems/playbooks/pr-readiness-check-scripts.md =====
+     1	---
+     2	Title: PR readiness check scripts
+     3	Ticket: PR-REVIEW-READY-001
+     4	Status: active
+     5	Topics:
+     6	    - automation
+     7	    - github
+     8	    - cicd
+     9	    - documentation
+    10	DocType: design-doc
+    11	Intent: long-term
+    12	Owners: []
+    13	RelatedFiles:
+    14	    - Path: ../../../../../../../pinocchio/.github/workflows/push.yml
+    15	      Note: Live PR test target for intentional bad change and revert
+    16	    - Path: ttmp/2026/05/26/PR-REVIEW-READY-001--automate-pr-readiness-checks-for-codex-reviews/scripts/00-pr-ready-check.sh
+    17	      Note: Bash entry point for the readiness checker
+    18	    - Path: ttmp/2026/05/26/PR-REVIEW-READY-001--automate-pr-readiness-checks-for-codex-reviews/scripts/01-pr-ready-check.py
+    19	      Note: Main non-mutating PR readiness checker implementation
+    20	    - Path: ttmp/2026/05/26/PR-REVIEW-READY-001--automate-pr-readiness-checks-for-codex-reviews/scripts/02-trigger-codex-review.sh
+    21	      Note: |-
+    22	        Helper to add the @codex review trigger comment
+    23	        Codex trigger helper
+    24	    - Path: ttmp/2026/05/26/PR-REVIEW-READY-001--automate-pr-readiness-checks-for-codex-reviews/scripts/03-watch-codex-reactions.py
+    25	      Note: |-
+    26	        Polling helper for observing Codex reaction transitions
+    27	        Codex reaction polling helper
+    28	ExternalSources:
+    29	    - https://github.com/go-go-golems/pinocchio/pull/158
+    30	Summary: Design and usage notes for scripts that decide whether a PR is ready based on completed checks and Codex review reactions.
+    31	LastUpdated: 2026-05-26T13:00:00-04:00
+    32	WhatFor: Use this when batching PR readiness checks across many repositories.
+    33	WhenToUse: Before merging rollout PRs that require both green CI and a satisfied Codex review.
+    34	---
+    35	
+    36	
+    37	# PR readiness check scripts
+    38	
+    39	## Executive summary
+    40	
+    41	This ticket provides a small script set for checking whether a GitHub pull request is ready to merge under the workflow used in the logcopter rollout: all Actions/status checks must have run and succeeded, and Codex must have finished review with a thumbs-up rather than an in-progress eyes reaction or substantive review comments.
+    42	
+    43	The operator entry point is `scripts/00-pr-ready-check.sh`, a Bash wrapper around `scripts/01-pr-ready-check.py`. It is intentionally non-mutating and exits with status `0` only when the PR is ready. It can be run against a single PR URL or wrapped by future batch scripts that iterate through many repositories.
+    44	
+    45	## Problem statement
+    46	
+    47	When rolling changes through multiple go-go-golems repositories, manual PR readiness checks become repetitive and easy to misread. The desired ready state is stricter than "checks are green": Codex review must also be satisfied. In the observed GitHub UI flow, Codex uses reactions on an `@codex review` trigger comment: an eyes reaction indicates review is running, and a thumbs-up indicates successful review. If Codex leaves substantive comments, the PR is not ready even if CI is green.
+    48	
+    49	A reusable script should therefore answer four questions:
+    50	
+    51	1. Did Actions/status checks run?
+    52	2. Are all checks completed with acceptable conclusions?
+    53	3. Is there a Codex review signal?
+    54	4. Does the newest Codex signal indicate done/satisfied rather than running/unsatisfied?
+    55	
+    56	## Proposed solution
+    57	
+    58	### Script layout
+    59	
+    60	```text
+    61	scripts/
+    62	  00-pr-ready-check.sh          # bash entry point for operators
+    63	  01-pr-ready-check.py          # non-mutating readiness check implementation
+    64	  02-trigger-codex-review.sh    # posts '@codex review'
+    65	  03-watch-codex-reactions.py   # polls until a Codex signal appears
+    66	  04-wait-pr-ready.sh           # waits on one PR; stops on terminal feedback/failures
+    67	  05-batch-pr-ready.sh          # one-shot or watch-mode readiness table for many PRs
+    68	  06-batch-trigger-codex-review.sh # posts '@codex review' to many PRs
+    69	```
+    70	
+    71	### Readiness model
+    72	
+    73	A PR is ready when all of the following are true:
+    74	
+    75	- `statusCheckRollup` contains at least one check/status.
+    76	- Every check run is `COMPLETED` and has conclusion `SUCCESS`, `SKIPPED`, or `NEUTRAL`.
+    77	- Every legacy status context has state `SUCCESS`.
+    78	- A Codex signal exists. A signal is either:
+    79	  - a Codex-authored review/comment, matched by configurable author regex; or
+    80	  - a human comment whose body is exactly `@codex review`, because Codex reacts to that trigger comment.
+    81	- The latest Codex signal has at least one `THUMBS_UP` reaction, or a Codex-authored body explicitly says no major issues and includes a thumbs-up token such as `:+1:`.
+    82	- The latest Codex signal has no `EYES` reaction.
+    83	- If the latest signal is Codex-authored, its body is empty/benign/satisfied; substantive body text with suggestions means the review likely requested changes or left comments.
+    84	
+    85	`04-wait-pr-ready.sh` treats substantive Codex review text as a terminal wait condition. It exits immediately with status `3` instead of polling until timeout, because those comments require an operator/code change before the PR can become ready.
+    86	
+    87	### Why trigger comments are signals
+    88	
+    89	Initial testing on Pinocchio PR 158 showed that after posting `@codex review`, the PR comment received an `EYES` reaction while Codex was running. That means the relevant in-progress state may be attached to the human trigger comment rather than a bot-authored review object. The script treats the latest exact `@codex review` comment as a Codex signal and checks its reactions.
+    90	
+    91	## Usage examples
+    92	
+    93	Check one PR:
+    94	
+    95	```bash
+    96	scripts/00-pr-ready-check.sh https://github.com/go-go-golems/pinocchio/pull/158
+    97	```
+    98	
+    99	Machine-readable output:
+   100	
+   101	```bash
+   102	scripts/00-pr-ready-check.sh https://github.com/go-go-golems/pinocchio/pull/158 --json
+   103	```
+   104	
+   105	The JSON output includes automation-friendly fields:
+   106	
+   107	```json
+   108	{
+   109	  "ok": false,
+   110	  "state": "waiting_checks",
+   111	  "terminal": false,
+   112	  "failedCheckKinds": ["pending_checks"]
+   113	}
+   114	```
+   115	
+   116	Known `state` values are `ready`, `waiting_checks`, `waiting_codex`, `no_codex`, `failed_checks`, `codex_feedback`, `not_ready`, and `error`. `terminal=true` means a human/code change is required before waiting can succeed.
+   117	
+   118	Trigger Codex review:
+   119	
+   120	```bash
+   121	scripts/02-trigger-codex-review.sh https://github.com/go-go-golems/pinocchio/pull/158
+   122	```
+   123	
+   124	Trigger Codex review for a batch:
+   125	
+   126	```bash
+   127	scripts/06-batch-trigger-codex-review.sh /tmp/prs.txt
+   128	```
+   129	
+   130	Watch for a Codex reaction signal:
+   131	
+   132	```bash
+   133	scripts/03-watch-codex-reactions.py https://github.com/go-go-golems/pinocchio/pull/158 --interval 30 --timeout 900
+   134	```
+   135	
+   136	Check many PRs without blocking on one PR:
+   137	
+   138	```bash
+   139	scripts/05-batch-pr-ready.sh /tmp/prs.txt
+   140	```
+   141	
+   142	Watch many PRs until there is something for the operator to do:
+   143	
+   144	```bash
+   145	scripts/05-batch-pr-ready.sh /tmp/prs.txt --watch --interval 30 --timeout 1800
+   146	```
+   147	
+   148	Watch mode keeps polling only while every PR is still waiting. It stops when all PRs are ready, when any PR reaches a terminal operator-action state (`codex_feedback`, `failed_checks`, or `error`), or when some PR becomes `ready` while others are still waiting. The partial-ready stop exits with code `5` so release-train operators can merge/release in dependency order instead of sleeping through an actionable state.
+   149	
+   150	## Implementation notes
+   151	
+   152	The checker uses `gh api graphql` rather than scraping HTML. It queries:
+   153	
+   154	- `statusCheckRollup.contexts.nodes` for check runs and legacy status contexts;
+   155	- `reviews` for Codex-authored review objects;
+   156	- `comments` for exact `@codex review` trigger comments;
+   157	- `reactionGroups` for `THUMBS_UP` and `EYES` reaction counts.
+   158	
+   159	The default Codex author regex is intentionally broad:
+   160	
+   161	```text
+   162	(?i)(^|[-_])(codex|openai-codex|chatgpt)([-_]|$)|codex|openai
+   163	```
+   164	
+   165	If the organization standardizes on a specific bot login, pass a narrower value:
+   166	
+   167	```bash
+   168	scripts/01-pr-ready-check.py OWNER/REPO#123 --codex-author-regex '^openai-codex\[bot\]$'
+   169	```
+   170	
+   171	## Observed Pinocchio test output
+   172	
+   173	After temporarily pushing an intentionally bad workflow change and commenting `@codex review`, the checker observed the in-progress state:
+   174	
+   175	```text
+   176	READY: no
+   177	FAIL: pending checks: Analyze: status=IN_PROGRESS; lint: status=IN_PROGRESS; GoSec Security Scan: status=IN_PROGRESS
+   178	OK: latest Codex signal (codex-trigger) by wesen: https://github.com/go-go-golems/pinocchio/pull/158#issuecomment-4546486328
+   179	FAIL: latest Codex signal has no thumbs-up reaction
+   180	FAIL: latest Codex signal has 1 eyes reaction(s), review may still be running
+   181	OK: latest signal is a human @codex review trigger; body comments are not treated as review findings
+   182	```
+   183	
+   184	That verifies the script can detect the eyes/in-progress state. A subsequent Codex review on the intentionally bad commit produced a substantive Codex-authored body, which the checker also treated as not ready. After reverting the bad commit, a later Codex comment said it did not find major issues and included `:+1:`; the checker now treats that body form as a satisfied thumbs-up signal even when GitHub reaction counts do not include `THUMBS_UP`.
+   185	
+   186	## Risks and open questions
+   187	
+   188	- GitHub's GraphQL schema can vary by host/version. The script already had to avoid unsupported `statusCheckRollup(first:)` and unsupported `CheckRun.workflowName` fields.
+   189	- Reaction identity is currently summarized by count. If unrelated users add thumbs-up or eyes reactions to the trigger comment, the script could misread the Codex state. The query already fetches reaction user logins for future tightening, but the first version checks counts.
+   190	- Codex may sometimes leave review findings as inline review comments rather than a review body. Future versions should query review threads/comments if this becomes common.
+   191	- The exact satisfied signal should be revalidated after a full successful Codex review cycle, because this pass verified the running `EYES` state but not yet a completed `THUMBS_UP` state.
+   192	
+   193	## Implementation plan for future batch mode
+   194	
+   195	1. Store a list of PR URLs in a file.
+   196	2. Loop over the URLs and run `01-pr-ready-check.py --json`.
+   197	3. Emit a table with ready/not-ready status and failed criteria.
+   198	4. Only merge PRs where the script exits `0`.
+   199	5. For not-ready PRs with no Codex signal, optionally run `02-trigger-codex-review.sh`.
+   200	6. For PRs with eyes reactions, wait and rerun later.
+
+===== examples/go-go-golems/Makefile.bump-go-go-golems-gowork-off.snippet.mk =====
+     1	# Generic go-go-golems dependency bump target for repositories that should
+     2	# validate against published modules only. This variant forces GOWORK=off so a
+     3	# local go.work cannot hide missing upstream releases.
+     4	
+     5	.PHONY: bump-go-go-golems
+     6	bump-go-go-golems:
+     7		@deps="$$(awk '/^require[[:space:]]+github\.com\/go-go-golems\// { print $$2 } /^[[:space:]]*github\.com\/go-go-golems\// { print $$1 }' go.mod | sort -u)"; \
+     8		if [ -z "$$deps" ]; then \
+     9			echo "No github.com/go-go-golems dependencies in go.mod"; \
+    10		else \
+    11			echo "Bumping go-go-golems dependencies:"; \
+    12			echo "$$deps"; \
+    13			for dep in $$deps; do GOWORK=off go get "$${dep}@latest"; done; \
+    14		fi
+    15		GOWORK=off go mod tidy
+

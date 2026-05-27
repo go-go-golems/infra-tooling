@@ -1,0 +1,171 @@
+===== XGOJA-015 ticket scripts from go-go-goja =====
+===== /home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja/ttmp/2026/05/26/XGOJA-015--release-xgoja-runtime-api-and-bump-downstream-repositories/scripts/08-extract-codex-review-comments.sh =====
+     1	#!/usr/bin/env bash
+     2	set -euo pipefail
+     3	
+     4	# Extract Codex-authored review bodies and inline code-review comments for one or
+     5	# more PRs. This is the evidence-gathering script used during the XGOJA-015
+     6	# release train when the readiness checker reported CODEX_FEEDBACK.
+     7	#
+     8	# Usage:
+     9	#   08-extract-codex-review-comments.sh <pr-url-or-owner/repo#number> [...]
+    10	#   08-extract-codex-review-comments.sh --file /tmp/xgoja-release-prs.txt
+    11	
+    12	CODEX_RE='codex|chatgpt|openai'
+    13	
+    14	parse_pr() {
+    15	  local pr="$1"
+    16	  if [[ "$pr" =~ github\.com/([^/]+)/([^/]+)/pull/([0-9]+) ]]; then
+    17	    printf '%s %s %s\n' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "${BASH_REMATCH[3]}"
+    18	    return 0
+    19	  fi
+    20	  if [[ "$pr" =~ ^([^/]+)/([^#]+)#([0-9]+)$ ]]; then
+    21	    printf '%s %s %s\n' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "${BASH_REMATCH[3]}"
+    22	    return 0
+    23	  fi
+    24	  echo "could not parse PR: $pr" >&2
+    25	  return 2
+    26	}
+    27	
+    28	read_prs_file() {
+    29	  local file="$1"
+    30	  while IFS= read -r pr || [[ -n "$pr" ]]; do
+    31	    pr="${pr%%#*}"
+    32	    pr="$(printf '%s' "$pr" | xargs)"
+    33	    [[ -z "$pr" ]] && continue
+    34	    printf '%s\n' "$pr"
+    35	  done < "$file"
+    36	}
+    37	
+    38	print_pr() {
+    39	  local pr="$1" owner repo number
+    40	  read -r owner repo number < <(parse_pr "$pr")
+    41	  echo "### $owner/$repo#$number"
+    42	  gh api graphql \
+    43	    -f owner="$owner" \
+    44	    -f repo="$repo" \
+    45	    -F number="$number" \
+    46	    -f query='query($owner:String!,$repo:String!,$number:Int!){ repository(owner:$owner,name:$repo){ pullRequest(number:$number){ headRefOid reviews(last:20){nodes{author{login} state body url submittedAt comments(first:100){nodes{path line body url author{login}}}}}}}}' |
+    47	    jq -r --arg re "$CODEX_RE" '
+    48	      .data.repository.pullRequest as $pr |
+    49	      $pr.reviews.nodes[] |
+    50	      select((.author.login // "") | test($re; "i")) |
+    51	      "REVIEW " + .submittedAt + " " + .url,
+    52	      "BODY: " + ((.body // "") | gsub("\\n"; " ") | .[0:500]),
+    53	      "COMMENTS:",
+    54	      ((.comments.nodes // [])[]? | "- " + (.path // "<unknown>") + ":" + ((.line // "?")|tostring) + " " + ((.body // "") | gsub("\\n"; " ") | .[0:700]) + " " + (.url // "")),
+    55	      "---"
+    56	    '
+    57	}
+    58	
+    59	if [[ $# -eq 0 ]]; then
+    60	  echo "usage: $0 <pr> [...] | --file <prs-file>" >&2
+    61	  exit 2
+    62	fi
+    63	
+    64	if [[ "${1:-}" == "--file" ]]; then
+    65	  [[ $# -eq 2 ]] || { echo "--file requires exactly one argument" >&2; exit 2; }
+    66	  while IFS= read -r pr; do
+    67	    print_pr "$pr"
+    68	  done < <(read_prs_file "$2")
+    69	else
+    70	  for pr in "$@"; do
+    71	    print_pr "$pr"
+    72	  done
+    73	fi
+
+===== /home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja/ttmp/2026/05/26/XGOJA-015--release-xgoja-runtime-api-and-bump-downstream-repositories/scripts/09-pr-check-summary.sh =====
+     1	#!/usr/bin/env bash
+     2	set -euo pipefail
+     3	
+     4	# Print `gh pr checks` summaries for every PR in a release-train PR list.
+     5	# This preserves the CI inspection command sequence used while resolving
+     6	# XGOJA-015 readiness failures.
+     7	#
+     8	# Usage:
+     9	#   09-pr-check-summary.sh /tmp/xgoja-release-prs.txt
+    10	
+    11	if [[ $# -ne 1 ]]; then
+    12	  echo "usage: $0 <prs-file>" >&2
+    13	  exit 2
+    14	fi
+    15	
+    16	parse_pr() {
+    17	  local pr="$1"
+    18	  if [[ "$pr" =~ github\.com/([^/]+)/([^/]+)/pull/([0-9]+) ]]; then
+    19	    printf '%s/%s %s\n' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "${BASH_REMATCH[3]}"
+    20	    return 0
+    21	  fi
+    22	  if [[ "$pr" =~ ^([^/]+/[^#]+)#([0-9]+)$ ]]; then
+    23	    printf '%s %s\n' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+    24	    return 0
+    25	  fi
+    26	  echo "could not parse PR: $pr" >&2
+    27	  return 2
+    28	}
+    29	
+    30	while IFS= read -r pr || [[ -n "$pr" ]]; do
+    31	  pr="${pr%%#*}"
+    32	  pr="$(printf '%s' "$pr" | xargs)"
+    33	  [[ -z "$pr" ]] && continue
+    34	  read -r repo number < <(parse_pr "$pr")
+    35	  echo "### $repo#$number"
+    36	  gh pr checks "$number" --repo "$repo" || true
+    37	done < "$1"
+
+===== /home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja/ttmp/2026/05/26/XGOJA-015--release-xgoja-runtime-api-and-bump-downstream-repositories/scripts/10-validate-downstream-focused.sh =====
+     1	#!/usr/bin/env bash
+     2	set -euo pipefail
+     3	
+     4	# Focused downstream validation commands used during XGOJA-015. Run one repo at a
+     5	# time with GOWORK=off so local workspace replacements cannot hide unpublished
+     6	# upstream tags or module/API mismatches.
+     7	#
+     8	# Usage:
+     9	#   10-validate-downstream-focused.sh <repo-name>
+    10	
+    11	ROOT="${ROOT:-/home/manuel/workspaces/2026-05-24/add-js-providers}"
+    12	repo="${1:-}"
+    13	if [[ -z "$repo" ]]; then
+    14	  echo "usage: $0 <repo-name>" >&2
+    15	  exit 2
+    16	fi
+    17	
+    18	case "$repo" in
+    19	  discord-bot)
+    20	    cd "$ROOT/discord-bot"
+    21	    GOWORK=off go test ./pkg/xgoja/provider ./internal/jsdiscord ./pkg/botcli -count=1
+    22	    ;;
+    23	  go-minitrace)
+    24	    cd "$ROOT/go-minitrace"
+    25	    GOWORK=off go test ./pkg/minitracejs/provider ./cmd/go-minitrace/cmds/query ./pkg/minitracecmd -count=1
+    26	    ;;
+    27	  loupedeck)
+    28	    cd "$ROOT/loupedeck"
+    29	    GOWORK=off go test ./runtime/js ./runtime/js/provider ./cmd/loupedeck/cmds/verbs ./pkg/jsmetrics -count=1
+    30	    make -C examples/xgoja/loupedeck-command-provider smoke
+    31	    ;;
+    32	  workspace-manager)
+    33	    cd "$ROOT/workspace-manager"
+    34	    GOWORK=off go test ./cmd/wsm/cmds/registry/list ./cmd/wsm ./pkg/wsmjs/provider -count=1
+    35	    GOWORK=off golangci-lint run --timeout=5m ./cmd/... ./pkg/...
+    36	    ;;
+    37	  goja-git)
+    38	    cd "$ROOT/goja-git"
+    39	    GOWORK=off go test ./filterrepo ./pkg/provider -count=1
+    40	    GOWORK=off golangci-lint run --timeout=5m ./...
+    41	    ;;
+    42	  css-visual-diff)
+    43	    cd "$ROOT/css-visual-diff"
+    44	    GOWORK=off go test ./pkg/xgoja/provider ./internal/cssvisualdiff/jsapi ./internal/cssvisualdiff/verbcli ./internal/cssvisualdiff/dsl -count=1
+    45	    ;;
+    46	  pinocchio)
+    47	    cd "$ROOT/pinocchio"
+    48	    GOWORK=off go test ./cmd/pinocchio/cmds -count=1
+    49	    ;;
+    50	  *)
+    51	    echo "unknown repo: $repo" >&2
+    52	    exit 2
+    53	    ;;
+    54	esac
+

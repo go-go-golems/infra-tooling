@@ -1,0 +1,209 @@
+---
+Title: Investigation Diary
+Ticket: INFRA-001
+Status: active
+Topics:
+  - cli
+  - github
+  - release
+  - automation
+DocType: reference
+Intent: long-term
+Owners: []
+RelatedFiles: []
+ExternalSources: []
+Summary: Chronological diary for researching a go-go-golems open-source management CLI.
+LastUpdated: 2026-05-26T23:00:00-04:00
+WhatFor: Preserve investigation steps, evidence gathered, failures, and continuation notes.
+WhenToUse: Read before resuming INFRA-001 research or implementation.
+---
+
+# Diary
+
+## Goal
+
+This diary records the research and design work for a future Go package plus CLI toolbox that manages go-go-golems open-source repository operations. The ticket studies the shell/Python scripts, GitHub API interactions, release-train workflows, PR readiness states, and XGOJA-015 operational experience before proposing a cleaner implementation.
+
+## Step 1: Initialize the ticket and gather the first evidence set
+
+I created a dedicated `infra-tooling` docmgr workspace because this work is no longer about one xgoja release train. The goal is to turn repeated operational scripts and lessons into a reusable management tool for future go-go-golems open-source maintenance.
+
+The first investigation pass inventoried current infra-tooling scripts and docs, then explicitly pulled in the ticket-local scripts from XGOJA-015. The user called out those scripts because they contain the real ad-hoc operational knowledge: Codex inline review extraction, PR check summaries, and focused downstream validation commands.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Ok, we are shifting to @infra-tooling/. Create a new docmgr ticket to create a go go golem CLI management tool based on all the scripts and experience we have gathered. First, I want to analyze all the APIs, functionality, actions, data we have been dealing with, the APIs, formats, interactions, etc... ONce we cover all the existing functionality and implementation and usages (and missing things too), we will be able to put together the building blocoks of a go package + CLI toolbox to do go-go-golems opensource management in the future.
+
+Create  a detailed analysis / design / implementation guide that is for a new intern, explaining all the parts of the system needed to understand what it is, with prose paragraphs and bullet point sand pseudocode and diagrams and api references and file references. It should be very clear and technical. Store in the ticket and the nupload to remarkable.
+
+Keep a diary as you work"
+
+**Assistant interpretation:** Create a new `infra-tooling` docmgr ticket, perform an evidence-backed analysis of the existing release/readiness scripts and workflows, write a detailed intern-oriented design/implementation guide for a future Go CLI/package, maintain a diary, and upload the result to reMarkable.
+
+**Inferred user intent:** The user wants to consolidate lessons from recent multi-repo release trains into a deliberate tool design instead of accumulating one-off scripts.
+
+**Commit (code):** N/A — documentation/research setup only so far.
+
+### What I did
+- Initialized docmgr in `/home/manuel/code/wesen/go-go-golems/infra-tooling` because the repo had no `ttmp` root yet.
+- Added vocabulary topics: `cli`, `github`, `release`, and `automation`.
+- Created ticket `INFRA-001 — Design go-go-golems open-source management CLI`.
+- Created:
+  - `design-doc/01-go-go-golems-open-source-management-cli-design.md`
+  - `reference/01-investigation-diary.md`
+  - `sources/01-line-anchored-evidence.txt`
+  - `sources/02-xgoja-015-script-evidence.txt`
+- Read current infra-tooling scripts and docs under:
+  - `scripts/go-go-golems/`
+  - `docs/go-go-golems/`
+  - `examples/go-go-golems/`
+- Read the XGOJA-015 scripts that the user explicitly referenced:
+  - `08-extract-codex-review-comments.sh`
+  - `09-pr-check-summary.sh`
+  - `10-validate-downstream-focused.sh`
+- Replaced the default task list with a concrete investigation/delivery checklist.
+
+### Why
+- The future CLI should be based on observed workflows and APIs, not only on desired commands.
+- The XGOJA-015 scripts capture missing functionality that is not yet in the reusable infra-tooling script directory.
+
+### What worked
+- `docmgr init --seed-vocabulary` created a clean ticket workspace for `infra-tooling`.
+- The existing repository already has a useful split between scripts, docs, examples, and action/tooling directories.
+- The XGOJA-015 ticket scripts gave concrete examples of functionality that should be promoted into the future CLI.
+
+### What didn't work
+- `docmgr status --summary-only` initially failed because `infra-tooling/ttmp` did not exist yet:
+
+```text
+Error: root directory does not exist: /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp
+```
+
+I fixed that by running `docmgr init --seed-vocabulary`.
+
+### What I learned
+- The reusable infra-tooling scripts cover PR readiness and Codex triggering, while XGOJA-015 adds operational helpers for extracting Codex review comments, checking PR checks, and running repo-specific validation.
+- The future CLI needs to model both reusable primitives and release-train-specific configuration.
+
+### What was tricky to build
+- The evidence spans two repositories: reusable scripts in `infra-tooling` and historical ticket scripts in `go-go-goja`. The ticket sources now preserve line-numbered snapshots of both so the design doc can cite them without relying on memory.
+
+### What warrants a second pair of eyes
+- Whether the future CLI should live in `infra-tooling` as a Go module directly, or whether `infra-tooling` should hold docs/scripts while the CLI gets a dedicated repo.
+- Whether XGOJA-015 ticket scripts should be copied into `infra-tooling/scripts/go-go-golems/` immediately or only used as design input.
+
+### What should be done in the future
+- Write the full design guide with explicit command groups and Go package boundaries.
+- Upload the completed docs to reMarkable.
+
+### Code review instructions
+- Start with the evidence files in `sources/` and compare them against the current scripts in `scripts/go-go-golems/`.
+- Validate docmgr ticket state with `docmgr doctor --ticket INFRA-001 --stale-after 30`.
+
+### Technical details
+
+Evidence capture commands included:
+
+```bash
+rg --files scripts docs examples templates tests
+find scripts/go-go-golems -maxdepth 2 -type f -print | sort
+find docs/go-go-golems -maxdepth 3 -type f -print | sort
+nl -ba scripts/go-go-golems/01-pr-ready-check.py
+nl -ba /home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja/ttmp/2026/05/26/XGOJA-015--release-xgoja-runtime-api-and-bump-downstream-repositories/scripts/10-validate-downstream-focused.sh
+```
+
+## Step 2: Write the design guide and upload the bundle
+
+The second step turned the evidence inventory into the first full design document. The guide explains the existing scripts, the GitHub and Go module APIs they use, the current release-train state machine, and the proposed Go package/CLI architecture.
+
+I also uploaded the design guide and diary to reMarkable. The first upload attempt timed out at the tool-call level after 300 seconds, but no upload process remained running. Re-running the same upload with a longer timeout succeeded.
+
+### Prompt Context
+
+**User prompt (verbatim):** "look at the scripts you wrote as well, righ. @go-go-goja/ttmp/2026/05/26/XGOJA-015--release-xgoja-runtime-api-and-bump-downstream-repositories/scripts/10-validate-downstream-focused.sh  etc..."
+
+**Assistant interpretation:** Include the ticket-local scripts from the XGOJA-015 release train as first-class evidence, especially `10-validate-downstream-focused.sh` and related helper scripts.
+
+**Inferred user intent:** The user wants the future CLI design to be grounded in the actual scripts used during the release train, not just the reusable infra-tooling scripts.
+
+**Commit (code):** N/A — documentation/research update.
+
+### What I did
+- Wrote `design-doc/01-go-go-golems-open-source-management-cli-design.md`.
+- Included current functionality inventory for:
+  - PR readiness checks;
+  - Codex signal parsing;
+  - batch readiness/watch behavior;
+  - Codex triggering;
+  - inline review extraction;
+  - PR check summaries;
+  - focused downstream validation;
+  - release-train dependency and publication workflows;
+  - dependency bump Makefile snippets.
+- Proposed Go package boundaries, CLI command groups, data models, pseudocode, diagrams, configuration shape, missing functionality, and phased implementation plan.
+- Related key files to the design doc with `docmgr doc relate`.
+- Updated the changelog and checked completed tasks.
+- Uploaded the design bundle to reMarkable:
+  - `OK: uploaded INFRA 001 Go Go Golems Management CLI Design.pdf -> /ai/2026/05/26/INFRA-001`
+
+### Why
+- The future CLI should consolidate observed operational behavior into typed, testable building blocks.
+- The XGOJA-015 scripts show missing reusable commands that should be promoted into the Go CLI design.
+
+### What worked
+- Line-anchored evidence files made it easy to cite current scripts and playbooks.
+- `docmgr doctor --ticket INFRA-001 --stale-after 30` passed before upload.
+- The reMarkable upload succeeded with a longer timeout.
+
+### What didn't work
+- The first reMarkable upload attempt timed out after 300 seconds:
+
+```text
+Command timed out after 300 seconds
+```
+
+- I checked for lingering processes with:
+
+```bash
+pgrep -af 'remarquee|pandoc|xelatex' || true
+```
+
+No upload/render process was left running, so I reran the same upload with a longer timeout.
+
+### What I learned
+- The combined design+diary PDF can take longer than 300 seconds to render/upload in this environment.
+- For long technical design bundles, use a longer tool timeout rather than changing the document structure prematurely.
+
+### What was tricky to build
+- The design needed to distinguish reusable policy from release-train-specific configuration. For example, `GOWORK=off` validation is a global invariant, but the exact package list for `discord-bot` or `loupedeck` belongs in validation-profile configuration.
+
+### What warrants a second pair of eyes
+- Naming of the future CLI (`ggg`, `go-go-golems`, or another binary name).
+- Whether the first implementation should shell out to `gh` for parity or use a direct GitHub GraphQL client immediately.
+- Whether ticket-local XGOJA-015 scripts should be copied into `infra-tooling/scripts/go-go-golems/` before the Go CLI exists.
+
+### What should be done in the future
+- Implement Phase 1: `ggg pr ready <pr> --json` with fixtures matching the current Python behavior.
+- Add structured `codexComments` JSON output rather than only message strings.
+- Convert `10-validate-downstream-focused.sh` into YAML validation profiles.
+
+### Code review instructions
+- Start with the design doc sections “Current functionality inventory”, “Data model for a Go package”, and “Implementation phases”.
+- Compare references against:
+  - `scripts/go-go-golems/01-pr-ready-check.py`
+  - `scripts/go-go-golems/05-batch-pr-ready.sh`
+  - XGOJA-015 `scripts/10-validate-downstream-focused.sh`
+
+### Technical details
+
+Successful upload command:
+
+```bash
+remarquee upload bundle \
+  ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/design-doc/01-go-go-golems-open-source-management-cli-design.md \
+  ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/reference/01-investigation-diary.md \
+  --name "INFRA 001 Go Go Golems Management CLI Design" \
+  --remote-dir "/ai/2026/05/26/INFRA-001" \
+  --toc-depth 2 \
+  --non-interactive
+```
