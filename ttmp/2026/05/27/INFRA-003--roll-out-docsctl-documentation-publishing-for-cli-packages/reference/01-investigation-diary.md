@@ -12,6 +12,12 @@ DocType: reference
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: ../../../../../../../../corporate-headquarters/loupedeck/.github/workflows/release.yaml
+      Note: Step 11 release workflow that published docs
+    - Path: ../../../../../../../../terraform/vault/github-actions/envs/k3s/main.tf
+      Note: Step 11 applied Terraform docsctl publisher roles
+    - Path: pkg/release/release.go
+      Note: Step 11 ggg release-tag ergonomics fix
     - Path: ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/design-doc/01-docsctl-publishing-rollout-analysis-and-implementation-guide.md
       Note: Primary guide created from the investigation
     - Path: ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/scripts/01-inventory-help-export.sh
@@ -24,6 +30,7 @@ LastUpdated: 2026-05-27T17:45:00-04:00
 WhatFor: Record what was investigated, what worked, what failed, and how to continue the docsctl publishing rollout.
 WhenToUse: Before resuming INFRA-003 implementation work or reviewing the generated design guide.
 ---
+
 
 
 # Diary
