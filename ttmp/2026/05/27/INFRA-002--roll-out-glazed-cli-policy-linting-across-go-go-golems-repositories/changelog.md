@@ -53,3 +53,12 @@ Added a per-repository rollout action document describing the Makefile/CI change
 
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/reference/02-repository-rollout-actions.md — Per-repository review aid for Glazed lint rollout
 
+
+## 2026-05-27
+
+Added intern-oriented design guide for extending ggg with rollout automation commands based on INFRA-002 script friction and workflow evidence.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/design-doc/02-ggg-rollout-automation-improvements-design.md — Design guide for ggg rollout automation improvements
+

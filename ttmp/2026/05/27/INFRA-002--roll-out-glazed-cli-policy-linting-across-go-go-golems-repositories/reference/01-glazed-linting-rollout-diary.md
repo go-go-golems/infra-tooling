@@ -459,3 +459,73 @@ The sixth step created a focused reference document listing exactly what had to 
 - Start with `reference/02-repository-rollout-actions.md`.
 - Compare each repo's `GLAZED_LINT_FLAGS` with the allow-path list in the document.
 - Confirm final `make glazed-lint` logs under `sources/glazed-lint-logs/`.
+
+## Step 6: Design ggg rollout automation improvements
+
+The sixth step turned the friction from INFRA-002 into a concrete `ggg` design. The rollout required many ticket-local scripts before `ggg` could take over PR readiness. Those scripts are useful evidence: they show exactly which operations should become reusable `ggg rollout` commands.
+
+I wrote a new design guide for an intern that explains the current workflow, the missing abstractions, proposed command group, rollout YAML format, data model, implementation phases, testing strategy, and the first recommended implementation slice.
+
+### Prompt Context
+
+**User prompt (verbatim):** "What additions/improvements can be made to ggg to simplify this work?
+
+Create a Create  a detailed analysis / design / implementation guide that is for a new intern, explaining all the parts of the system needed to understand what it is, with prose paragraphs and bullet point sand pseudocode and diagrams and api references and file references. It should be very clear and technical. Store in the ticket and the nupload to remarkable."
+
+**Assistant interpretation:** Analyze the INFRA-002 rollout friction and write an intern-oriented design document for extending `ggg` with rollout automation commands, then upload the document to reMarkable.
+
+**Inferred user intent:** The user wants the lessons from this rollout preserved as a technical blueprint so `ggg` can reduce future script-writing and manual branch/PR bookkeeping.
+
+**Commit (code):** pending — design document and diary update ready to commit.
+
+### What I did
+- Created `design-doc/02-ggg-rollout-automation-improvements-design.md`.
+- Documented the current `ggg` capabilities and the missing rollout abstractions.
+- Proposed a `ggg rollout` command group with:
+  - `inventory`
+  - `init`
+  - `plan`
+  - `apply`
+  - `validate`
+  - `branch`
+  - `push-prs`
+  - `status`
+  - `report`
+  - `release-plan`
+- Proposed a rollout YAML schema.
+- Proposed `pkg/rollout` data types.
+- Added Mermaid architecture diagram and implementation phases.
+- Prepared the document for reMarkable upload.
+
+### Why
+- INFRA-002 required ticket-local scripts for everything before PR readiness: inventory, patching, validation, branch hygiene, PR creation, and reporting.
+- These operations are reusable across future rollouts, not specific to Glazed linting.
+
+### What worked
+- The ticket scripts give concrete evidence for each proposed command.
+- The existing `ggg` packages (`prlist`, `prready`, `ghclient`, `release`) provide enough foundation for the rollout layer.
+
+### What didn't work
+- N/A.
+
+### What I learned
+- The highest-value next `ggg` additions are not release tagging or PR readiness; those already exist. The largest gap is the pre-PR rollout path.
+
+### What was tricky to build
+- The design needs to keep rollout mechanics separate from the Glazed-lint profile. Future rollouts should reuse the same mechanics for different patch profiles.
+
+### What warrants a second pair of eyes
+- Whether `ggg rollout push-prs` should ever support merges. The current design explicitly says no, matching the user's current policy.
+- Whether `--no-verify-push` should require a reason string.
+
+### What should be done in the future
+- Implement `ggg rollout inventory` and `ggg rollout validate` as the first read-only slice.
+- Add mutation commands only after the read-only model is tested.
+
+### Code review instructions
+- Review `design-doc/02-ggg-rollout-automation-improvements-design.md`.
+- Compare proposed commands against the ticket scripts in `scripts/`.
+- Confirm the first implementation slice is small enough for an intern.
+
+### Technical details
+- The document intentionally treats INFRA-002 scripts as evidence rather than permanent tooling.
