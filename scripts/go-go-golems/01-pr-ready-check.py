@@ -73,6 +73,14 @@ query($owner: String!, $repo: String!, $number: Int!) {
             content
             users(first: 20) { totalCount nodes { login } }
           }
+          comments(first: 100) {
+            nodes {
+              path
+              line
+              body
+              url
+            }
+          }
         }
       }
       comments(last: 100) {
@@ -134,6 +142,32 @@ def codex_body_is_satisfied(body: str) -> bool:
 def codex_body_is_benign(body: str) -> bool:
     stripped = (body or "").strip()
     return not stripped or bool(BENIGN_CODEX_BODY_RE.match(stripped)) or codex_body_is_satisfied(stripped)
+
+
+def reviewed_commit_from_body(body: str) -> str:
+    match = re.search(r"Reviewed commit:\*\*\s*`([0-9a-fA-F]+)`", body or "")
+    return match.group(1).lower() if match else ""
+
+
+def body_reviewed_current_head(body: str, head_oid: str) -> bool:
+    reviewed = reviewed_commit_from_body(body)
+    head = (head_oid or "").lower()
+    return bool(reviewed and head.startswith(reviewed))
+
+
+def code_review_comments(signal: dict[str, Any]) -> list[dict[str, Any]]:
+    nodes = (((signal.get("comments") or {}).get("nodes")) or [])
+    return [n for n in nodes if (n.get("body") or "").strip()]
+
+
+def format_code_review_comment(comment: dict[str, Any]) -> str:
+    location = comment.get("path") or "<unknown file>"
+    if comment.get("line") is not None:
+        location += f":{comment.get('line')}"
+    body = re.sub(r"\s+", " ", (comment.get("body") or "").strip())[:240]
+    url = comment.get("url") or ""
+    suffix = f" ({url})" if url else ""
+    return f"{location}: {body}{suffix}"
 
 
 def checks_findings(pr: dict[str, Any]) -> list[Finding]:
@@ -211,11 +245,19 @@ def codex_findings(pr: dict[str, Any], codex_re: re.Pattern[str]) -> list[Findin
         authored_body = latest_authored.get("body") or ""
         authored_where = f"latest Codex-authored signal ({latest_authored['kind']}) by {latest_authored.get('login') or '<unknown>'}: {latest_authored.get('url')}"
         findings.append(Finding(True, authored_where))
-        if not codex_body_is_benign(authored_body):
+        current_head = body_reviewed_current_head(authored_body, pr.get("headRefOid") or "")
+        comments = code_review_comments(latest_authored)
+        if not current_head and reviewed_commit_from_body(authored_body):
+            findings.append(Finding(True, "latest Codex-authored findings are stale for an older head commit"))
+        elif comments:
+            preview = "; ".join(format_code_review_comment(c) for c in comments[:3])
+            more = "" if len(comments) <= 3 else f"; ... {len(comments) - 3} more"
+            findings.append(Finding(False, f"latest Codex-authored review has {len(comments)} code review comment(s): {preview}{more}"))
+        elif not codex_body_is_benign(authored_body):
             preview = re.sub(r"\s+", " ", authored_body.strip())[:240]
             findings.append(Finding(False, f"latest Codex-authored body contains substantive comments: {preview!r}"))
         else:
-            findings.append(Finding(True, "latest Codex-authored body is empty/benign/satisfied"))
+            findings.append(Finding(True, "latest Codex-authored body is empty/benign/satisfied and has no code review comments"))
 
     body_satisfied = latest.get("codexAuthored") and codex_body_is_satisfied(body)
     if thumbs <= 0 and not body_satisfied:
@@ -259,7 +301,7 @@ def classify_findings(findings: list[Finding]) -> tuple[str, bool, list[str]]:
 
     failed_check_kinds = sorted(set(failed_check_kinds))
 
-    if any("latest Codex-authored body contains substantive comments" in msg for msg in failed):
+    if any("latest Codex-authored review has" in msg or "latest Codex-authored body contains substantive comments" in msg for msg in failed):
         return "codex_feedback", True, failed_check_kinds
     if any("failing/non-success checks:" in msg for msg in failed):
         return "failed_checks", True, failed_check_kinds
