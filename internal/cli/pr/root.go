@@ -8,6 +8,10 @@ func NewCommand() (*cobra.Command, error) {
 	if err != nil {
 		return nil, err
 	}
-	root.AddCommand(trigger)
+	ready, err := newReadyCommand()
+	if err != nil {
+		return nil, err
+	}
+	root.AddCommand(trigger, ready)
 	return root, nil
 }

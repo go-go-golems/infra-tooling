@@ -53,3 +53,14 @@ Updated design for YAML PR lists, safe Codex trigger --force behavior, Glazed co
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prlist/prlist.go — YAML PR-list parser
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/release/release.go — Initial release tag helper for patch/minor/major
 
+
+## 2026-05-27
+
+Implemented first Go PR readiness parity slice with pkg/prready classifier, GitHub GraphQL readiness query, and Glazed ggg pr ready command; go test ./... and live JSON smoke against Discord Bot PR 9 passed.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/pr/ready.go — Glazed pr ready command
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/ghclient/readiness.go — GitHub GraphQL readiness query and decoding
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/prready.go — Go readiness classifier for checks and Codex signals
+

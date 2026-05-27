@@ -53,11 +53,11 @@ WhenToUse: Use while executing INFRA-001.
 
 ## Phase 3: PR readiness parity
 
-- [ ] Port the Python GraphQL readiness query and typed decoding.
-- [ ] Port check classification.
-- [ ] Port Codex signal collection, stale reviewed-commit detection, and inline review comment extraction.
-- [ ] Implement `ggg pr ready` with Glazed row output and current state names.
-- [ ] Preserve current exit-code semantics.
+- [x] Port the Python GraphQL readiness query and typed decoding.
+- [x] Port check classification.
+- [x] Port Codex signal collection, stale reviewed-commit detection, and inline review comment extraction.
+- [x] Implement `ggg pr ready` with Glazed row output and current state names.
+- [x] Preserve current exit-code semantics.
 - [ ] Add golden fixtures for observed XGOJA-015 states.
 
 ## Phase 4: Batch readiness with YAML input

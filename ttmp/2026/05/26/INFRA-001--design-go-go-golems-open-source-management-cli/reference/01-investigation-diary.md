@@ -315,3 +315,94 @@ prs:
     number: 2
   - ref: go-go-golems/go-minitrace#11
 ```
+
+## Step 4: Port the first PR readiness classifier into Go
+
+The fourth step implemented the first Go version of `ggg pr ready`. This ports the core behavior of `01-pr-ready-check.py`: query GitHub GraphQL, decode status checks and Codex review/comment signals, classify readiness, and emit Glazed rows.
+
+This is still a first parity slice rather than the final implementation. It supports the current state names and Codex stale-feedback logic, but future work should add fixture-based golden tests, full exit-code compatibility, and structured Codex comment rows.
+
+### Prompt Context
+
+**User prompt (verbatim):** "go ahead."
+
+**Assistant interpretation:** Continue the phased implementation plan, starting with the next pending phase after the initial CLI scaffold.
+
+**Inferred user intent:** The user wants continued implementation work, committed in focused increments and documented in the diary.
+
+**Commit (code):** pending — PR readiness implementation validated and ready to commit.
+
+### What I did
+- Added `pkg/prready` with:
+  - readiness states;
+  - check/Codex/finding/report types;
+  - status-check classification;
+  - Codex signal classification;
+  - stale reviewed-commit detection;
+  - inline review comment detection;
+  - unit tests for ready, current-head Codex feedback, and stale Codex feedback.
+- Added `pkg/ghclient.Readiness` with a GitHub GraphQL query covering:
+  - `statusCheckRollup.contexts`;
+  - PR reviews;
+  - review inline comments;
+  - PR comments;
+  - reaction groups.
+- Added `ggg pr ready <pr>` as a Glazed command.
+- Added `--findings` to emit one row per readiness finding.
+- Registered the command under `ggg pr`.
+
+### Why
+- The Python readiness checker is now central release-train infrastructure. Porting it to Go is the highest-value next step because every later batch/train command depends on the same readiness model.
+
+### What worked
+- `go test ./...` passed.
+- Live smoke against the already-merged Discord Bot PR produced a structured JSON summary row with `state=ready`.
+
+### What didn't work
+- The first GraphQL query string had one extra closing brace and GitHub rejected it:
+
+```text
+gh: Expected one of SCHEMA, SCALAR, TYPE, ENUM, INPUT, UNION, INTERFACE, actual: RCURLY ("}") at [1, 685]
+```
+
+I counted braces in the query string, removed the extra closing brace, reran tests, and then the live smoke succeeded.
+
+### What I learned
+- The Go implementation should eventually store GraphQL queries as multiline constants or embedded `.graphql` files to make brace balance easier to review.
+- The stale reviewed-commit test must use hex strings because the parser intentionally matches only commit-like `[0-9a-fA-F]+` values.
+
+### What was tricky to build
+- The Go classifier must preserve the subtle XGOJA-015 behavior: a newer human `@codex review` trigger does not mask current-head Codex-authored feedback, but stale Codex-authored feedback for an older reviewed commit should not block the current head.
+
+### What warrants a second pair of eyes
+- Whether `ggg pr ready` should return non-zero when the state is not ready. The current Glazed command emits rows but does not yet force process exit based on readiness.
+- Whether `--findings` should be the default for human output or remain opt-in.
+
+### What should be done in the future
+- Add golden JSON fixtures copied from real XGOJA-015 states.
+- Add structured `codex_comments` output as a separate command or output mode.
+- Add batch readiness using the new Go classifier.
+
+### Code review instructions
+- Start with `pkg/prready/prready.go` for the state machine.
+- Review `pkg/ghclient/readiness.go` for GraphQL field parity with the Python script.
+- Review `internal/cli/pr/ready.go` for Glazed row output.
+- Validate with:
+
+```bash
+go test ./...
+go run ./cmd/ggg pr ready https://github.com/go-go-golems/discord-bot/pull/9 --output json
+```
+
+### Technical details
+
+Successful live smoke output included:
+
+```json
+{
+  "ok": true,
+  "state": "ready",
+  "terminal": true,
+  "repository": "go-go-golems/discord-bot"
+}
+```
