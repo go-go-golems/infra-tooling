@@ -1,0 +1,75 @@
+repo_path	module	glazed_version	has_makefile	lint_targets	has_workflows	has_lefthook	packages	git_status
+/home/manuel/code/wesen/go-go-golems/almanach	github.com/go-go-golems/almanach	v1.2.7	yes	test,lint,lintmax	yes	yes	cmd pkg	dirty
+/home/manuel/code/wesen/go-go-golems/biberon	github.com/go-go-golems/biberon	v0.3.4	yes	lint,test	yes	yes	cmd	clean
+/home/manuel/code/wesen/go-go-golems/bucheron	github.com/go-go-golems/bucheron	v0.3.4	yes	lint,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/clay	github.com/go-go-golems/clay	v1.3.0	yes	glazed-lint-build,glazed-lint,lint,lintmax,test	yes	yes	pkg	clean
+/home/manuel/code/wesen/go-go-golems/cliopatra	github.com/go-go-golems/cliopatra	v0.5.3	yes	lint,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/codex-sessions	github.com/go-go-golems/codex-session	v1.0.4	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/common-sense	github.com/go-go-golems/common-sense	v0.4.12	yes	lint,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/corporate-headquarters/workspace-manager.backup	github.com/go-go-golems/workspace-manager	v0.5.50	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/cozodb-goja	github.com/go-go-golems/cozodb-goja	v1.0.1	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/css-visual-diff	github.com/go-go-golems/css-visual-diff	v1.3.0	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/devctl	github.com/go-go-golems/devctl	v1.2.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/discord-bot	github.com/go-go-golems/discord-bot	v1.2.6	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/dmeta	github.com/go-go-golems/dmeta	v0.0.0	no		yes	no	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/docmgr	github.com/go-go-golems/docmgr	v1.0.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/docmgr/scenariolog	github.com/go-go-golems/docmgr/scenariolog	v0.7.3	yes	test	no	no	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/ecrivain	github.com/go-go-golems/ecrivain	v0.4.12	yes	lint,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/escuse-me	github.com/go-go-golems/escuse-me	v0.6.9	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/esp32-s3-m5/mled-server	mled-server	v0.7.14	no		no	no	cmd	clean
+/home/manuel/code/wesen/go-go-golems/esp32-s3-m5/zigctl	github.com/go-go-golems/zigctl	v0.7.14	no		no	no	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/esper	github.com/go-go-golems/esper	v0.7.14	no		no	no	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/font-util	github.com/go-go-golems/font-util	v1.2.14	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/form-generator	github.com/go-go-golems/form-generator	v0.7.3	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/geppetto	github.com/go-go-golems/geppetto	v1.3.0	yes	linttool-build,linttool,glazed-lint-build,glazed-lint,lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/gitcommit	github.com/go-go-golems/gitcommit	v0.7.6	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/glazed	github.com/go-go-golems/glazed	indirect-or-replace	yes	lint,lintmax,glazed-lint-build,glazed-lint,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/go-emrichen	github.com/go-go-golems/go-emrichen	v0.5.52	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/go-go-agent	github.com/go-go-golems/go-go-agent	v0.5.48	yes	lint,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/go-go-app-inventory	github.com/go-go-golems/go-go-app-inventory	v1.0.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/go-go-gepa	github.com/go-go-golems/go-go-gepa	v1.0.4	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/go-go-goja	github.com/go-go-golems/go-go-goja	v1.2.5	yes	lint,lintmax,test,test-inspector	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/go-go-mcp	github.com/go-go-golems/go-go-mcp	v1.0.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/goja-git	github.com/go-go-golems/goja-git	v1.2.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/goja-github-actions	github.com/go-go-golems/goja-github-actions	v1.0.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/go-minitrace	github.com/go-go-golems/go-minitrace	v1.2.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/harkonnen	github.com/go-go-golems/harkonnen	v0.5.15	yes	lint,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/infra-tooling	github.com/go-go-golems/infra-tooling	v1.3.4	no		yes	no	cmd pkg	dirty
+/home/manuel/code/wesen/go-go-golems/jesus	github.com/go-go-golems/jesus	v1.0.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/js-analyzer	github.com/go-go-golems/js-analyzer	v1.0.5	no		no	no	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/loupedeck	github.com/go-go-golems/loupedeck	v1.2.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/markdown-quizz	github.com/go-go-golems/XXX	v0.7.8	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/mastoid	github.com/go-go-golems/mastoid	v0.5.3	yes	lint,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/oak	github.com/go-go-golems/oak	v0.6.12	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/openai-app-server	github.com/go-go-golems/openai-app-server	v1.0.1	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/openai-mock-server	mock-openai-server	v0.6.12	yes	lint,lintmax,test,test-chat,test-responses,test-stream	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/parka	github.com/go-go-golems/parka	v1.0.6	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/pinocchio	github.com/go-go-golems/pinocchio	v1.3.0	yes	glazed-lint-build,glazed-lint,lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/plunger	github.com/go-go-golems/plunger	v0.2.56	yes	lint,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/plz-confirm	github.com/go-go-golems/plz-confirm	v1.0.1	yes	lint,lintmax,test,ci	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/prescribe	github.com/go-go-golems/prescribe	v0.7.6	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/prompto	github.com/go-go-golems/prompto	v1.0.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/refactorio	github.com/go-go-golems/refactorio	v0.7.14	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/remarquee	github.com/go-go-golems/remarquee	v1.2.7	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/sanitize	github.com/go-go-golems/sanitize	v1.0.4	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/scraper	github.com/go-go-golems/scraper	v1.2.14	yes	test,test-go,test-web,lint,lintmax	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/sessionstream	github.com/go-go-golems/sessionstream	v1.2.7	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/smailnail	github.com/go-go-golems/smailnail	v1.2.3	yes	lint,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/sqleton	github.com/go-go-golems/sqleton	v1.2.6	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/tactician	github.com/go-go-golems/tactician	v0.7.6	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/uhoh	github.com/go-go-golems/uhoh	v0.5.39	yes	lint,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/vault-envrc-generator	github.com/go-go-golems/vault-envrc-generator	v1.0.6	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/vm-system	github.com/go-go-golems/vm-system	v1.0.0	yes		no	no	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/web-agent-example	github.com/go-go-golems/web-agent-example	v1.0.4	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/workspace-manager	github.com/go-go-golems/workspace-manager	v1.3.4	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/code/wesen/go-go-golems/zine-layout	github.com/go-go-golems/zine-layout	v0.6.14	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff	github.com/go-go-golems/css-visual-diff	v1.3.0	yes	lint,lintmax,test	yes	yes	cmd pkg	dirty
+/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot	github.com/go-go-golems/discord-bot	v1.2.6	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto	github.com/go-go-golems/geppetto	v1.3.0	yes	linttool-build,linttool,glazed-lint-build,glazed-lint,lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/workspaces/2026-05-24/add-js-providers/glazed	github.com/go-go-golems/glazed	indirect-or-replace	yes	lint,lintmax,glazed-lint-build,glazed-lint,test	yes	yes	cmd pkg	clean
+/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja	github.com/go-go-golems/go-go-goja	v1.2.5	yes	lint,lintmax,test,test-inspector	yes	yes	cmd pkg	clean
+/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git	github.com/go-go-golems/goja-git	v1.2.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace	github.com/go-go-golems/go-minitrace	v1.2.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck	github.com/go-go-golems/loupedeck	v1.2.5	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio	github.com/go-go-golems/pinocchio	v1.3.0	yes	glazed-lint-build,glazed-lint,lint,lintmax,test	yes	yes	cmd pkg	clean
+/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager	github.com/go-go-golems/workspace-manager	v1.3.4	yes	lint,lintmax,test	yes	yes	cmd pkg	clean
