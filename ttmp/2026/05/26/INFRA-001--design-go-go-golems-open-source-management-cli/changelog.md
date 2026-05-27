@@ -23,3 +23,12 @@ Uploaded INFRA-001 design bundle to reMarkable at /ai/2026/05/26/INFRA-001 after
 
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/reference/01-investigation-diary.md — Diary records design writing and reMarkable upload
 
+
+## 2026-05-27
+
+Created and printed a thermal almanach for the ggg project using image separators (owl, lighthouse, fox, windmill); remote render dry-run succeeded at 384x2361 and final print succeeded in 4 bitmap segments.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/various/ggg-project-almanach.json — Printed almanach layout with embedded separator images
+
