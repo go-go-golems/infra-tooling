@@ -742,7 +742,7 @@ This was the first end-to-end proof that the rollout works after the Terraform-f
 - Review `pkg/release/release.go`.
 - Validate with:
   - `go test ./...`
-  - `ggg release tag-patch --dry-run --yes --output json` in a clean repo; confirm the plan no longer includes `git checkout --detach`.
+  - `ggg release tag-patch --dry-run --yes --output json` in a clean repo; confirm the plan no longer includes `git checkout --detach`. Validation artifact: `sources/15-loupedeck-tag-dryrun-after-ggg-fix.json`.
 
 ### Technical details
 - Terraform apply command shape:

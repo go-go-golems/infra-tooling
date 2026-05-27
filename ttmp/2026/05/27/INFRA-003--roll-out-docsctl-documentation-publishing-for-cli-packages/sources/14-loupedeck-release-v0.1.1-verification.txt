@@ -26,3 +26,9 @@ Docs verification:
 Operational note:
 - ggg release tag-patch worked but left the loupedeck worktree detached because it implemented tagging as `git checkout --detach origin/main` then `git tag`.
 - Fixed infra-tooling so future tag commands create the tag directly at the target commit (`git tag <tag> <commit>`) and do not mutate the operator's checkout.
+
+Post-fix ggg validation:
+- `ggg release tag-patch --dry-run --yes --output json` in the Loupedeck main worktree now plans direct target tagging:
+  - git tag v0.1.2 bca2bea3ecb6f90fe0de74a2822c26510a8ccbf0
+- The plan no longer includes `git checkout --detach`.
+- The Loupedeck worktree remained on `main...origin/main` after the dry run.
