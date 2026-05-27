@@ -19,3 +19,11 @@ Additional docsctl verification releases:
   - sections: 6
 
 All three release runs completed successfully and `ggg release watch --no-stream --verify-docs` returned ok=true.
+
+- pinocchio v0.10.29
+  - commit: 764d25d7a2a18cd30f9afd18b28b8f6547a00e27
+  - run: https://github.com/go-go-golems/pinocchio/actions/runs/26544444380
+  - workflow: release.yml
+  - docs: https://docs.yolo.scapegoat.dev/pinocchio/v0.10.29
+  - sections: 112
+  - note: this verifies the Terraform `workflow_ref` correction from release.yaml to release.yml.

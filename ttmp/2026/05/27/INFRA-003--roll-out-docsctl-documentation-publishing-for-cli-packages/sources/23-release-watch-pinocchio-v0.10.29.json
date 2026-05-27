@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "repository": "go-go-golems/pinocchio",
+  "workflow": "release.yml",
+  "tag": "v0.10.29",
+  "run": {
+    "databaseId": 26544444380,
+    "status": "completed",
+    "conclusion": "success",
+    "headBranch": "v0.10.29",
+    "headSha": "764d25d7a2a18cd30f9afd18b28b8f6547a00e27",
+    "event": "push",
+    "displayTitle": "Add docsctl documentation publishing",
+    "createdAt": "2026-05-27T23:18:33Z",
+    "url": "https://github.com/go-go-golems/pinocchio/actions/runs/26544444380"
+  },
+  "docs": {
+    "ok": true,
+    "url": "https://docs.yolo.scapegoat.dev/pinocchio/v0.10.29",
+    "package": "pinocchio",
+    "version": "v0.10.29",
+    "status_code": 200,
+    "title": "Pinocchio v0.10.29 Documentation — Glazed Help Browser",
+    "section_count": 112,
+    "has_package": true,
+    "has_version": true,
+    "has_preloaded_state": true
+  },
+  "elapsed_seconds": 1
+}

@@ -924,3 +924,54 @@ After the fix, the command successfully waited for completed release runs and ve
 - Review `internal/cli/release/watch.go`, especially `waitForReleaseRunCompletion`.
 - Validate with any completed release tag using:
   - `ggg release watch --repo go-go-golems/<repo> --tag <tag> --no-stream --verify-docs --package <package> --output json`
+
+## Step 15: Verify Pinocchio with `release.yml`
+
+I tagged Pinocchio as an additional verification case because it specifically exercises the workflow filename correction from `release.yaml` to `release.yml` in the Vault bound claims.
+
+The release and docs publish succeeded, proving the corrected `workflow_ref` claim matches the live Pinocchio release workflow.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 12)
+
+**Assistant interpretation:** Continue tagging packages for verification, including a package that validates a known Terraform edge case.
+
+**Inferred user intent:** Increase confidence that both normal `release.yaml` packages and the Pinocchio `release.yml` exception work.
+
+**Commit (code):** N/A — documentation/evidence only
+
+### What I did
+- Pulled Pinocchio `main` to include the merged docsctl workflow.
+- Tagged `v0.10.29` at `764d25d7a2a18cd30f9afd18b28b8f6547a00e27` using `ggg release tag-patch --yes`.
+- Watched the release with:
+  - `ggg release watch --repo go-go-golems/pinocchio --workflow release.yml --tag v0.10.29 --verify-docs --package pinocchio --no-stream --output json`
+- Saved the verification artifact:
+  - `sources/23-release-watch-pinocchio-v0.10.29.json`
+
+### Why
+- Pinocchio uses `.github/workflows/release.yml`, not `release.yaml`.
+- The Terraform apply changed Pinocchio's Vault bound `workflow_ref` to match `release.yml`; this needed a live tag proof.
+
+### What worked
+- The release run succeeded.
+- The docs verification succeeded at `https://docs.yolo.scapegoat.dev/pinocchio/v0.10.29`.
+- The verifier reported 112 sections.
+
+### What didn't work
+- N/A
+
+### What I learned
+- The exact workflow filename warning is not theoretical; the successful Pinocchio publish confirms the corrected Vault claim is required and sufficient.
+
+### What was tricky to build
+- The command needed an explicit `--workflow release.yml`; the default `release.yaml` is intentionally not correct for Pinocchio.
+
+### What warrants a second pair of eyes
+- Pinocchio published 112 sections, whereas earlier validation artifacts showed lower counts for older versions. This may be expected from newer docs exports, but it is worth noting.
+
+### What should be done in the future
+- Add workflow filename detection to any future batch release-watch helper so Pinocchio-style exceptions do not require manual `--workflow` overrides.
+
+### Code review instructions
+- Inspect `sources/23-release-watch-pinocchio-v0.10.29.json` for the run URL, workflow filename, and docs verification result.
