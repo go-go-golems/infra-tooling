@@ -32,3 +32,12 @@ Created and printed a thermal almanach for the ggg project using image separator
 
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/various/ggg-project-almanach.json — Printed almanach layout with embedded separator images
 
+
+## 2026-05-27
+
+Reprinted the ggg project almanach at bodyScale 1.7 per user request; dry-run rendered 384x2880 and final print succeeded in 4 bitmap segments.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/various/ggg-project-almanach.json — Updated bodyScale to 1.7 for larger print
+
