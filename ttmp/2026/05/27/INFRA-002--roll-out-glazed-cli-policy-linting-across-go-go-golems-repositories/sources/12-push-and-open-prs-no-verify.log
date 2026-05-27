@@ -1,0 +1,31 @@
+=== css-visual-diff ===
+branch 'infra-002/glazed-lint' set up to track 'origin/infra-002/glazed-lint' by rebasing.
+PR: https://github.com/go-go-golems/css-visual-diff/pull/9
+=== discord-bot ===
+branch 'infra-002/glazed-lint' set up to track 'origin/infra-002/glazed-lint' by rebasing.
+PR: https://github.com/go-go-golems/discord-bot/pull/10
+=== geppetto ===
+branch 'infra-002/glazed-lint' set up to track 'origin/infra-002/glazed-lint' by rebasing.
+PR: https://github.com/go-go-golems/geppetto/pull/363
+=== glazed ===
+branch 'infra-002/glazed-lint' set up to track 'origin/infra-002/glazed-lint' by rebasing.
+PR: https://github.com/go-go-golems/glazed/pull/582
+=== go-go-goja ===
+branch 'infra-002/glazed-lint' set up to track 'origin/infra-002/glazed-lint' by rebasing.
+PR: https://github.com/go-go-golems/go-go-goja/pull/42
+=== goja-git ===
+branch 'infra-002/glazed-lint' set up to track 'origin/infra-002/glazed-lint' by rebasing.
+PR: https://github.com/go-go-golems/goja-git/pull/3
+=== go-minitrace ===
+branch 'infra-002/glazed-lint' set up to track 'origin/infra-002/glazed-lint' by rebasing.
+PR: https://github.com/go-go-golems/go-minitrace/pull/12
+=== loupedeck ===
+branch 'infra-002/glazed-lint' set up to track 'origin/infra-002/glazed-lint' by rebasing.
+PR: https://github.com/go-go-golems/loupedeck/pull/4
+=== pinocchio ===
+branch 'infra-002/glazed-lint' set up to track 'origin/infra-002/glazed-lint' by rebasing.
+PR: https://github.com/go-go-golems/pinocchio/pull/161
+=== workspace-manager ===
+branch 'infra-002/glazed-lint' set up to track 'origin/infra-002/glazed-lint' by rebasing.
+PR: https://github.com/go-go-golems/workspace-manager/pull/21
+wrote /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/10-glazed-lint-prs.yaml

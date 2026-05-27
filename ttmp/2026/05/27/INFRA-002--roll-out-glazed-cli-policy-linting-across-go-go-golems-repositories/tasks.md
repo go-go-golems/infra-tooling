@@ -45,9 +45,9 @@ WhenToUse: During the Glazed linting release train.
 ## Phase 4: Commit, push, and PRs
 
 - [x] Commit each repository's focused lint rollout changes.
-- [ ] Push branches and open PRs.
-- [ ] Store PR list as YAML under this ticket's `scripts/` directory.
-- [ ] Trigger Codex with `ggg pr codex-trigger --file`.
+- [x] Push branches and open PRs.
+- [x] Store PR list as YAML under this ticket's `scripts/` directory.
+- [x] Trigger Codex with `ggg pr codex-trigger --file`.
 - [ ] Watch readiness with `ggg batch ready --watch`.
 
 ## Phase 5: Merge and release

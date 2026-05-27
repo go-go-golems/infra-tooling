@@ -1,0 +1,222 @@
+=== css-visual-diff ===
+╭─────────────────────────────────────╮
+│ 🥊 lefthook v2.0.16  hook: pre-push │
+╰─────────────────────────────────────╯
+┃  lint ❯ 
+
+mkdir -p /home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff/.bin/
+GOBIN=/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff/.bin/ GOWORK=off go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.11.2
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.3.0
+GOWORK=off /home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff/.bin/golangci-lint config verify
+GOWORK=off /home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff/.bin/golangci-lint run -v --timeout=5m ./cmd/... ./internal/... ./pkg/...
+[36mINFO[0m golangci-lint has version 2.11.2 built with go1.26.3 from (unknown, modified: ?, mod sum: "h1:4Icd3mEqthcFcFww8L67OBtfKB/obXxko8aFUMqP/5w=") on (unknown) 
+[36mINFO[0m [config_reader] Config search paths: [./ /home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff/cmd /home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff /home/manuel/workspaces/2026-05-24/add-js-providers /home/manuel/workspaces/2026-05-24 /home/manuel/workspaces /home/manuel /home /] 
+[36mINFO[0m [config_reader] Used config file .golangci.yml 
+[36mINFO[0m [config_reader] Module name "github.com/go-go-golems/css-visual-diff" 
+[36mINFO[0m [goenv] Read go env for 9.084879ms: map[string]string{"GOCACHE":"/home/manuel/.cache/go-build", "GOROOT":"/home/manuel/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.3.linux-amd64"} 
+[36mINFO[0m [lintersdb] Active 9 linters: [errcheck exhaustive gofmt govet ineffassign nonamedreturns predeclared staticcheck unused] 
+[36mINFO[0m [loader] Go packages loading at mode 8767 (deps|exports_file|imports|types_sizes|compiled_files|files|name) took 515.885287ms 
+[36mINFO[0m [runner/filename_unadjuster] Pre-built 0 adjustments in 17.942255ms 
+[36mINFO[0m [linters_context/goanalysis] analyzers took 437.785079ms with top 10 stages: buildir: 104.38874ms, S1038: 31.624634ms, gofmt: 21.197053ms, QF1010: 15.288128ms, SA1012: 15.148022ms, QF1012: 14.598296ms, printf: 13.829451ms, SA4026: 12.805797ms, unused: 11.856404ms, nilness: 9.781466ms 
+[36mINFO[0m [runner/exclusion_rules] Skipped 0 issues by rules: [Text: "SA1019: cli.CreateProcessorLegacy", Linters: "staticcheck"] 
+[36mINFO[0m [runner] processing took 29.878µs with stages: exclusion_rules: 25.475µs, max_same_issues: 652ns, max_from_linter: 477ns, exclusion_paths: 432ns, path_absoluter: 343ns, nolint_filter: 313ns, filename_unadjuster: 249ns, source_code: 212ns, sort_results: 200ns, fixer: 190ns, diff: 187ns, path_prettifier: 181ns, path_relativity: 181ns, cgo: 177ns, max_per_file_from_linter: 173ns, invalid_issue: 102ns, path_shortener: 92ns, uniq_by_line: 87ns, severity-rules: 85ns, generated_file_filter: 70ns 
+[36mINFO[0m [runner] linters took 1.151837528s with stages: goanalysis_metalinter: 1.151745394s 
+0 issues.
+[36mINFO[0m File cache stats: 0 entries of total size 0B 
+[36mINFO[0m Memory: 18 samples, avg is 83.1MB, max is 174.4MB 
+[36mINFO[0m Execution took 1.695317108s                  
+GOWORK=off go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/,cmd/build-web/,cmd/css-visual-diff/,internal/cssvisualdiff/driver/,internal/cssvisualdiff/verbcli/bootstrap.go ./cmd/build-web ./cmd/css-visual-diff ./internal/cssvisualdiff/ai ./internal/cssvisualdiff/doc ./internal/cssvisualdiff/driver ./internal/cssvisualdiff/dsl ./internal/cssvisualdiff/jsapi ./internal/cssvisualdiff/llm ./internal/cssvisualdiff/modes ./internal/cssvisualdiff/review ./internal/cssvisualdiff/service ./internal/cssvisualdiff/services ./internal/cssvisualdiff/verbcli ./pkg ./pkg/xgoja/provider
+
+┃  test ❯ 
+
+GOWORK=off go test ./...
+?   	github.com/go-go-golems/css-visual-diff/cmd/build-web	[no test files]
+ok  	github.com/go-go-golems/css-visual-diff/cmd/css-visual-diff	(cached)
+?   	github.com/go-go-golems/css-visual-diff/internal/cssvisualdiff/ai	[no test files]
+?   	github.com/go-go-golems/css-visual-diff/internal/cssvisualdiff/doc	[no test files]
+ok  	github.com/go-go-golems/css-visual-diff/internal/cssvisualdiff/driver	(cached)
+ok  	github.com/go-go-golems/css-visual-diff/internal/cssvisualdiff/dsl	(cached)
+ok  	github.com/go-go-golems/css-visual-diff/internal/cssvisualdiff/jsapi	(cached)
+ok  	github.com/go-go-golems/css-visual-diff/internal/cssvisualdiff/llm	(cached)
+ok  	github.com/go-go-golems/css-visual-diff/internal/cssvisualdiff/modes	(cached)
+?   	github.com/go-go-golems/css-visual-diff/internal/cssvisualdiff/review	[no test files]
+ok  	github.com/go-go-golems/css-visual-diff/internal/cssvisualdiff/service	(cached)
+?   	github.com/go-go-golems/css-visual-diff/internal/cssvisualdiff/services	[no test files]
+--- FAIL: TestNearestGitRootDetectsGitDirectory (0.00s)
+    bootstrap_test.go:146: 
+        	Error Trace:	/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff/internal/cssvisualdiff/verbcli/bootstrap_test.go:146
+        	Error:      	Not equal: 
+        	            	expected: "/tmp/TestNearestGitRootDetectsGitDirectory2206814714/001"
+        	            	actual  : ""
+        	            	
+        	            	Diff:
+        	            	--- Expected
+        	            	+++ Actual
+        	            	@@ -1 +1 @@
+        	            	-/tmp/TestNearestGitRootDetectsGitDirectory2206814714/001
+        	            	+
+        	Test:       	TestNearestGitRootDetectsGitDirectory
+hello Manuel{"level":"info","time":"2026-05-27T12:40:56-04:00","message":"css-visual-diff chromedp: initializing browser"}
+{"level":"info","time":"2026-05-27T12:40:56-04:00","message":"css-visual-diff chromedp: browser context created"}
+{"level":"info","time":"2026-05-27T12:40:56-04:00","message":"css-visual-diff chromedp: creating page"}
+{"level":"info","width":400,"height":300,"time":"2026-05-27T12:40:56-04:00","message":"css-visual-diff chromedp: set viewport"}
+{"level":"info","url":"http://127.0.0.1:35993","time":"2026-05-27T12:40:58-04:00","message":"css-visual-diff chromedp: navigate"}
+{"level":"info","time":"2026-05-27T12:40:58-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:40:58-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:40:58-04:00","message":"css-visual-diff chromedp: closing page"}
+{"level":"info","time":"2026-05-27T12:40:58-04:00","message":"css-visual-diff chromedp: closing browser"}
+{"level":"info","time":"2026-05-27T12:40:58-04:00","message":"css-visual-diff chromedp: initializing browser"}
+{"level":"info","time":"2026-05-27T12:40:58-04:00","message":"css-visual-diff chromedp: browser context created"}
+{"level":"info","time":"2026-05-27T12:40:58-04:00","message":"css-visual-diff chromedp: creating page"}
+{"level":"info","width":320,"height":240,"time":"2026-05-27T12:40:58-04:00","message":"css-visual-diff chromedp: set viewport"}
+{"level":"info","url":"http://127.0.0.1:36063","time":"2026-05-27T12:41:00-04:00","message":"css-visual-diff chromedp: navigate"}
+{"level":"info","time":"2026-05-27T12:41:00-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:00-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:00-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:00-04:00","message":"css-visual-diff chromedp: closing page"}
+{"level":"info","time":"2026-05-27T12:41:00-04:00","message":"css-visual-diff chromedp: closing browser"}
+{"level":"info","time":"2026-05-27T12:41:00-04:00","message":"css-visual-diff chromedp: initializing browser"}
+{"level":"info","time":"2026-05-27T12:41:00-04:00","message":"css-visual-diff chromedp: browser context created"}
+{"level":"info","time":"2026-05-27T12:41:00-04:00","message":"css-visual-diff chromedp: creating page"}
+{"level":"info","width":320,"height":240,"time":"2026-05-27T12:41:00-04:00","message":"css-visual-diff chromedp: set viewport"}
+{"level":"info","url":"http://127.0.0.1:33327","time":"2026-05-27T12:41:01-04:00","message":"css-visual-diff chromedp: navigate"}
+{"level":"info","time":"2026-05-27T12:41:01-04:00","message":"css-visual-diff chromedp: closing page"}
+{"level":"info","time":"2026-05-27T12:41:01-04:00","message":"css-visual-diff chromedp: closing browser"}
+{"level":"info","time":"2026-05-27T12:41:01-04:00","message":"css-visual-diff chromedp: initializing browser"}
+{"level":"info","time":"2026-05-27T12:41:01-04:00","message":"css-visual-diff chromedp: browser context created"}
+{"level":"info","time":"2026-05-27T12:41:01-04:00","message":"css-visual-diff chromedp: creating page"}
+{"level":"info","width":320,"height":240,"time":"2026-05-27T12:41:01-04:00","message":"css-visual-diff chromedp: set viewport"}
+{"level":"info","url":"http://127.0.0.1:35067","time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: navigate"}
+{"level":"info","time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: closing page"}
+{"level":"info","time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: closing browser"}
+{"level":"info","time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: initializing browser"}
+{"level":"info","time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: browser context created"}
+{"level":"info","time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: creating page"}
+{"level":"info","width":320,"height":240,"time":"2026-05-27T12:41:02-04:00","message":"css-visual-diff chromedp: set viewport"}
+{"level":"info","url":"http://127.0.0.1:44583","time":"2026-05-27T12:41:03-04:00","message":"css-visual-diff chromedp: navigate"}
+{"level":"info","time":"2026-05-27T12:41:03-04:00","message":"css-visual-diff chromedp: closing page"}
+{"level":"info","time":"2026-05-27T12:41:03-04:00","message":"css-visual-diff chromedp: closing browser"}
+{"level":"info","time":"2026-05-27T12:41:03-04:00","message":"css-visual-diff chromedp: initializing browser"}
+{"level":"info","time":"2026-05-27T12:41:03-04:00","message":"css-visual-diff chromedp: browser context created"}
+{"level":"info","time":"2026-05-27T12:41:03-04:00","message":"css-visual-diff chromedp: creating page"}
+{"level":"info","width":320,"height":240,"time":"2026-05-27T12:41:03-04:00","message":"css-visual-diff chromedp: set viewport"}
+{"level":"info","url":"http://127.0.0.1:39401","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: navigate"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","duration":50,"time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: wait"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","duration":50,"time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: wait"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: closing page"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: closing browser"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: initializing browser"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: browser context created"}
+{"level":"info","time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: creating page"}
+{"level":"info","width":320,"height":240,"time":"2026-05-27T12:41:04-04:00","message":"css-visual-diff chromedp: set viewport"}
+{"level":"info","url":"http://127.0.0.1:44261","time":"2026-05-27T12:41:05-04:00","message":"css-visual-diff chromedp: navigate"}
+{"level":"info","time":"2026-05-27T12:41:05-04:00","message":"css-visual-diff chromedp: closing page"}
+{"level":"info","time":"2026-05-27T12:41:05-04:00","message":"css-visual-diff chromedp: closing browser"}
+{"level":"info","time":"2026-05-27T12:41:05-04:00","message":"css-visual-diff chromedp: initializing browser"}
+{"level":"info","time":"2026-05-27T12:41:05-04:00","message":"css-visual-diff chromedp: browser context created"}
+{"level":"info","time":"2026-05-27T12:41:05-04:00","message":"css-visual-diff chromedp: creating page"}
+{"level":"info","width":320,"height":240,"time":"2026-05-27T12:41:05-04:00","message":"css-visual-diff chromedp: set viewport"}
+{"level":"info","url":"http://127.0.0.1:44741","time":"2026-05-27T12:41:06-04:00","message":"css-visual-diff chromedp: navigate"}
+{"level":"info","time":"2026-05-27T12:41:06-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:06-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:06-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:06-04:00","message":"css-visual-diff chromedp: closing page"}
+{"level":"info","time":"2026-05-27T12:41:06-04:00","message":"css-visual-diff chromedp: closing browser"}
+{"level":"info","time":"2026-05-27T12:41:06-04:00","message":"css-visual-diff chromedp: initializing browser"}
+{"level":"info","time":"2026-05-27T12:41:06-04:00","message":"css-visual-diff chromedp: browser context created"}
+{"level":"info","time":"2026-05-27T12:41:06-04:00","message":"css-visual-diff chromedp: creating page"}
+{"level":"info","time":"2026-05-27T12:41:06-04:00","message":"css-visual-diff chromedp: creating page"}
+{"level":"info","width":320,"height":240,"time":"2026-05-27T12:41:06-04:00","message":"css-visual-diff chromedp: set viewport"}
+{"level":"info","width":480,"height":320,"time":"2026-05-27T12:41:06-04:00","message":"css-visual-diff chromedp: set viewport"}
+{"level":"info","url":"http://127.0.0.1:37757","time":"2026-05-27T12:41:08-04:00","message":"css-visual-diff chromedp: navigate"}
+{"level":"info","url":"http://127.0.0.1:37757","time":"2026-05-27T12:41:08-04:00","message":"css-visual-diff chromedp: navigate"}
+{"level":"info","time":"2026-05-27T12:41:09-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:09-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:09-04:00","message":"css-visual-diff chromedp: closing page"}
+{"level":"info","time":"2026-05-27T12:41:09-04:00","message":"css-visual-diff chromedp: closing page"}
+{"level":"info","time":"2026-05-27T12:41:09-04:00","message":"css-visual-diff chromedp: closing browser"}
+{"level":"info","time":"2026-05-27T12:41:09-04:00","message":"css-visual-diff chromedp: initializing browser"}
+{"level":"info","time":"2026-05-27T12:41:09-04:00","message":"css-visual-diff chromedp: browser context created"}
+{"level":"info","time":"2026-05-27T12:41:09-04:00","message":"css-visual-diff chromedp: creating page"}
+{"level":"info","width":320,"height":240,"time":"2026-05-27T12:41:09-04:00","message":"css-visual-diff chromedp: set viewport"}
+{"level":"info","url":"http://127.0.0.1:45641","time":"2026-05-27T12:41:10-04:00","message":"css-visual-diff chromedp: navigate"}
+{"level":"info","time":"2026-05-27T12:41:10-04:00","message":"css-visual-diff chromedp: evaluate script"}
+{"level":"info","time":"2026-05-27T12:41:10-04:00","message":"css-visual-diff chromedp: closing page"}
+{"level":"info","time":"2026-05-27T12:41:10-04:00","message":"css-visual-diff chromedp: closing browser"}
+FAIL
+FAIL	github.com/go-go-golems/css-visual-diff/internal/cssvisualdiff/verbcli	14.135s
+?   	github.com/go-go-golems/css-visual-diff/pkg	[no test files]
+ok  	github.com/go-go-golems/css-visual-diff/pkg/xgoja/provider	(cached)
+FAIL
+make: *** [Makefile:63: test] Error 1
+
+exit status 2┃  release ❯ 
+
+GOWORK=off goreleaser release --skip=sign --snapshot --clean --single-target
+[1;94m  •[m by using this software you agree with its EULA, available at https://goreleaser.com/eula
+[1;94m  •[m running goreleaser v2.13.3 [3;93m(outdated, latest is v2.16.0)[m
+[1;94m  •[m skipping license check on snapshot
+[1;93m  •[m [1;93mskipping announce, publish, sign, and validate...[m
+[1;94m  •[m [1mcleaning distribution directory[m
+[1;94m  •[m [1mloading environment variables[m
+[1;94m  •[m [1mgetting and validating git state[m
+[1;94m    •[m git state                                      [1;94mcommit[m=1f744eced3d8fb0ac59162234a7e5010897adcf1 [1;94mbranch[m=infra-002/glazed-lint [1;94mcurrent_tag[m=v0.1.2 [1;94mprevious_tag[m=v0.1.1 [1;94mdirty[m=false
+[1;93m    •[m pipe skipped or partially skipped              [1;93mreason[m=validation is disabled
+[1;94m  •[m [1mparsing tag[m
+[1;94m  •[m [1msetting defaults[m
+[1;93m    •[m [1;93mDEPRECATED: [38;2;237;86;122;48;2;36;36;36msnapshot.name_template[m should not be used anymore, check [33mhttps://goreleaser.com/deprecations#snapshotname_template[m for more info[m
+[1;93m    •[m [38;2;237;86;122;48;2;36;36;36mbrews[m[1;93m is being phased out in favor of [m[38;2;237;86;122;48;2;36;36;36mhomebrew_casks[m[1;93m, check [m[33mhttps://goreleaser.com/deprecations#brews[m[1;93m for more info[m
+[1;94m  •[m [1mpartial[m
+[1;94m    •[m adjusting environment                          [1;94mby[m=target [1;94mtarget[m=linux_amd64 [1;94mdist[m=dist/linux_amd64
+[1;94m  •[m [1msnapshotting[m
+[1;94m    •[m building snapshot...                           [1;94mversion[m=0.1.3-next
+[1;94m  •[m [1mrunning before hooks[m
+[1;94m    •[m running hook                                   [1;94mhook[m=go mod tidy
+[1;94m    •[m running hook                                   [1;94mhook[m=go generate ./...
+[1;94m      •[m [3;2mtook: 46s[m
+[1;94m      •[m [3;2mtook: 46s[m
+[1;94m  •[m [1mensuring distribution directory[m
+[1;94m  •[m [1msetting up metadata[m
+[1;94m  •[m [1mwriting release metadata[m
+[1;94m  •[m [1mloading go mod information[m
+[1;94m  •[m [1mbuild prerequisites[m
+[1;94m  •[m [1mbuilding binaries[m
+[1;94m    •[m partial build                                  [1;94mfilter[m=target=linux_amd64_v1 [1;94mmatches[m=linux_amd64_v1
+[1;94m    •[m partial build                                  [1;94mfilter[m=target=linux_amd64_v1 [1;94mmatches[m=
+[1;94m    •[m building                                       [1;94mbinary[m=dist/linux_amd64/css-visual-diff-linux_linux_amd64_v1/css-visual-diff
+[1;94m  •[m [1marchives[m
+[1;94m    •[m archiving                                      [1;94mname[m=dist/linux_amd64/css-visual-diff_0.1.3-next_linux_amd64.tar.gz
+[1;94m  •[m [1mlinux packages[m
+[1;94m    •[m creating                                       [1;94mpackage[m=css-visual-diff [1;94mformat[m=rpm [1;94march[m=amd64v1 [1;94mfile[m=dist/linux_amd64/css-visual-diff_0.1.3-next_linux_amd64.rpm
+[1;94m    •[m creating                                       [1;94mpackage[m=css-visual-diff [1;94mformat[m=deb [1;94march[m=amd64v1 [1;94mfile[m=dist/linux_amd64/css-visual-diff_0.1.3-next_linux_amd64.deb
+[1;94m  •[m [1mstoring artifacts metadata[m
+[1;93m  •[m [1myou are using deprecated options, check the output above for details[m
+[1;94m  •[m [1mrelease succeeded after 58s[m
+[1;94m  •[m thanks for using GoReleaser Pro!
+
+                                      
+  ────────────────────────────────────
+summary: (done in 61.69 seconds)      
+✔️ lint (15.41 seconds)
+✔️ release (58.98 seconds)
+🥊 test (16.40 seconds)
