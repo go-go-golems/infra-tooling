@@ -21,8 +21,12 @@ type tagCommand struct {
 }
 
 type tagSettings struct {
-	Repo   string `glazed:"repo"`
-	DryRun bool   `glazed:"dry-run"`
+	Repo       string `glazed:"repo"`
+	DryRun     bool   `glazed:"dry-run"`
+	AllowDirty bool   `glazed:"allow-dirty"`
+	Target     string `glazed:"from"`
+	Commit     string `glazed:"commit"`
+	Yes        bool   `glazed:"yes"`
 }
 
 func newTagCommand(mode string) (*cobra.Command, error) {
@@ -42,6 +46,10 @@ func newTagCommand(mode string) (*cobra.Command, error) {
 		cmds.WithFlags(
 			fields.New("repo", fields.TypeString, fields.WithDefault("."), fields.WithHelp("Repository directory")),
 			fields.New("dry-run", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Compute the next tag without creating or pushing it")),
+			fields.New("allow-dirty", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Allow tagging from a dirty worktree")),
+			fields.New("from", fields.TypeString, fields.WithDefault("origin/main"), fields.WithHelp("Git ref to tag by default")),
+			fields.New("commit", fields.TypeString, fields.WithHelp("Explicit commit/ref to tag; overrides --from")),
+			fields.New("yes", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Confirm pushing the new tag")),
 		),
 		cmds.WithSections(glazedSection, commandSettingsSection),
 	)}
@@ -53,7 +61,11 @@ func (c *tagCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.Val
 	if err := vals.DecodeSectionInto(schema.DefaultSlug, s); err != nil {
 		return err
 	}
-	res, err := releasepkg.Tag(ctx, s.Repo, c.mode, s.DryRun)
+	target := s.Target
+	if s.Commit != "" {
+		target = s.Commit
+	}
+	res, err := releasepkg.TagWithOptions(ctx, releasepkg.Options{RepoDir: s.Repo, Mode: c.mode, DryRun: s.DryRun, AllowDirty: s.AllowDirty, Target: target, Yes: s.Yes})
 	if err != nil {
 		return err
 	}
@@ -61,10 +73,15 @@ func (c *tagCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.Val
 		types.MRP("repo", res.RepoDir),
 		types.MRP("mode", string(res.Mode)),
 		types.MRP("module", res.Module),
+		types.MRP("current_tag", res.CurrentTag),
 		types.MRP("tag", res.Tag),
+		types.MRP("target", res.Target),
 		types.MRP("commit", res.Commit),
+		types.MRP("dirty", res.Dirty),
+		types.MRP("existing_tag", res.ExistingTag),
 		types.MRP("dry_run", s.DryRun),
 		types.MRP("verified", res.Verified),
+		types.MRP("plan", res.Plan),
 	)
 	return gp.AddRow(ctx, row)
 }

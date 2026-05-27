@@ -554,3 +554,97 @@ state: no_codex
 Error: PR not ready: state=no_codex
 exit status 1
 ```
+
+## Step 7: Harden Codex comment handling and release tagging
+
+The seventh step implemented the first Codex/release hardening pass. The Codex trigger path now reuses the same GitHub snapshot and Codex signal model as readiness, which removes the earlier duplicate simplified parser. I also added a `codex-comments` command so inline Codex review comments can be inspected as structured rows.
+
+On the release side, the tag commands now have the main safety rails that the shell/Makefile flow lacked: dirty-worktree checks, explicit tag target selection, non-dry-run confirmation, existing-tag collision checks, narrow tag push, proxy verification retry, and richer dry-run plan output.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok do it. Add detailed tasks to the ticket so we can keep track."
+
+**Assistant interpretation:** Add detailed hardening tasks to INFRA-001, then implement the Codex comment/trigger and release hardening work discussed in the previous answers.
+
+**Inferred user intent:** The user wants concrete tracked implementation, not just explanation of hardening concepts.
+
+**Commit (code):** pending — hardening implementation validated and ready to commit.
+
+### What I did
+- Added detailed Phase 9 Codex hardening tasks and Phase 10 release hardening tasks to `tasks.md`.
+- Refactored `ghclient.Readiness` to build a shared `prready.Snapshot` through `ghclient.Snapshot`.
+- Changed `ghclient.CodexStatus` to derive from the shared snapshot instead of its own simplified GraphQL parser.
+- Added `pkg/prready/codex_helpers.go` with helpers for sorted signals, latest signal, latest authored signal, current-head matching, and current authored feedback detection.
+- Updated `ggg pr codex-trigger` to use the shared snapshot and skip on current Codex feedback unless `--force` is used.
+- Added `ggg pr codex-comments` with structured rows for Codex-authored review bodies and inline comments.
+- Reworked `pkg/release` to support `TagWithOptions` with dirty checks, target selection, explicit confirmation, existing-tag collision handling, proxy retry, and dry-run plans.
+- Added release command flags:
+  - `--allow-dirty`
+  - `--from`
+  - `--commit`
+  - `--yes`
+- Expanded release rows with `current_tag`, `target`, `dirty`, `existing_tag`, and `plan`.
+
+### Why
+- Codex readiness and Codex trigger safety must not diverge. A duplicate simplified parser could skip or trigger differently than the readiness classifier.
+- Release commands mutate Git state and publish tags. They need guardrails before they are used as a Makefile replacement.
+
+### What worked
+- `go test ./...` passed.
+- `ggg pr codex-comments` against Discord Bot PR 9 emitted structured rows with stale/current-head status, paths, lines, bodies, and URLs.
+- `ggg release tag-patch --repo . --dry-run --allow-dirty --output json` emitted a rich plan without mutating the repo.
+
+### What didn't work
+- Piping the large `codex-comments --output json` output through `head` caused a normal broken-pipe signal after enough rows were printed. This is a shell pipeline artifact, not a command failure in the underlying model.
+
+### What I learned
+- The historical Discord Bot PR is a good live smoke for `codex-comments` because it contains multiple stale Codex review comments across reviewed commits.
+- The release dry-run row is much more useful once it includes the exact planned commands and target commit.
+
+### What was tricky to build
+- Release hardening needs to preserve the simple operator path while adding safety. The command now requires `--yes` for non-dry-run tag pushes, but dry-run remains easy and informative.
+- Codex comments are attached to review nodes, while trigger state may be on issue comments. The shared snapshot is the right internal boundary.
+
+### What warrants a second pair of eyes
+- `skipped_recent_trigger` is still listed as a task and not implemented yet; the current skip reasons are `skipped_running` and `skipped_current_feedback`.
+- GraphQL pagination is still not implemented; review comments are limited to the first 100 per review.
+- Release tests using temporary git repositories are still pending.
+
+### What should be done in the future
+- Add fixture tests for `codex-comments` and trigger skip decisions.
+- Implement `skipped_recent_trigger` if duplicate non-eyes trigger comments become a problem.
+- Add release command tests with temporary repositories and fake/proxied verification.
+
+### Code review instructions
+- Review Codex changes in:
+  - `pkg/ghclient/readiness.go`
+  - `pkg/ghclient/ghclient.go`
+  - `pkg/prready/codex_helpers.go`
+  - `internal/cli/pr/codex_trigger.go`
+  - `internal/cli/pr/codex_comments.go`
+- Review release changes in:
+  - `pkg/release/release.go`
+  - `internal/cli/release/tag.go`
+- Validate with:
+
+```bash
+go test ./...
+go run ./cmd/ggg pr codex-comments https://github.com/go-go-golems/discord-bot/pull/9 --output json
+go run ./cmd/ggg release tag-patch --repo . --dry-run --allow-dirty --output json
+```
+
+### Technical details
+
+The release dry-run now includes a row with fields like:
+
+```json
+{
+  "module": "github.com/go-go-golems/infra-tooling",
+  "current_tag": "v0.0.0",
+  "tag": "v0.0.1",
+  "target": "origin/main",
+  "dirty": true,
+  "plan": ["git fetch origin main --tags", "git checkout --detach origin/main", "git tag v0.0.1"]
+}
+```

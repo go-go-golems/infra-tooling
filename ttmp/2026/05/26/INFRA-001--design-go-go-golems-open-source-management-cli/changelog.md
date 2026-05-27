@@ -86,3 +86,15 @@ Added readiness exit-code parity using internal/exitcode.Error; ggg pr ready and
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/pr/ready.go — PR readiness command now returns non-ready exit codes
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/exitcode/exitcode.go — Typed exit-code error for script-compatible command exits
 
+
+## 2026-05-27
+
+Added detailed Codex/release hardening tasks and implemented shared Codex snapshot parsing, ggg pr codex-comments, safer Codex trigger skip behavior, and hardened release tag options/guardrails.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/pr/codex_comments.go — Structured Codex review/comment output command
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/codex_helpers.go — Shared Codex signal helper model
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/release/release.go — Hardened release tag implementation with dirty checks
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/tasks.md — Added detailed Phase 9 and Phase 10 hardening tasks
+

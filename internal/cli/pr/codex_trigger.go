@@ -14,6 +14,7 @@ import (
 	"github.com/go-go-golems/glazed/pkg/types"
 	"github.com/go-go-golems/infra-tooling/pkg/ghclient"
 	"github.com/go-go-golems/infra-tooling/pkg/prlist"
+	"github.com/go-go-golems/infra-tooling/pkg/prready"
 	"github.com/go-go-golems/infra-tooling/pkg/prref"
 	"github.com/spf13/cobra"
 )
@@ -75,16 +76,21 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 	}
 	client := ghclient.Client{}
 	for _, ref := range refs {
-		status, err := client.CodexStatus(ctx, ref)
+		snap, err := client.Snapshot(ctx, ref)
 		if err != nil {
 			return err
 		}
+		latest, _ := prready.LatestSignal(snap)
+		status := ghclient.CodexStatus{SignalURL: latest.URL, SignalKind: latest.Kind, Author: latest.Author, Eyes: latest.Eyes, ThumbsUp: latest.ThumbsUp, Running: latest.Eyes > 0}
 		action := "triggered"
 		url := ""
+		currentFeedback := prready.HasCurrentAuthoredFeedback(snap)
 		if s.DryRun {
 			action = "would_trigger"
 		} else if status.Running && !s.Force {
 			action = "skipped_running"
+		} else if currentFeedback && !s.Force {
+			action = "skipped_current_feedback"
 		} else {
 			url, err = client.TriggerCodex(ctx, ref)
 			if err != nil {
@@ -99,6 +105,7 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 			types.MRP("force", s.Force),
 			types.MRP("dry_run", s.DryRun),
 			types.MRP("codex_running", status.Running),
+			types.MRP("current_feedback", currentFeedback),
 			types.MRP("eyes", status.Eyes),
 			types.MRP("thumbs_up", status.ThumbsUp),
 			types.MRP("signal_url", status.SignalURL),

@@ -14,16 +14,24 @@ import (
 const readinessQuery = `query($owner: String!, $repo: String!, $number: Int!) { repository(owner: $owner, name: $repo) { pullRequest(number: $number) { url number title mergeStateStatus reviewDecision headRefOid statusCheckRollup { contexts(first: 100) { nodes { __typename ... on CheckRun { name status conclusion detailsUrl } ... on StatusContext { context state targetUrl } } } } reviews(last: 100) { nodes { author { login } state body submittedAt url reactionGroups { content users(first: 20) { totalCount } } comments(first: 100) { nodes { path line body url } } } } comments(last: 100) { nodes { author { login } body createdAt url reactionGroups { content users(first: 20) { totalCount } } } } } } }`
 
 func (c Client) Readiness(ctx context.Context, ref prref.Ref) (prready.Report, error) {
-	if err := ref.Validate(); err != nil {
-		return prready.Report{}, err
-	}
-	out, err := run(ctx, "gh", "api", "graphql", "-f", "owner="+ref.Owner, "-f", "repo="+ref.Repo, "-F", fmt.Sprintf("number=%d", ref.Number), "-f", "query="+readinessQuery)
+	snap, err := c.Snapshot(ctx, ref)
 	if err != nil {
 		return prready.Report{}, err
 	}
+	return prready.Classify(snap), nil
+}
+
+func (c Client) Snapshot(ctx context.Context, ref prref.Ref) (prready.Snapshot, error) {
+	if err := ref.Validate(); err != nil {
+		return prready.Snapshot{}, err
+	}
+	out, err := run(ctx, "gh", "api", "graphql", "-f", "owner="+ref.Owner, "-f", "repo="+ref.Repo, "-F", fmt.Sprintf("number=%d", ref.Number), "-f", "query="+readinessQuery)
+	if err != nil {
+		return prready.Snapshot{}, err
+	}
 	var decoded readinessResponse
 	if err := json.Unmarshal(out, &decoded); err != nil {
-		return prready.Report{}, err
+		return prready.Snapshot{}, err
 	}
 	pr := decoded.Data.Repository.PullRequest
 	snap := prready.Snapshot{PR: ref, URL: pr.URL, MergeStateStatus: pr.MergeStateStatus, ReviewDecision: pr.ReviewDecision, HeadRefOID: pr.HeadRefOID}
@@ -64,7 +72,7 @@ func (c Client) Readiness(ctx context.Context, ref prref.Ref) (prready.Report, e
 		}
 		snap.Signals = append(snap.Signals, prready.CodexSignal{Kind: kind, Author: login, URL: n.URL, Time: n.CreatedAt, Body: n.Body, CodexAuthored: authored, Eyes: reactionCount(n.ReactionGroups, "EYES"), ThumbsUp: reactionCount(n.ReactionGroups, "THUMBS_UP")})
 	}
-	return prready.Classify(snap), nil
+	return snap, nil
 }
 
 var codexTriggerRE = regexp.MustCompile(`(?im)^\s*@codex\s+review\s*$`)

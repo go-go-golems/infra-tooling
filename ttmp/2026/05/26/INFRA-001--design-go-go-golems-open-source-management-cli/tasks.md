@@ -58,14 +58,14 @@ WhenToUse: Use while executing INFRA-001.
 - [x] Port Codex signal collection, stale reviewed-commit detection, and inline review comment extraction.
 - [x] Implement `ggg pr ready` with Glazed row output and current state names.
 - [x] Preserve current exit-code semantics.
-- [x] Add golden fixtures for observed XGOJA-015 states.
+- [ ] Add golden fixtures for observed XGOJA-015 states.
 
 ## Phase 4: Batch readiness with YAML input
 
 - [x] Implement `ggg batch ready prs.yaml`.
 - [x] Support `--watch`, `--interval`, `--timeout`, and `--trigger-missing-codex`.
 - [x] Preserve batch exit codes including partial-ready exit `5`.
-- [x] Add tests for aggregation and partial readiness.
+- [ ] Add tests for aggregation and partial readiness.
 
 ## Phase 5: Release verbs and Go module verification
 
@@ -88,12 +88,33 @@ WhenToUse: Use while executing INFRA-001.
 
 - [ ] Define release-train YAML schema.
 - [ ] Implement dependency graph loading and topological sort.
-- [x] Implement `ggg train status`.
-- [x] Implement `ggg train next`.
-- [x] Add merge gates for readiness and visible upstream tags.
+- [ ] Implement `ggg train status`.
+- [ ] Implement `ggg train next`.
+- [ ] Add merge gates for readiness and visible upstream tags.
 
 ## Phase 8: Reporting and docmgr integration
 
-- [x] Generate Markdown release reports from run-state files.
+- [ ] Generate Markdown release reports from run-state files.
 - [ ] Generate docmgr changelog snippets.
 - [ ] Evaluate whether reMarkable upload should remain manual/documented or become a CLI command.
+
+## Phase 9: Codex comment and trigger hardening
+
+- [x] Refactor Codex signal parsing so readiness and trigger safety share one model.
+- [x] Make `ggg pr codex-trigger` use the shared readiness/Codex snapshot instead of the simplified `CodexStatus` query.
+- [ ] Add precise trigger actions and skip reasons: `triggered`, `would_trigger`, `skipped_running`, `skipped_current_feedback`, and `skipped_recent_trigger`.
+- [x] Add `ggg pr codex-comments` to emit Codex-authored review bodies and inline review comments as structured rows.
+- [x] Include reviewed commit, current/stale status, path, line, body preview/full body, and URL in Codex comment rows.
+- [ ] Add tests for stale-vs-current Codex inline comments and trigger skip decisions.
+- [ ] Document pagination limitations for review comments and add a follow-up task for GraphQL pagination.
+
+## Phase 10: Release command hardening
+
+- [x] Add clean-worktree checks before tagging; refuse dirty repos unless `--allow-dirty` is set.
+- [x] Add explicit `--commit` / `--from` target support with default `origin/main`.
+- [x] Add `--yes` confirmation guard for non-dry-run tag pushes.
+- [x] Detect existing tag collisions and verify whether the tag already points at the expected commit.
+- [x] Keep pushing only `refs/tags/<tag>` and never broad `git push --tags`.
+- [x] Add Go proxy verification retry/backoff with structured status rows.
+- [x] Expand dry-run output to include module path, current tag, next tag, target commit, dirty status, and planned commands.
+- [ ] Add temporary-git-repo tests for patch/minor/major and existing-tag behavior.

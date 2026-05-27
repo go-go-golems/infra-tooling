@@ -12,6 +12,10 @@ func NewCommand() (*cobra.Command, error) {
 	if err != nil {
 		return nil, err
 	}
-	root.AddCommand(trigger, ready)
+	comments, err := newCodexCommentsCommand()
+	if err != nil {
+		return nil, err
+	}
+	root.AddCommand(trigger, ready, comments)
 	return root, nil
 }
