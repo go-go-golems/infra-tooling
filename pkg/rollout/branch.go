@@ -71,8 +71,17 @@ func CommitTargets(cfg Config, yes bool) ([]BranchResult, error) {
 		if err := runGit(target, "checkout", "-B", cfg.Branch, cfg.Base); err != nil {
 			return results, err
 		}
-		if err := runGit(target, "add", "Makefile", ".github/workflows"); err != nil {
-			return results, err
+		paths := []string{}
+		if fileExists(target + "/Makefile") {
+			paths = append(paths, "Makefile")
+		}
+		if dirExists(target + "/.github/workflows") {
+			paths = append(paths, ".github/workflows")
+		}
+		if len(paths) > 0 {
+			if err := runGit(target, append([]string{"add"}, paths...)...); err != nil {
+				return results, err
+			}
 		}
 		if hasStagedChanges(target) {
 			_ = runGit(target, "commit", "-m", cfg.CommitMessage)

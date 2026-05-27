@@ -10,6 +10,7 @@ func NewCommand() (*cobra.Command, error) {
 		newValidateCommand,
 		newBranchCommand,
 		newPushPRsCommand,
+		newStatusCommand,
 		newReportCommand,
 	} {
 		sub, err := factory()
