@@ -162,3 +162,12 @@ Tagged and verified Pinocchio v0.10.29 docs publishing through release.yml.
 
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/23-release-watch-pinocchio-v0.10.29.json — Pinocchio release.yml verification artifact
 
+
+## 2026-05-27
+
+Merged css-visual-diff PR and recorded v0.1.3 release failure before docs publishing.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/24-css-visual-diff-v0.1.3-failed-release.txt — css-visual-diff failed release evidence
+

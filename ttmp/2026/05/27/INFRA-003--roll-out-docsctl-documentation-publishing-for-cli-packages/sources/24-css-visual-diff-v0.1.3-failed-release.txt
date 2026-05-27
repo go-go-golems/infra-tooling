@@ -1,0 +1,12 @@
+css-visual-diff v0.1.3 release attempt:
+- PR 10 was ready and merged.
+- Tag v0.1.3 was created at 6a05d0bfaf27bc0a34a1a172f6a07e9fa0f8b439.
+- `ggg release tag-patch` verified proxy.golang.org for github.com/go-go-golems/css-visual-diff@v0.1.3.
+- Release run failed: https://github.com/go-go-golems/css-visual-diff/actions/runs/26544778174
+- Failure job: goreleaser-darwin / Run goreleaser/goreleaser-action@v6
+- Error:
+  - go generate ./... invoked the review UI generator.
+  - Dagger failed on macOS runner: `start engine: driver for scheme "image" was not available`.
+  - Fallback failed because `pnpm` was not available: `exec: "pnpm": executable file not found in $PATH`.
+- Result: docs were not published for css-visual-diff v0.1.3 because `publish-docs` depends on `goreleaser-merge`.
+- Likely fix: install pnpm before the darwin GoReleaser step or adjust generation so darwin release does not need local pnpm/Dagger.

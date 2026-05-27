@@ -975,3 +975,59 @@ The release and docs publish succeeded, proving the corrected `workflow_ref` cla
 
 ### Code review instructions
 - Inspect `sources/23-release-watch-pinocchio-v0.10.29.json` for the run URL, workflow filename, and docs verification result.
+
+## Step 16: Merge css-visual-diff and capture release failure
+
+I merged the now-ready `css-visual-diff` docsctl PR and attempted to tag `v0.1.3` as another verification package. The tag and Go proxy verification succeeded, but the release workflow failed before docs publishing.
+
+This failure is useful rollout evidence: docsctl was not the failing component. The release failed in the existing GoReleaser darwin build path because `go generate ./...` needed the review UI build, Dagger was unavailable on the macOS runner, and the fallback local `pnpm` executable was missing.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 12)
+
+**Assistant interpretation:** Continue validating package tags and record any failures clearly.
+
+**Inferred user intent:** Discover whether docsctl publishing works in real release workflows and capture actionable failures.
+
+**Commit (code):** N/A — evidence only
+
+### What I did
+- Confirmed `css-visual-diff` PR 10 was ready.
+- Merged PR 10.
+- Pulled `main` in `/home/manuel/code/wesen/go-go-golems/css-visual-diff`.
+- Tagged `v0.1.3` with `ggg release tag-patch --yes`.
+- Watched the release with `ggg release watch --verify-docs`.
+- Saved failure evidence in `sources/24-css-visual-diff-v0.1.3-failed-release.txt`.
+
+### Why
+- `css-visual-diff` was the last open docsctl package PR and had become ready after the Chrome startup timeout fix.
+- Tagging it would verify the docsctl path for another package if the release workflow succeeded.
+
+### What worked
+- The PR merged.
+- The tag was created and pushed.
+- The Go module proxy verification succeeded for `github.com/go-go-golems/css-visual-diff@v0.1.3`.
+
+### What didn't work
+- The release workflow failed before `publish-docs` could run:
+  - run: `https://github.com/go-go-golems/css-visual-diff/actions/runs/26544778174`
+  - failing job: `goreleaser-darwin`
+  - failure: `go generate ./...` tried to build the review UI; Dagger could not start on the macOS runner, then fallback failed with `exec: "pnpm": executable file not found in $PATH`.
+
+### What I learned
+- A docsctl verification tag can still fail on package-specific release prerequisites before docs publishing starts.
+- `ggg release watch` correctly surfaced the overall release failure, but it does not yet summarize the failed job logs.
+
+### What was tricky to build
+- The failed tag is already published as `v0.1.3`, so the fix must land on a later commit and a later tag (`v0.1.4` or similar). Do not retag `v0.1.3`.
+
+### What warrants a second pair of eyes
+- Decide whether css-visual-diff should install `pnpm` on macOS release runners or avoid UI generation in the darwin split release job.
+
+### What should be done in the future
+- Add `ggg release failed-logs` or extend `ggg release watch` to print the first failed job name and `gh run view --log-failed` hint.
+- Fix css-visual-diff release workflow and tag a follow-up version.
+
+### Code review instructions
+- Inspect the failed run logs before changing css-visual-diff release workflow.
