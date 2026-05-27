@@ -702,6 +702,7 @@ This was the first end-to-end proof that the rollout works after the Terraform-f
 - Saved the release verification note in:
   - `sources/14-loupedeck-release-v0.1.1-verification.txt`
 - Improved `ggg release tag-*` so future tag commands do not leave the repo in detached HEAD state.
+- Ran a post-apply Terraform drift check; `terraform plan -detailed-exitcode` exited `0` with `No changes`.
 
 ### Why
 - Merging the workflow PR does not publish docs by itself; release-tag workflows publish docs.
@@ -712,6 +713,7 @@ This was the first end-to-end proof that the rollout works after the Terraform-f
 - The release workflow succeeded end-to-end.
 - The `Publish docs / publish-docs` reusable workflow job succeeded, including Vault login, JWT minting, publishing, and package API verification.
 - The public docs page has title `Loupedeck v0.1.1 Documentation — Glazed Help Browser` and lists 4 sections.
+- A post-apply Terraform plan returned exit code `0`, confirming the applied Vault state matches configuration.
 
 ### What didn't work
 - Running Terraform earlier without AWS credentials failed with:

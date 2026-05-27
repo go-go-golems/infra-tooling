@@ -113,3 +113,12 @@ Applied docsctl Vault publisher roles, tagged loupedeck v0.1.1, verified docs pu
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/14-loupedeck-release-v0.1.1-verification.txt — End-to-end release/docs verification artifact
 - /home/manuel/code/wesen/terraform/vault/github-actions/envs/k3s/main.tf — Applied docsctl publisher roles
 
+
+## 2026-05-27
+
+Verified Terraform is clean after docsctl publisher-role apply.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/16-terraform-post-apply-clean-plan.log — Post-apply Terraform no-change plan
+

@@ -32,3 +32,9 @@ Post-fix ggg validation:
   - git tag v0.1.2 bca2bea3ecb6f90fe0de74a2822c26510a8ccbf0
 - The plan no longer includes `git checkout --detach`.
 - The Loupedeck worktree remained on `main...origin/main` after the dry run.
+
+Terraform post-apply drift check:
+- Command: terraform plan -detailed-exitcode -out=/tmp/infra-003-post-apply-clean.tfplan
+- Exit code: 0
+- Result: No changes. Your infrastructure matches the configuration.
+- Log artifact: sources/16-terraform-post-apply-clean-plan.log
