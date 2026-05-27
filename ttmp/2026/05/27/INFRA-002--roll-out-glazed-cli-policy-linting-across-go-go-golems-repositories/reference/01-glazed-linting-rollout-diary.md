@@ -33,8 +33,12 @@ RelatedFiles:
       Note: Final hardened Glazed lint rollout Makefile
     - Path: internal/cli/rollout
       Note: Implemented rollout CLI commands
+    - Path: internal/cli/rollout/plan.go
+      Note: Step 10 rollout plan CLI
     - Path: pkg/rollout
       Note: Implemented rollout primitives
+    - Path: pkg/rollout/plan.go
+      Note: Step 10 rollout plan implementation
     - Path: ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/12-ggg-rollout.yaml
       Note: Rollout config used for validation/status
 ExternalSources: []
@@ -43,6 +47,7 @@ LastUpdated: 2026-05-27T11:20:00-04:00
 WhatFor: Preserve exact steps, commands, failures, validations, PRs, and release actions for the Glazed linting rollout.
 WhenToUse: Read before resuming INFRA-002 or reviewing the rollout.
 ---
+
 
 
 # Diary
@@ -817,3 +822,82 @@ After validation, I amended every branch back to one focused rollout commit, for
   - `sources/26-codex-retrigger-final-amended-heads.json`
 - Final status artifact:
   - `sources/27-ggg-rollout-status-final-amended-heads.json`
+
+## Step 10: Implement `ggg rollout plan`
+
+The tenth step implemented the profile-specific dry-run planner that was intentionally left out of the first rollout slice. The planner is read-only: it inspects each target repository and emits structured rows describing which Glazed-lint rollout operations are present, needed, or worth manual inspection.
+
+This closes the most important gap between `inventory` and future `apply`: operators can now ask `ggg` what the rollout profile expects before mutating files. I also used the planner against the live INFRA-002 branches, which surfaced one remaining Glazed self-hosting mismatch and then confirmed the final branches have no needed planning operations.
+
+### Prompt Context
+
+**User prompt (verbatim):** "go ahead"
+
+**Assistant interpretation:** Implement the `ggg rollout plan` command described in the previous answer and validate it against the active INFRA-002 rollout.
+
+**Inferred user intent:** The user wants the planned dry-run patch inspection capability implemented now, not left as future work.
+
+**Commit (code):** 81c55be — "Add rollout plan command"
+
+### What I did
+- Added `pkg/rollout/plan.go` with the `glazed-lint` profile planner.
+- Added `internal/cli/rollout/plan.go` and registered it under `ggg rollout`.
+- Added `pkg/rollout/plan_test.go` covering missing and hardened Makefile cases.
+- Special-cased the `glazed` repo because it builds the lint tool from its local checkout rather than installing `github.com/go-go-golems/glazed/cmd/tools/glazed-lint` from a module version.
+- Ran `go test ./...`.
+- Installed the updated `ggg` binary.
+- Ran `ggg rollout plan` against `scripts/12-ggg-rollout.yaml`.
+- Fixed the live `glazed` rollout Makefile to use `GLAZED_LINT_FLAGS` and `GLAZED_LINT_DIRS` in the standalone target.
+- Fixed the live `discord-bot` rollout Makefile allow-list after a new Codex comment identified existing bridge files that needed narrow legacy allow paths.
+- Retriggered Codex for the changed PRs.
+
+### Why
+- `ggg rollout plan` gives operators a read-only check before an eventual `ggg rollout apply` mutates files.
+- Running it on INFRA-002 turns the planner into a real safety gate instead of a theoretical command.
+
+### What worked
+- `go test ./...` passed.
+- `ggg rollout plan ... --output json` now exits `0` against the final INFRA-002 branch heads.
+- The planner correctly detected Glazed self-hosting differences and avoided requiring module-install-only variables for the `glazed` repo.
+- The planner helped identify that the `glazed` standalone target should use the same dirs/flags variables as the integrated lint targets.
+
+### What didn't work
+- The first live plan run flagged the `glazed` repository as missing module-install variables that do not apply to the Glazed repo itself.
+- Fix:
+  - special-case `repo.Module == "github.com/go-go-golems/glazed"` in `PlanGlazedLint`.
+- A new Discord Codex round identified allow-list gaps for `pkg/botcli/command_root.go` and `pkg/xgoja/provider/provider.go`.
+- Fix:
+  - added those narrow paths to `GLAZED_LINT_FLAGS` and amended the PR branch.
+
+### What I learned
+- The profile planner needs repository-role awareness. A repo that owns the lint tool has different correct wiring than downstream repos that install the tool.
+- Running the planner as a live gate is useful even before `apply` exists.
+
+### What was tricky to build
+- The Makefile parser needed to be useful without becoming a full Make parser. It extracts target bodies with simple target-boundary rules and string checks. This is good enough for planning but should remain conservative.
+- The planner must avoid false positives on the `glazed` self-host repo while still enforcing the downstream reproducibility policy.
+
+### What warrants a second pair of eyes
+- Whether `PlanGlazedLint` should eventually support per-repo policy overrides in the rollout YAML instead of hard-coded self-host detection.
+- Whether missing `lintmax` should be `warning` or `needed` for all future rollout profiles.
+
+### What should be done in the future
+- Implement `ggg rollout apply --profile glazed-lint` using the plan operation model.
+- Add fixture tests around real Makefile snippets from the ten INFRA-002 repositories.
+- Add `--status needed|present|warning` filtering to `ggg rollout plan`.
+
+### Code review instructions
+- Review `pkg/rollout/plan.go` first.
+- Review `pkg/rollout/plan_test.go` for expected policy behavior.
+- Review `internal/cli/rollout/plan.go` for Glazed row output and exit-code behavior.
+- Validate with:
+  - `go test ./...`
+  - `ggg rollout plan scripts/12-ggg-rollout.yaml --output json`
+
+### Technical details
+- Initial plan artifact:
+  - `sources/29-ggg-rollout-plan-final-heads.json`
+- Final no-needed-ops plan artifact:
+  - `sources/33-ggg-rollout-plan-after-discord-fix.json`
+- Status after Discord fix:
+  - `sources/34-ggg-rollout-status-after-discord-fix.json`

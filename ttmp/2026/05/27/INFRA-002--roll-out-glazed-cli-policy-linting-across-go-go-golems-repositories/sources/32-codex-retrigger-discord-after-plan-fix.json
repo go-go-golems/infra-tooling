@@ -1,0 +1,19 @@
+[
+{
+  "action": "triggered",
+  "codex_running": false,
+  "current_feedback": false,
+  "dry_run": false,
+  "eyes": 0,
+  "force": true,
+  "number": 10,
+  "pr": "https://github.com/go-go-golems/discord-bot/pull/10",
+  "recent_trigger": false,
+  "recent_trigger_window": "10m0s",
+  "repository": "go-go-golems/discord-bot",
+  "signal_url": "https://github.com/go-go-golems/discord-bot/pull/10#pullrequestreview-4374721842",
+  "thumbs_up": 0,
+  "trigger_age_seconds": 0,
+  "trigger_url": "https://github.com/go-go-golems/discord-bot/pull/10#issuecomment-4557261049"
+}
+]

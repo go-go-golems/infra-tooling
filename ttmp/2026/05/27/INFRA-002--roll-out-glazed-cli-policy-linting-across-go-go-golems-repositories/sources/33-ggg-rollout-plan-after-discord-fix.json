@@ -1,0 +1,2052 @@
+[
+{
+  "description": "Ensure GLAZED_LINT_BIN is defined",
+  "detail": "GLAZED_LINT_BIN is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_PKG is defined",
+  "detail": "GLAZED_LINT_PKG is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_VERSION is defined",
+  "detail": "GLAZED_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_TOOL_VERSION is defined",
+  "detail": "GLAZED_LINT_TOOL_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_FLAGS is defined",
+  "detail": "GLAZED_LINT_FLAGS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_DIRS is defined",
+  "detail": "GLAZED_LINT_DIRS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint-build target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Build glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go install",
+  "file": "Makefile",
+  "kind": "tool-install-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Use an explicit fallback/tool version for glazed-lint",
+  "detail": "found $(GLAZED_LINT_TOOL_VERSION)",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "No @latest glazed-lint install fallback",
+  "detail": "target does not contain @latest",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Run standalone glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_FLAGS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_FLAGS)",
+  "file": "Makefile",
+  "kind": "vet-flags",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lint",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lint",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lint",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lintmax",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lintmax",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lintmax",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed CLI policy linters in CI",
+  "detail": "workflow runs make glazed-lint",
+  "file": ".github/workflows/lint.yml",
+  "kind": "ci-workflow",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "profile": "glazed-lint",
+  "repo": "css-visual-diff",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_BIN is defined",
+  "detail": "GLAZED_LINT_BIN is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_PKG is defined",
+  "detail": "GLAZED_LINT_PKG is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_VERSION is defined",
+  "detail": "GLAZED_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_TOOL_VERSION is defined",
+  "detail": "GLAZED_LINT_TOOL_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_FLAGS is defined",
+  "detail": "GLAZED_LINT_FLAGS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_DIRS is defined",
+  "detail": "GLAZED_LINT_DIRS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint-build target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Build glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go install",
+  "file": "Makefile",
+  "kind": "tool-install-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Use an explicit fallback/tool version for glazed-lint",
+  "detail": "found $(GLAZED_LINT_TOOL_VERSION)",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "No @latest glazed-lint install fallback",
+  "detail": "target does not contain @latest",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Run standalone glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_FLAGS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_FLAGS)",
+  "file": "Makefile",
+  "kind": "vet-flags",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lint",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lint",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lint",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lintmax",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lintmax",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lintmax",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed CLI policy linters in CI",
+  "detail": "workflow runs make glazed-lint",
+  "file": ".github/workflows/lint.yml",
+  "kind": "ci-workflow",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "profile": "glazed-lint",
+  "repo": "discord-bot",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_BIN is defined",
+  "detail": "GLAZED_LINT_BIN is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_PKG is defined",
+  "detail": "GLAZED_LINT_PKG is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_VERSION is defined",
+  "detail": "GLAZED_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_TOOL_VERSION is defined",
+  "detail": "GLAZED_LINT_TOOL_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_FLAGS is defined",
+  "detail": "GLAZED_LINT_FLAGS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_DIRS is defined",
+  "detail": "GLAZED_LINT_DIRS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint-build target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Build glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go install",
+  "file": "Makefile",
+  "kind": "tool-install-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Use an explicit fallback/tool version for glazed-lint",
+  "detail": "found $(GLAZED_LINT_TOOL_VERSION)",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "No @latest glazed-lint install fallback",
+  "detail": "target does not contain @latest",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Run standalone glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_FLAGS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_FLAGS)",
+  "file": "Makefile",
+  "kind": "vet-flags",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lint",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lint",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lint",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lintmax",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lintmax",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lintmax",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed CLI policy linters in CI",
+  "detail": "workflow runs make glazed-lint",
+  "file": ".github/workflows/lint.yml",
+  "kind": "ci-workflow",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "profile": "glazed-lint",
+  "repo": "geppetto",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_BIN is defined",
+  "detail": "GLAZED_LINT_BIN is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_FLAGS is defined",
+  "detail": "GLAZED_LINT_FLAGS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_DIRS is defined",
+  "detail": "GLAZED_LINT_DIRS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint-build target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Build glazed-lint from the local Glazed checkout",
+  "detail": "found go build -o $(GLAZED_LINT_BIN) ./cmd/tools/glazed-lint",
+  "file": "Makefile",
+  "kind": "tool-build-local",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Run standalone glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_FLAGS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_FLAGS)",
+  "file": "Makefile",
+  "kind": "vet-flags",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lint",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lint",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lint",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lintmax",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lintmax",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lintmax",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed CLI policy linters in CI",
+  "detail": "workflow runs make glazed-lint",
+  "file": ".github/workflows/lint.yml",
+  "kind": "ci-workflow",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "profile": "glazed-lint",
+  "repo": "glazed",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_BIN is defined",
+  "detail": "GLAZED_LINT_BIN is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_PKG is defined",
+  "detail": "GLAZED_LINT_PKG is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_VERSION is defined",
+  "detail": "GLAZED_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_TOOL_VERSION is defined",
+  "detail": "GLAZED_LINT_TOOL_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_FLAGS is defined",
+  "detail": "GLAZED_LINT_FLAGS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_DIRS is defined",
+  "detail": "GLAZED_LINT_DIRS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint-build target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Build glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go install",
+  "file": "Makefile",
+  "kind": "tool-install-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Use an explicit fallback/tool version for glazed-lint",
+  "detail": "found $(GLAZED_LINT_TOOL_VERSION)",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "No @latest glazed-lint install fallback",
+  "detail": "target does not contain @latest",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Run standalone glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_FLAGS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_FLAGS)",
+  "file": "Makefile",
+  "kind": "vet-flags",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lint",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lint",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lint",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lintmax",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lintmax",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lintmax",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed CLI policy linters in CI",
+  "detail": "workflow runs make glazed-lint",
+  "file": ".github/workflows/lint.yml",
+  "kind": "ci-workflow",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "profile": "glazed-lint",
+  "repo": "go-go-goja",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_BIN is defined",
+  "detail": "GLAZED_LINT_BIN is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_PKG is defined",
+  "detail": "GLAZED_LINT_PKG is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_VERSION is defined",
+  "detail": "GLAZED_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_TOOL_VERSION is defined",
+  "detail": "GLAZED_LINT_TOOL_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_FLAGS is defined",
+  "detail": "GLAZED_LINT_FLAGS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_DIRS is defined",
+  "detail": "GLAZED_LINT_DIRS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint-build target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Build glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go install",
+  "file": "Makefile",
+  "kind": "tool-install-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Use an explicit fallback/tool version for glazed-lint",
+  "detail": "found $(GLAZED_LINT_TOOL_VERSION)",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "No @latest glazed-lint install fallback",
+  "detail": "target does not contain @latest",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Run standalone glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_FLAGS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_FLAGS)",
+  "file": "Makefile",
+  "kind": "vet-flags",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lint",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lint",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lint",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lintmax",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lintmax",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lintmax",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed CLI policy linters in CI",
+  "detail": "workflow runs make glazed-lint",
+  "file": ".github/workflows/lint.yml",
+  "kind": "ci-workflow",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "profile": "glazed-lint",
+  "repo": "goja-git",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_BIN is defined",
+  "detail": "GLAZED_LINT_BIN is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_PKG is defined",
+  "detail": "GLAZED_LINT_PKG is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_VERSION is defined",
+  "detail": "GLAZED_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_TOOL_VERSION is defined",
+  "detail": "GLAZED_LINT_TOOL_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_FLAGS is defined",
+  "detail": "GLAZED_LINT_FLAGS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_DIRS is defined",
+  "detail": "GLAZED_LINT_DIRS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint-build target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Build glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go install",
+  "file": "Makefile",
+  "kind": "tool-install-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Use an explicit fallback/tool version for glazed-lint",
+  "detail": "found $(GLAZED_LINT_TOOL_VERSION)",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "No @latest glazed-lint install fallback",
+  "detail": "target does not contain @latest",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Run standalone glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_FLAGS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_FLAGS)",
+  "file": "Makefile",
+  "kind": "vet-flags",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lint",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lint",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lint",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lintmax",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lintmax",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lintmax",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed CLI policy linters in CI",
+  "detail": "workflow runs make glazed-lint",
+  "file": ".github/workflows/lint.yml",
+  "kind": "ci-workflow",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "profile": "glazed-lint",
+  "repo": "go-minitrace",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_BIN is defined",
+  "detail": "GLAZED_LINT_BIN is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_PKG is defined",
+  "detail": "GLAZED_LINT_PKG is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_VERSION is defined",
+  "detail": "GLAZED_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_TOOL_VERSION is defined",
+  "detail": "GLAZED_LINT_TOOL_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_FLAGS is defined",
+  "detail": "GLAZED_LINT_FLAGS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_DIRS is defined",
+  "detail": "GLAZED_LINT_DIRS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint-build target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Build glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go install",
+  "file": "Makefile",
+  "kind": "tool-install-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Use an explicit fallback/tool version for glazed-lint",
+  "detail": "found $(GLAZED_LINT_TOOL_VERSION)",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "No @latest glazed-lint install fallback",
+  "detail": "target does not contain @latest",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Run standalone glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_FLAGS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_FLAGS)",
+  "file": "Makefile",
+  "kind": "vet-flags",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lint",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lint",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lint",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lintmax",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lintmax",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lintmax",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed CLI policy linters in CI",
+  "detail": "workflow runs make glazed-lint",
+  "file": ".github/workflows/lint.yml",
+  "kind": "ci-workflow",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "profile": "glazed-lint",
+  "repo": "loupedeck",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_BIN is defined",
+  "detail": "GLAZED_LINT_BIN is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_PKG is defined",
+  "detail": "GLAZED_LINT_PKG is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_VERSION is defined",
+  "detail": "GLAZED_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_TOOL_VERSION is defined",
+  "detail": "GLAZED_LINT_TOOL_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_FLAGS is defined",
+  "detail": "GLAZED_LINT_FLAGS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_DIRS is defined",
+  "detail": "GLAZED_LINT_DIRS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint-build target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Build glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go install",
+  "file": "Makefile",
+  "kind": "tool-install-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Use an explicit fallback/tool version for glazed-lint",
+  "detail": "found $(GLAZED_LINT_TOOL_VERSION)",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "No @latest glazed-lint install fallback",
+  "detail": "target does not contain @latest",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Run standalone glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_FLAGS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_FLAGS)",
+  "file": "Makefile",
+  "kind": "vet-flags",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lint",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lint",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lint",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lintmax",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lintmax",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lintmax",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed CLI policy linters in CI",
+  "detail": "workflow runs make glazed-lint",
+  "file": ".github/workflows/lint.yml",
+  "kind": "ci-workflow",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "profile": "glazed-lint",
+  "repo": "pinocchio",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_BIN is defined",
+  "detail": "GLAZED_LINT_BIN is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_PKG is defined",
+  "detail": "GLAZED_LINT_PKG is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_VERSION is defined",
+  "detail": "GLAZED_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_TOOL_VERSION is defined",
+  "detail": "GLAZED_LINT_TOOL_VERSION is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_FLAGS is defined",
+  "detail": "GLAZED_LINT_FLAGS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Ensure GLAZED_LINT_DIRS is defined",
+  "detail": "GLAZED_LINT_DIRS is defined",
+  "file": "Makefile",
+  "kind": "makefile-variable",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint-build target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Build glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go install",
+  "file": "Makefile",
+  "kind": "tool-install-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Use an explicit fallback/tool version for glazed-lint",
+  "detail": "found $(GLAZED_LINT_TOOL_VERSION)",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "No @latest glazed-lint install fallback",
+  "detail": "target does not contain @latest",
+  "file": "Makefile",
+  "kind": "tool-install-version",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "glazed-lint target exists",
+  "detail": "target is present",
+  "file": "Makefile",
+  "kind": "makefile-target",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Run standalone glazed-lint outside ambient workspaces",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_FLAGS in standalone glazed-lint target",
+  "detail": "found $(GLAZED_LINT_FLAGS)",
+  "file": "Makefile",
+  "kind": "vet-flags",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lint",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lint",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lint",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Integrate Glazed lint into lintmax",
+  "detail": "target references glazed-lint",
+  "file": "Makefile",
+  "kind": "lint-integration",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed vettool outside ambient workspaces in lintmax",
+  "detail": "found GOWORK=off go vet",
+  "file": "Makefile",
+  "kind": "vet-workspace",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Use GLAZED_LINT_DIRS in lintmax",
+  "detail": "found $(GLAZED_LINT_DIRS)",
+  "file": "Makefile",
+  "kind": "vet-dirs",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+, {
+  "description": "Run Glazed CLI policy linters in CI",
+  "detail": "workflow runs make glazed-lint",
+  "file": ".github/workflows/lint.yml",
+  "kind": "ci-workflow",
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "profile": "glazed-lint",
+  "repo": "workspace-manager",
+  "status": "present"
+}
+]

@@ -1,0 +1,19 @@
+[
+{
+  "action": "triggered",
+  "codex_running": false,
+  "current_feedback": false,
+  "dry_run": false,
+  "eyes": 0,
+  "force": true,
+  "number": 582,
+  "pr": "https://github.com/go-go-golems/glazed/pull/582",
+  "recent_trigger": false,
+  "recent_trigger_window": "10m0s",
+  "repository": "go-go-golems/glazed",
+  "signal_url": "https://github.com/go-go-golems/glazed/pull/582#issuecomment-4557125744",
+  "thumbs_up": 0,
+  "trigger_age_seconds": 0,
+  "trigger_url": "https://github.com/go-go-golems/glazed/pull/582#issuecomment-4557243655"
+}
+]

@@ -11,16 +11,26 @@ DocType: design-doc
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/discord-bot/Makefile
+      Note: Allow-list adjusted after Codex feedback during plan validation
+    - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/glazed/Makefile
+      Note: Self-hosted Glazed lint target adjusted after plan validation
     - Path: internal/cli/rollout
       Note: |-
         New Glazed/Cobra command group for ggg rollout
         New Glazed/Cobra rollout command group
+    - Path: internal/cli/rollout/plan.go
+      Note: Glazed command exposing rollout plan
     - Path: internal/cli/root.go
       Note: Registers the rollout command group
     - Path: pkg/rollout
       Note: |-
         New rollout package with config, inventory, validation, branch, PR, status, and report primitives
         New rollout package with config
+    - Path: pkg/rollout/plan.go
+      Note: Read-only Glazed lint rollout planner
+    - Path: pkg/rollout/plan_test.go
+      Note: Planner tests for missing and hardened Makefiles
     - Path: ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/12-ggg-rollout.yaml
       Note: |-
         INFRA-002 rollout configuration used to validate the new commands
@@ -31,6 +41,7 @@ LastUpdated: 2026-05-27T14:05:00-04:00
 WhatFor: Track what was planned, what was implemented, what was validated, and what remains for future ggg rollout work.
 WhenToUse: Use before continuing rollout automation implementation or reviewing the first implementation slice.
 ---
+
 
 
 # ggg rollout implementation phases and tasks
@@ -381,11 +392,56 @@ Latest observed status:
 - All ten PRs are waiting for checks/Codex on the final amended heads.
 - No PR was merged.
 
+## Phase 11: Rollout plan command
+
+Status: complete for the Glazed lint profile.
+
+Tasks:
+
+- [x] Add `ggg rollout plan`.
+- [x] Add `pkg/rollout.Plan` and `PlanGlazedLint`.
+- [x] Emit one structured row per planned/present operation.
+- [x] Support the `glazed-lint` profile.
+- [x] Detect required Makefile variables.
+- [x] Detect `glazed-lint-build` and `glazed-lint` targets.
+- [x] Detect reproducible tool installation with explicit `GLAZED_LINT_TOOL_VERSION`.
+- [x] Detect and reject `@latest` fallback usage as a needed operation.
+- [x] Detect `GOWORK=off` on Glazed vettool invocations.
+- [x] Detect `GLAZED_LINT_DIRS` and `GLAZED_LINT_FLAGS` usage.
+- [x] Detect CI workflow coverage via `make glazed-lint`.
+- [x] Special-case the `github.com/go-go-golems/glazed` repository because it builds `glazed-lint` from the local checkout rather than installing it from a released module path.
+- [x] Add unit tests for missing and hardened Makefile cases.
+- [x] Run the plan against the live INFRA-002 rollout.
+
+Implemented files:
+
+- `pkg/rollout/plan.go`
+- `pkg/rollout/plan_test.go`
+- `internal/cli/rollout/plan.go`
+
+Validation:
+
+```bash
+go test ./...
+ggg rollout plan scripts/12-ggg-rollout.yaml --output json
+```
+
+Artifacts:
+
+- `sources/29-ggg-rollout-plan-final-heads.json`
+- `sources/33-ggg-rollout-plan-after-discord-fix.json`
+
+Latest result:
+
+- `ggg rollout plan` exits `0` for the final INFRA-002 heads.
+- No non-present operations remain after the Discord and Glazed follow-up fixes.
+
+
 ## Remaining future work
 
 These tasks remain intentionally out of scope for the first implementation slice:
 
-- [ ] Add `ggg rollout plan` for profile-specific patch planning.
+- [x] Add `ggg rollout plan` for profile-specific patch planning.
 - [ ] Add `ggg rollout apply --profile glazed-lint` with idempotent Makefile/workflow patch operations.
 - [ ] Add typed patch-operation diff output.
 - [ ] Add diagnostic parser for `glazed-lint` logs and allow-path suggestions.

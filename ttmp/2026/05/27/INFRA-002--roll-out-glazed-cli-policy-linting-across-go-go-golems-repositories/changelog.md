@@ -91,3 +91,15 @@ Hardened Glazed lint Makefile rollout across all ten PR branches with pinned too
 - /home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio/Makefile — Final hardened rollout Makefile
 - /home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager/Makefile — Final hardened rollout Makefile
 
+
+## 2026-05-27
+
+Implemented ggg rollout plan for the Glazed lint profile, validated it against live rollout branches, and fixed remaining Glazed/Discord branch feedback found during planning.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/rollout/plan.go — Glazed CLI command for rollout plan
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/rollout/plan.go — Read-only Glazed lint rollout planner
+- /home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot/Makefile — Added narrow allow paths for existing Glazed bridge files
+- /home/manuel/workspaces/2026-05-24/add-js-providers/glazed/Makefile — Adjusted self-hosted Glazed lint target to use dirs and flags variables
+
