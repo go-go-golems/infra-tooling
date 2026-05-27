@@ -1,0 +1,21 @@
+- repo: css-visual-diff
+  path: /home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff
+  package_name: css-visual-diff
+  cmd_dir: ./cmd/build-web
+  workflow: .github/workflows/release.yaml
+  export_command: GOWORK=off go run ./cmd/build-web help export --format sqlite --output-path .docsctl/help.sqlite
+  sqlite_path: .docsctl/help.sqlite
+  vault_role: docsctl-css-visual-diff-publisher
+  status: export_failed
+  note: SQLite export missing or empty
+- repo: css-visual-diff
+  path: /home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff
+  package_name: css-visual-diff
+  cmd_dir: ./cmd/css-visual-diff
+  workflow: .github/workflows/release.yaml
+  export_command: GOWORK=off go run ./cmd/css-visual-diff help export --format sqlite --output-path .docsctl/help.sqlite
+  sqlite_path: .docsctl/help.sqlite
+  vault_role: docsctl-css-visual-diff-publisher
+  status: validate_ok
+  sqlite_size: 167936
+  note: 'OK: /tmp/ggg-docsctl-4080155389/help.sqlite is a valid Glazed help database for css-visual-diff@v0.0.0-local (8 sections, 8 slugs)'

@@ -1,0 +1,15 @@
+profile: docsctl
+workspace: /home/manuel/workspaces/2026-05-24/add-js-providers
+generated_at: "2026-05-27T18:11:34-04:00"
+repositories:
+    - repo: go-go-goja
+      path: /home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja
+      package_name: go-go-goja
+      cmd_dir: ./cmd/goja-repl
+      workflow: .github/workflows/release.yaml
+      export_command: GOWORK=off go run ./cmd/goja-repl help export --format sqlite --output-path .docsctl/help.sqlite
+      sqlite_path: .docsctl/help.sqlite
+      vault_role: docsctl-go-go-goja-publisher
+      status: validate_ok
+      sqlite_size: 278528
+      note: 'OK: /tmp/ggg-docsctl-2250563353/help.sqlite is a valid Glazed help database for go-go-goja@v0.0.0-local (22 sections, 22 slugs)'

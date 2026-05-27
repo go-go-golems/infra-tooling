@@ -81,3 +81,14 @@ Added ggg batch codex-comments with grouped Codex message reporting.
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/batch/root.go — Registered batch codex-comments
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/09-batch-codex-comments-grouped.json — Validation artifact for grouped Codex output
 
+
+## 2026-05-27
+
+Added ggg rollout docsctl inventory, validate, and plan commands.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/rollout/docsctl.go — New docsctl rollout profile
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/rollout/root.go — Registered docsctl rollout command
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/13-ggg-docsctl-plan-go-go-goja.yaml — Validation artifact for command override planning
+

@@ -525,3 +525,76 @@ This directly addresses the pattern from the docsctl rollout where Codex flagged
 - Validate with:
   - `go test ./...`
   - `ggg batch codex-comments <prs.yaml> --group-by-message --output json`
+
+## Step 9: Add the `ggg rollout docsctl` profile
+
+I added a profile-specific `ggg rollout docsctl` command group with `inventory`, `validate`, and `plan` subcommands. This moves the ad-hoc ticket scripts into reusable tooling while keeping the first version intentionally read-only: it discovers and validates candidates, but it does not patch workflows or Terraform yet.
+
+The command supports package and command overrides so multi-CLI repositories can encode explicit product decisions such as `go-go-goja=./cmd/goja-repl` rather than publishing the first validating binary by accident.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 5)
+
+**Assistant interpretation:** Execute improvement 4 by adding docsctl inventory, validation, and planning support to `ggg rollout`.
+
+**Inferred user intent:** Make future docsctl publishing rollouts repeatable without writing ticket-local discovery scripts.
+
+**Commit (code):** pending — "Add docsctl rollout profile"
+
+### What I did
+- Added `internal/cli/rollout/docsctl.go`.
+- Registered `docsctl` in `internal/cli/rollout/root.go`.
+- Added subcommands:
+  - `ggg rollout docsctl inventory`
+  - `ggg rollout docsctl validate`
+  - `ggg rollout docsctl plan`
+- Added flags:
+  - `--workspace`
+  - `--include`
+  - `--exclude`
+  - `--package repo=package`
+  - `--cmd repo=./cmd/name`
+  - `--output table|json|yaml`
+  - `--timeout`
+  - `--version`
+- Saved validation artifacts:
+  - `sources/10-ggg-docsctl-inventory-css.yaml`
+  - `sources/11-ggg-docsctl-validate-css.yaml`
+  - `sources/12-ggg-docsctl-plan-css.yaml`
+  - `sources/13-ggg-docsctl-plan-go-go-goja.yaml`
+
+### Why
+- The rollout needs repeatable candidate discovery and local validation.
+- Multi-CLI repositories need explicit command/package overrides to avoid wrong public docs surfaces.
+
+### What worked
+- `go test ./...` passed.
+- `ggg rollout docsctl inventory --include css-visual-diff` found both `cmd/build-web` and `cmd/css-visual-diff`.
+- `ggg rollout docsctl validate --include css-visual-diff` correctly reported `cmd/build-web` as `export_failed` and `cmd/css-visual-diff` as `validate_ok`.
+- `ggg rollout docsctl plan --include go-go-goja --cmd go-go-goja=./cmd/goja-repl` produced a plan for the approved `goja-repl` export.
+
+### What didn't work
+- The first version lacked command/package overrides, which would have made `go-go-goja` ambiguous. I added `--cmd` and `--package` before committing.
+
+### What I learned
+- `inventory` should intentionally include invalid candidates such as build helpers; `validate` and `plan` are where invalid commands are filtered out.
+
+### What was tricky to build
+- Validation shells out to `go run` and `docsctl`, so it needs per-command timeouts and temporary SQLite output paths. The command removes temporary export directories after each candidate.
+
+### What warrants a second pair of eyes
+- The command currently defaults `package_name` to the repo basename. That is correct for the current rollout but may need config-file input for repos whose public docs package intentionally differs.
+- The command prints direct table/JSON/YAML rather than using Glazed rows. This keeps YAML plan output simple but differs from other `ggg rollout` commands.
+
+### What should be done in the future
+- Add workflow/Terraform patch subcommands once the plan format has been used once or twice.
+- Add tests for `assignmentMap`, workflow detection, and candidate filtering.
+
+### Code review instructions
+- Review `internal/cli/rollout/docsctl.go` and `internal/cli/rollout/root.go`.
+- Validate with:
+  - `go test ./...`
+  - `ggg rollout docsctl inventory --workspace <workspace> --include css-visual-diff --output yaml`
+  - `ggg rollout docsctl validate --workspace <workspace> --include css-visual-diff --output yaml`
+  - `ggg rollout docsctl plan --workspace <workspace> --include go-go-goja --cmd go-go-goja=./cmd/goja-repl --output yaml`

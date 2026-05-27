@@ -13,6 +13,7 @@ func NewCommand() (*cobra.Command, error) {
 		newPushPRsCommand,
 		newStatusCommand,
 		newReportCommand,
+		newDocsctlCommand,
 	} {
 		sub, err := factory()
 		if err != nil {
