@@ -439,6 +439,9 @@ type ModuleVersion struct {
 
 ## Proposed CLI command groups
 
+All verbs should be implemented as Glazed commands. The default output should be concise and useful to a human operator, usually a small table or one-row summary. When the operator asks for structured output, the command should emit row-oriented data through Glazed output plumbing. In practice this means every verb should implement `RunIntoGlazeProcessor`, emit `types.Row` values, and support Glazed output flags such as JSON/YAML/CSV selection. The CLI should also provide a compatibility alias or explicit flag named `--with-structured-output` if the final root command needs a binary switch between concise prose and structured rows.
+
+
 ### `ggg pr ready`
 
 Checks one PR.
@@ -465,11 +468,23 @@ Posts `@codex review`.
 
 ```bash
 ggg pr codex-trigger <pr>
-ggg pr codex-trigger --file prs.txt --dry-run
-ggg pr codex-trigger --file prs.txt --yes
+ggg pr codex-trigger --file prs.yaml --dry-run
+ggg pr codex-trigger --file prs.yaml --yes
+ggg pr codex-trigger --file prs.yaml --force
 ```
 
-This is mutating, so default behavior should show what will happen and require confirmation unless `--yes` is passed.
+This is mutating, so default behavior should show what will happen and require confirmation unless `--yes` is passed. By default it should also check whether the latest Codex signal has an `EYES` reaction and skip triggering if a Codex run already appears to be in progress. `--force` overrides that safety check and always posts a fresh `@codex review` comment.
+
+All PR-list input should use YAML rather than ad-hoc newline text. The minimum supported form is:
+
+```yaml
+prs:
+  - https://github.com/go-go-golems/discord-bot/pull/9
+  - repo: go-go-golems/goja-git
+    number: 2
+```
+
+The YAML form gives the future CLI room to attach metadata such as dependency order, target release version, validation profile, and required upstream tags.
 
 ### `ggg pr codex-comments`
 
@@ -495,9 +510,9 @@ ggg pr checks --file prs.txt --json
 Replaces `05-batch-pr-ready.sh`.
 
 ```bash
-ggg batch ready prs.txt
-ggg batch ready prs.txt --watch --interval 30s --timeout 30m
-ggg batch ready prs.txt --trigger-missing-codex
+ggg batch ready prs.yaml
+ggg batch ready prs.yaml --watch --interval 30s --timeout 30m
+ggg batch ready prs.yaml --trigger-missing-codex
 ```
 
 Exit codes should preserve current semantics for script compatibility.
@@ -530,14 +545,14 @@ ggg repo validate loupedeck --profile xgoja-focused --dry-run
 ggg repo validate --all --profile release-train
 ```
 
-### `ggg release tag-patch`
+### `ggg release tag-patch`, `tag-minor`, and `tag-major`
 
-Wraps existing Makefile behavior but adds guardrails.
+Wrap existing Makefile behavior but add guardrails. Patch, minor, and major release verbs should share one implementation with a version-bump mode.
 
 ```bash
 ggg release tag-patch --repo go-minitrace
-ggg release tag-patch --repo goja-git --verify-proxy
-ggg release tag-patch --repo discord-bot --from origin/main
+ggg release tag-minor --repo goja-git --verify-proxy
+ggg release tag-major --repo discord-bot --from origin/main
 ```
 
 Guardrails:
@@ -795,71 +810,117 @@ validationProfiles:
 - Reaction counts do not verify that the reaction came from Codex rather than another user.
 - `gh` CLI output is convenient but not a stable API for all commands.
 
-## Implementation phases
+## Implementation phases and task plan
 
-### Phase 1: Go parity wrapper
+### Phase 1: CLI scaffold and Glazed command foundation
 
-Goal: replace the most important scripts while preserving behavior.
+Goal: create the Go module, root command, command groups, and output conventions before porting business logic.
 
-Deliverables:
+Tasks:
 
-- `ggg pr ready`
-- `ggg pr codex-trigger`
-- `ggg batch ready`
-- JSON output compatible with current scripts.
-- Exit codes compatible with current scripts.
-- Unit tests for readiness classification using saved JSON fixtures.
+1. Initialize a Go module in `infra-tooling` if one does not exist.
+2. Add Glazed, Cobra, and YAML dependencies.
+3. Create `cmd/ggg/main.go` as the initial binary entry point.
+4. Create `internal/cli` root wiring with command groups: `pr`, `batch`, `repo`, `release`, and `train`.
+5. Add a helper for building Glazed commands with concise table defaults and structured output support.
+6. Add a root-level `--with-structured-output` compatibility flag if needed, but keep row-oriented Glazed output as the implementation mechanism.
+7. Add a smoke test or `go test ./...` validation that proves the command tree builds.
 
-Implementation notes:
+### Phase 2: PR references, YAML PR lists, and Codex trigger safety
 
-- Use `gh api graphql` under the hood initially.
-- Keep GraphQL query equivalent to current Python script.
-- Add fixtures for:
-  - green checks + thumbs-up;
-  - pending checks;
-  - Codex inline feedback;
-  - stale Codex feedback;
-  - human trigger with eyes reaction.
+Goal: implement the first mutating command while introducing typed PR input handling.
 
-### Phase 2: Release and module helpers
+Tasks:
 
-Deliverables:
+1. Implement `pkg/prref.Parse` for URL and `owner/repo#number` formats.
+2. Implement YAML PR list loading for:
+   - `prs: ["https://github.com/.../pull/1"]`
+   - `prs: [{repo: "go-go-golems/repo", number: 1}]`
+3. Implement a `GitHubClient` interface with an initial `gh`-backed implementation.
+4. Implement `CodexRunInProgress(ctx, pr)` by querying latest Codex signals and checking for `EYES` reactions.
+5. Implement `ggg pr codex-trigger <pr|--file prs.yaml>` as a Glazed command.
+6. Add `--force`; default behavior skips trigger when a Codex run is already in progress.
+7. Add `--dry-run` and emit one row per PR with action `triggered`, `skipped_running`, or `would_trigger`.
+8. Add tests for PR parsing and YAML list loading.
 
-- `ggg repo deps`
-- `ggg repo bump-go-go-golems`
-- `ggg module versions`
-- `ggg release tag-patch`
-- module path detection from `go.mod`.
-- proxy verification via `GOPROXY=proxy.golang.org go list -m module@version`.
+### Phase 3: PR readiness parity
 
-### Phase 3: Validation profiles
+Goal: port the current Python readiness classifier into Go.
 
-Deliverables:
+Tasks:
 
-- YAML validation config.
-- `ggg repo validate <repo> --profile <name>`.
-- Command runner with `GOWORK=off` guardrails.
-- Dry-run output.
-- Timeout and log capture.
+1. Port the GraphQL query fields from `01-pr-ready-check.py`.
+2. Decode status checks, reviews, issue comments, reaction groups, and inline review comments into typed structs.
+3. Implement check-run classification.
+4. Implement Codex signal collection.
+5. Implement stale reviewed-commit detection.
+6. Implement inline comment extraction and structured `codex_comments` rows.
+7. Implement `ggg pr ready <pr>` with Glazed row output and JSON/YAML output support.
+8. Preserve current state names and exit-code semantics.
+9. Add golden fixtures from observed XGOJA-015 states.
 
-### Phase 4: Release-train orchestration
+### Phase 4: Batch readiness with YAML input
 
-Deliverables:
+Goal: replace `05-batch-pr-ready.sh` without losing operational behavior.
 
-- `ggg train status`
-- `ggg train next`
-- `ggg train watch`
-- dependency graph topological sort.
-- merge gate that verifies required tags are visible before merge.
-- release history output.
+Tasks:
 
-### Phase 5: Documentation/report integration
+1. Implement `ggg batch ready prs.yaml`.
+2. Support `--watch`, `--interval`, `--timeout`, and `--trigger-missing-codex`.
+3. Preserve exit codes `0`, `1`, `2`, `3`, `4`, and `5`.
+4. Emit one row per PR plus a summary row/table.
+5. Add tests for batch aggregation and partial readiness.
 
-Deliverables:
+### Phase 5: Release verbs and Go module verification
 
-- Markdown release report generation.
-- docmgr ticket update helpers.
-- reMarkable bundle upload helper or documented handoff.
+Goal: provide safe tag/release commands that do not rely on fragile Makefile placeholders.
+
+Tasks:
+
+1. Implement module-path detection from `go.mod`.
+2. Implement highest semver tag discovery.
+3. Implement next patch, minor, and major version calculation.
+4. Implement `ggg release tag-patch`, `ggg release tag-minor`, and `ggg release tag-major`.
+5. Add guardrails: fetch tags, verify clean worktree, target `origin/main` or explicit commit, push only the new tag.
+6. Verify publication with `GOPROXY=proxy.golang.org go list -m module@version`.
+7. Emit structured rows with tag, commit, module, and verification status.
+8. Add tests using temporary local Git repositories.
+
+### Phase 6: Validation profiles
+
+Goal: convert `10-validate-downstream-focused.sh` into reusable YAML-driven profiles.
+
+Tasks:
+
+1. Define validation profile YAML schema.
+2. Implement command runner with environment, working directory, timeout, dry-run, and log capture.
+3. Implement `ggg repo validate <repo> --profile <name>`.
+4. Port XGOJA-015 focused validations into a sample profile.
+5. Add tests for dry-run and command expansion.
+
+### Phase 7: Release-train orchestration
+
+Goal: make multi-repo release trains explicit and resumable.
+
+Tasks:
+
+1. Define release-train YAML schema with repositories, dependencies, PRs, validation profiles, and required tags.
+2. Implement dependency graph loading and topological sort.
+3. Implement `ggg train status`.
+4. Implement `ggg train next` to recommend the next safe operator action.
+5. Implement merge gates that require readiness and visible upstream tags.
+6. Record merge commits, tags, and verification results in a run-state file.
+
+### Phase 8: Reporting and docmgr integration
+
+Goal: generate durable handoff artifacts after release operations.
+
+Tasks:
+
+1. Generate Markdown release reports from run-state files.
+2. Generate changelog snippets for docmgr tickets.
+3. Optionally add `ggg docmgr changelog` helpers that shell out to `docmgr`.
+4. Keep reMarkable upload as documented workflow unless it proves stable enough to automate.
 
 ## Testing strategy
 

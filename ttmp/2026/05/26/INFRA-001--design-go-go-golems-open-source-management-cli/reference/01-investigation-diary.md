@@ -207,3 +207,111 @@ remarquee upload bundle \
   --toc-depth 2 \
   --non-interactive
 ```
+
+## Step 3: Update the design for YAML PR lists, force-trigger safety, release verbs, and Glazed output
+
+The third step incorporated the requested design changes and started implementation. The important changes are that PR lists are now YAML instead of ad-hoc newline files, `pr codex-trigger` is safe by default and needs `--force` to trigger over an in-progress Codex run, release verbs include patch/minor/major, and the new CLI uses Glazed commands so output is row-oriented and can become structured data.
+
+I then implemented the initial Go CLI scaffold plus the first functional commands. This is not the full tool yet, but it establishes the command architecture, PR-reference parsing, YAML PR-list parsing, Codex trigger safety check, and release tag verbs.
+
+### Prompt Context
+
+**User prompt (verbatim):** "small changes:
+
+- add --force to pr codex-trigger, because by default, check if a codex run is already running (eyes)
+- use yaml for prs.txt
+- add tag-minor and tag-major as verbs 
+
+Use glazed commands for all verbs, so that per default we have a concise human output, and with structured out --with-structured-output we get rows oriented structured data.
+
+Update the document, then add a detailed set of phases and for each phases a set of tasks for the work. 
+
+Then work on the tasks one by one, committing at appropriate intervals, and keeping a detailed didary"
+
+**Assistant interpretation:** Revise the design guide/task plan to include safer Codex triggering, YAML PR-list config, release tag minor/major verbs, Glazed command requirements, and then begin implementing the phased plan while maintaining the diary.
+
+**Inferred user intent:** The user wants the design to become an executable implementation plan and wants the first implementation work to follow that plan rather than remain purely theoretical.
+
+**Commit (code):** pending — implementation validated and ready to commit.
+
+### What I did
+- Updated the design guide to specify:
+  - `ggg pr codex-trigger --force`;
+  - default Codex trigger behavior that checks for `EYES` reactions and skips already-running reviews;
+  - YAML PR-list input instead of newline `prs.txt`;
+  - `ggg release tag-patch`, `tag-minor`, and `tag-major`;
+  - all verbs as Glazed commands with row-oriented structured output.
+- Rewrote the ticket tasks into phase/task sections.
+- Initialized a Go module: `github.com/go-go-golems/infra-tooling`.
+- Added dependencies: Glazed, Cobra, YAML.
+- Added CLI scaffold:
+  - `cmd/ggg/main.go`
+  - `internal/cli/root.go`
+- Added PR input packages:
+  - `pkg/prref`
+  - `pkg/prlist`
+- Added a `gh`-backed Codex status/trigger client:
+  - `pkg/ghclient`
+- Added first Glazed PR command:
+  - `ggg pr codex-trigger`
+- Added release tag implementation and Glazed commands:
+  - `ggg release tag-patch`
+  - `ggg release tag-minor`
+  - `ggg release tag-major`
+- Added tests for PR parsing and YAML PR-list loading.
+
+### Why
+- `--force` is needed because triggering Codex while an `EYES` reaction is present can create duplicate review requests and muddy readiness interpretation.
+- YAML input gives the future release-train file room to grow with metadata.
+- Release patch/minor/major share one implementation and should be first-class verbs rather than Makefile-only targets.
+- Glazed commands make output processing consistent across human tables and structured JSON/YAML outputs.
+
+### What worked
+- `go test ./...` passed.
+- `go run ./cmd/ggg --help` built the root command.
+- `go run ./cmd/ggg pr codex-trigger --help` built the first PR command.
+- `go run ./cmd/ggg release tag-patch --repo . --dry-run --output json` emitted a structured row.
+
+### What didn't work
+- N/A in this implementation pass.
+
+### What I learned
+- The first useful Go CLI slice can be small: typed PR parsing, YAML PR lists, one mutating Codex command, and release tag verbs already cover several script pain points.
+- Module path detection from `go.mod` avoids the exact Makefile placeholder failure seen in `goja-git`.
+
+### What was tricky to build
+- The Codex trigger command must be both mutating and row-oriented. It therefore emits an action row for every PR (`triggered`, `skipped_running`, or `would_trigger`) instead of only printing a URL.
+- The release commands need to support dry-run without creating tags, but still fetch tags and compute the next tag so operators can see what would happen.
+
+### What warrants a second pair of eyes
+- The first `ghclient.CodexStatus` implementation only checks the latest Codex-like review/comment and `@codex review` trigger for `EYES`; Phase 3 should replace this with the fuller readiness model from the Python script.
+- `release.Tag` currently shells out to `svu`; this matches current Makefile behavior, but tests should later cover fallback/semver behavior if `svu` is missing.
+- Root-level `--with-structured-output` is currently a compatibility flag; the real structured output path is Glazed `--output json/yaml/csv`.
+
+### What should be done in the future
+- Commit this implementation slice.
+- Continue with Phase 3: port PR readiness parity from Python.
+- Add direct tests for release tag calculation using temporary git repos.
+
+### Code review instructions
+- Start with `internal/cli/pr/codex_trigger.go` and `pkg/ghclient/ghclient.go` for Codex behavior.
+- Review `pkg/prlist/prlist.go` for YAML input compatibility.
+- Review `pkg/release/release.go` and `internal/cli/release/tag.go` for release guardrails.
+- Validate with:
+
+```bash
+go test ./...
+go run ./cmd/ggg release tag-patch --repo . --dry-run --output json
+```
+
+### Technical details
+
+YAML PR list format implemented in this slice:
+
+```yaml
+prs:
+  - https://github.com/go-go-golems/discord-bot/pull/9
+  - repo: go-go-golems/goja-git
+    number: 2
+  - ref: go-go-golems/go-minitrace#11
+```

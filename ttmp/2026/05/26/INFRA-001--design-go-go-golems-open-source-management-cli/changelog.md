@@ -41,3 +41,15 @@ Reprinted the ggg project almanach at bodyScale 1.7 per user request; dry-run re
 
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/various/ggg-project-almanach.json — Updated bodyScale to 1.7 for larger print
 
+
+## 2026-05-27
+
+Updated design for YAML PR lists, safe Codex trigger --force behavior, Glazed command output, and release tag-minor/tag-major verbs; implemented initial ggg CLI scaffold, pr codex-trigger, YAML PR-list parsing, and release tag patch/minor/major commands.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/cmd/ggg/main.go — New ggg CLI entry point
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/pr/codex_trigger.go — Initial Glazed Codex trigger command with --force and YAML input
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prlist/prlist.go — YAML PR-list parser
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/release/release.go — Initial release tag helper for patch/minor/major
+
