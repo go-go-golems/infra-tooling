@@ -1,0 +1,10 @@
+/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff
+/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot
+/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto
+/home/manuel/workspaces/2026-05-24/add-js-providers/glazed
+/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja
+/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git
+/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace
+/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck
+/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio
+/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager

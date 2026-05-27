@@ -26,20 +26,20 @@ WhenToUse: During the Glazed linting release train.
 - [x] Create rollout plan and diary documents.
 - [x] Add repository inventory script under this ticket's `scripts/` directory.
 - [x] Run inventory script and capture candidate repositories that depend on `github.com/go-go-golems/glazed`.
-- [ ] Record chosen target repository set and exclusions in the rollout plan.
+- [x] Record chosen target repository set and exclusions in the rollout plan.
 
 ## Phase 2: Apply Glazed lint wiring
 
-- [ ] Add Makefile `glazed-lint-build` / `glazed-lint` targets per target repository.
-- [ ] Wire `glazed-lint` into existing `lint` / `lintmax` targets where present.
-- [ ] Wire CI lint workflows to run `make glazed-lint` where appropriate.
-- [ ] Keep allow paths narrow and document every allow path.
+- [x] Add Makefile `glazed-lint-build` / `glazed-lint` targets per target repository.
+- [x] Wire `glazed-lint` into existing `lint` / `lintmax` targets where present.
+- [x] Wire CI lint workflows to run `make glazed-lint` where appropriate.
+- [x] Keep allow paths narrow and document every allow path.
 
 ## Phase 3: Validate and fix violations
 
-- [ ] Run `make glazed-lint` per target repository.
+- [x] Run `make glazed-lint` per target repository.
 - [ ] Fix real CLI policy violations where practical.
-- [ ] Add narrow allow paths only for intentional legacy bridge/tool code.
+- [x] Add narrow allow paths only for intentional legacy bridge/tool code.
 - [ ] Run repo-specific validation (`make lintmax` or `make lint`, `GOWORK=off go test ./...`, and smoke tests where relevant).
 
 ## Phase 4: Commit, push, and PRs

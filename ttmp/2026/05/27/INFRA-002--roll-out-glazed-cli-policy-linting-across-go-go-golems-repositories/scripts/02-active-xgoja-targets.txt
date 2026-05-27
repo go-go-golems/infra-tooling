@@ -1,0 +1,8 @@
+/home/manuel/code/wesen/go-go-golems/infra-tooling
+/home/manuel/code/wesen/go-go-golems/go-go-goja
+/home/manuel/code/wesen/go-go-golems/discord-bot
+/home/manuel/code/wesen/go-go-golems/go-minitrace
+/home/manuel/code/wesen/go-go-golems/loupedeck
+/home/manuel/code/wesen/go-go-golems/workspace-manager
+/home/manuel/code/wesen/go-go-golems/goja-git
+/home/manuel/code/wesen/go-go-golems/css-visual-diff

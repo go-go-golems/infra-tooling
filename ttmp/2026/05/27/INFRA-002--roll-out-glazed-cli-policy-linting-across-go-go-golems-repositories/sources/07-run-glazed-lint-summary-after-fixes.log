@@ -1,0 +1,130 @@
+=== css-visual-diff ===
+ok css-visual-diff log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/css-visual-diff.log
+=== discord-bot ===
+FAIL discord-bot exit=2 log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/discord-bot.log
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.6
+go: github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.6: module github.com/go-go-golems/glazed@v1.2.6 found, but does not contain package github.com/go-go-golems/glazed/cmd/tools/glazed-lint
+go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/ ./cmd/... ./internal/... ./pkg/...
+pkg/framework/framework.go:119:19: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+pkg/framework/framework.go:120:19: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+pkg/framework/framework.go:121:19: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+pkg/framework/framework.go:122:19: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+pkg/framework/framework.go:123:19: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+pkg/framework/framework.go:124:19: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+pkg/botcli/bootstrap.go:126:11: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+cmd/discord-bot/commands.go:58:21: this command exposes Glazed output flags but does not implement RunIntoGlazeProcessor
+cmd/discord-bot/root.go:30:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+make: *** [Makefile:34: glazed-lint] Error 1
+=== geppetto ===
+ok geppetto log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/geppetto.log
+=== glazed ===
+ok glazed log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/glazed.log
+=== go-go-goja ===
+FAIL go-go-goja exit=2 log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/go-go-goja.log
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5
+go: github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5: module github.com/go-go-golems/glazed@v1.2.5 found, but does not contain package github.com/go-go-golems/glazed/cmd/tools/glazed-lint
+go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/ ./cmd/... ./internal/... ./pkg/...
+cmd/gen-dts/main.go:60:8: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/gen-dts/main.go:63:9: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/gen-dts/main.go:64:15: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/gen-dts/main.go:65:12: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/gen-dts/main.go:66:11: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/gen-dts/main.go:67:12: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/gen-dts/main.go:69:12: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/bun-demo/dagger/main.go:38:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/bun-demo/dagger/main.go:39:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/jsverbs-example/main.go:81:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/hashiplugin/contract/internal/cmd/generate/main.go:57:78: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+pkg/jsverbrepos/bootstrap.go:215:29: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+pkg/jsverbscli/list.go:40:22: this command exposes Glazed output flags but does not implement RunIntoGlazeProcessor
+pkg/jsverbscli/command.go:62:23: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/jsverbscli/command.go:65:25: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/jsverbscli/command.go:68:28: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/jsverbscli/command.go:72:3: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/jsverbscli/command.go:73:3: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/jsverbscli/command.go:74:3: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/replessay/handler.go:377:35: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+cmd/bun-demo/main.go:37:11: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/bun-demo/main.go:40:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/bun-demo/main.go:41:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/bun-demo/main.go:42:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/goja-repl/root.go:49:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/goja-repl/root.go:50:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/goja-repl/root.go:51:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/goja-repl/root.go:52:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/goja-repl/root.go:53:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/goja-repl/root.go:54:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+make: *** [Makefile:34: glazed-lint] Error 1
+=== goja-git ===
+ok goja-git log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/goja-git.log
+=== go-minitrace ===
+FAIL go-minitrace exit=2 log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/go-minitrace.log
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5
+go: github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5: module github.com/go-go-golems/glazed@v1.2.5 found, but does not contain package github.com/go-go-golems/glazed/cmd/tools/glazed-lint
+go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/ ./cmd/... ./pkg/...
+cmd/build-web/main.go:19:5: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+cmd/build-web/main.go:48:35: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+cmd/build-web/main.go:53:36: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+cmd/go-minitrace/cmds/annotate/add.go:23:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/add.go:24:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/add.go:25:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/add.go:26:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/add.go:27:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/add.go:28:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/add.go:29:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/add.go:30:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/add.go:31:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/add.go:32:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/add.go:33:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/add.go:34:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/delete.go:18:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/edit.go:18:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/edit.go:19:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/edit.go:20:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/edit.go:21:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/edit.go:22:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/edit.go:23:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/edit.go:24:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/import.go:37:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/list.go:21:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/list.go:22:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/list.go:23:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/list.go:24:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/list.go:25:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/list.go:26:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/list.go:27:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/root.go:30:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/synccmd.go:30:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/synccmd.go:35:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/annotate/synccmd.go:36:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/query/commands.go:51:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/go-minitrace/cmds/serve/serve.go:83:21: this command exposes Glazed output flags but does not implement RunIntoGlazeProcessor
+make: *** [Makefile:32: glazed-lint] Error 1
+=== loupedeck ===
+FAIL loupedeck exit=2 log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/loupedeck.log
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5
+go: github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5: module github.com/go-go-golems/glazed@v1.2.5 found, but does not contain package github.com/go-go-golems/glazed/cmd/tools/glazed-lint
+go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/ ./cmd/loupedeck ./cmd/loupedeck/cmds/common ./cmd/loupedeck/cmds/doc ./cmd/loupedeck/cmds/run ./cmd/loupedeck/cmds/verbs ./dev-tools/loupe-fps-bench ./docs/help ./examples ./examples/cmd/loupe-js-demo ./examples/cmd/loupe-svg-buttons ./pkg/device ./pkg/jsmetrics ./pkg/scriptmeta ./pkg/xgoja/provider ./runtime/anim ./runtime/easing ./runtime/gfx ./runtime/host ./runtime/js ./runtime/js/env ./runtime/js/module_anim ./runtime/js/module_easing ./runtime/js/module_gfx ./runtime/js/module_metrics ./runtime/js/module_present ./runtime/js/module_scene_metrics ./runtime/js/module_state ./runtime/js/module_ui ./runtime/js/provider ./runtime/metrics ./runtime/present ./runtime/reactive ./runtime/render ./runtime/ui
+examples/cmd/loupe-svg-buttons/main.go:87:17: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+examples/cmd/loupe-svg-buttons/main.go:88:9: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+examples/cmd/loupe-svg-buttons/main.go:89:14: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+examples/cmd/loupe-svg-buttons/main.go:90:15: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+examples/cmd/loupe-svg-buttons/main.go:91:12: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+examples/cmd/loupe-svg-buttons/main.go:92:15: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+examples/cmd/loupe-svg-buttons/main.go:93:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/loupedeck/cmds/doc/command.go:33:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/loupedeck/cmds/doc/command.go:34:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+examples/cmd/loupe-js-demo/main.go:36:16: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+examples/cmd/loupe-js-demo/main.go:37:12: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+examples/cmd/loupe-js-demo/main.go:38:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/loupedeck/cmds/verbs/bootstrap.go:209:29: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+cmd/loupedeck/main.go:37:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+make: *** [Makefile:38: glazed-lint] Error 1
+=== pinocchio ===
+ok pinocchio log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/pinocchio.log
+=== workspace-manager ===
+ok workspace-manager log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/workspace-manager.log

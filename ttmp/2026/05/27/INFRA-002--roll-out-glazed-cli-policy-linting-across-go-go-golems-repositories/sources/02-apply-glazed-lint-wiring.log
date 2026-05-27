@@ -1,0 +1,11 @@
+changed	/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff	makefile=True	ci=True
+changed	/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot	makefile=True	ci=True
+changed	/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto	makefile=True	ci=False
+changed	/home/manuel/workspaces/2026-05-24/add-js-providers/glazed	makefile=True	ci=True
+changed	/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja	makefile=True	ci=True
+changed	/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git	makefile=True	ci=True
+changed	/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace	makefile=True	ci=True
+changed	/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck	makefile=True	ci=True
+changed	/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio	makefile=True	ci=False
+changed	/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager	makefile=True	ci=True
+changed_count=10

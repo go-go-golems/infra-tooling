@@ -1,0 +1,3 @@
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.3.0
+go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/,cmd/build-web/,cmd/css-visual-diff/,internal/cssvisualdiff/driver/,internal/cssvisualdiff/verbcli/bootstrap.go ./cmd/build-web ./cmd/css-visual-diff ./internal/cssvisualdiff/ai ./internal/cssvisualdiff/doc ./internal/cssvisualdiff/driver ./internal/cssvisualdiff/dsl ./internal/cssvisualdiff/jsapi ./internal/cssvisualdiff/llm ./internal/cssvisualdiff/modes ./internal/cssvisualdiff/review ./internal/cssvisualdiff/service ./internal/cssvisualdiff/services ./internal/cssvisualdiff/verbcli ./pkg ./pkg/xgoja/provider

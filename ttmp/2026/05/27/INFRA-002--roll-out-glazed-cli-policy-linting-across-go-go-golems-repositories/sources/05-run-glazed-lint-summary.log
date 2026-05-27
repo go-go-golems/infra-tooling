@@ -1,0 +1,88 @@
+=== css-visual-diff ===
+FAIL css-visual-diff exit=2 log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/css-visual-diff.log
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.3.0
+go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/ ./cmd/build-web ./cmd/css-visual-diff ./internal/cssvisualdiff/ai ./internal/cssvisualdiff/doc ./internal/cssvisualdiff/driver ./internal/cssvisualdiff/dsl ./internal/cssvisualdiff/jsapi ./internal/cssvisualdiff/llm ./internal/cssvisualdiff/modes ./internal/cssvisualdiff/review ./internal/cssvisualdiff/service ./internal/cssvisualdiff/services ./internal/cssvisualdiff/verbcli ./pkg ./pkg/xgoja/provider
+cmd/build-web/main.go:46:5: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+cmd/build-web/main.go:177:10: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+internal/cssvisualdiff/driver/chrome.go:44:13: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+internal/cssvisualdiff/driver/chrome.go:44:41: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+internal/cssvisualdiff/verbcli/bootstrap.go:288:29: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+cmd/css-visual-diff/main.go:155:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:156:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:157:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:159:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:160:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:161:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:163:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:164:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:166:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:167:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:169:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:170:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:172:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:173:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:174:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:272:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:273:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:274:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:275:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:276:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:277:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:278:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:380:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:381:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:382:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:383:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:384:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/main.go:385:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/serve.go:41:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/serve.go:42:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/serve.go:43:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/serve.go:44:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+cmd/css-visual-diff/serve.go:45:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+make: *** [Makefile:40: glazed-lint] Error 1
+=== discord-bot ===
+FAIL discord-bot exit=2 log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/discord-bot.log
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.6
+go: github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.6: module github.com/go-go-golems/glazed@v1.2.6 found, but does not contain package github.com/go-go-golems/glazed/cmd/tools/glazed-lint
+make: *** [Makefile:24: glazed-lint-build] Error 1
+=== geppetto ===
+ok geppetto log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/geppetto.log
+=== glazed ===
+ok glazed log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/glazed.log
+=== go-go-goja ===
+FAIL go-go-goja exit=2 log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/go-go-goja.log
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5
+go: github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5: module github.com/go-go-golems/glazed@v1.2.5 found, but does not contain package github.com/go-go-golems/glazed/cmd/tools/glazed-lint
+make: *** [Makefile:24: glazed-lint-build] Error 1
+=== goja-git ===
+FAIL goja-git exit=2 log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/goja-git.log
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5
+go: github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5: module github.com/go-go-golems/glazed@v1.2.5 found, but does not contain package github.com/go-go-golems/glazed/cmd/tools/glazed-lint
+make: *** [Makefile:22: glazed-lint-build] Error 1
+=== go-minitrace ===
+FAIL go-minitrace exit=2 log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/go-minitrace.log
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5
+go: github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5: module github.com/go-go-golems/glazed@v1.2.5 found, but does not contain package github.com/go-go-golems/glazed/cmd/tools/glazed-lint
+make: *** [Makefile:22: glazed-lint-build] Error 1
+=== loupedeck ===
+FAIL loupedeck exit=2 log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/loupedeck.log
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5
+go: github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.2.5: module github.com/go-go-golems/glazed@v1.2.5 found, but does not contain package github.com/go-go-golems/glazed/cmd/tools/glazed-lint
+make: *** [Makefile:28: glazed-lint-build] Error 1
+=== pinocchio ===
+ok pinocchio log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/pinocchio.log
+=== workspace-manager ===
+FAIL workspace-manager exit=2 log=/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/../sources/glazed-lint-logs/workspace-manager.log
+ls: cannot access 'doc/vhs/*tape': No such file or directory
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.3.4
+go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/ ./cmd/... ./pkg/...
+pkg/wsm/branch/types.go:31:28: use Glazed config/env middleware or an explicit command field instead of os.Getenv in CLI code
+make: *** [Makefile:31: glazed-lint] Error 1
