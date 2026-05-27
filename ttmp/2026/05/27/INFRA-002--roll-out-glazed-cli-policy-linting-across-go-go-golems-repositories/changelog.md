@@ -103,3 +103,14 @@ Implemented ggg rollout plan for the Glazed lint profile, validated it against l
 - /home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot/Makefile — Added narrow allow paths for existing Glazed bridge files
 - /home/manuel/workspaces/2026-05-24/add-js-providers/glazed/Makefile — Adjusted self-hosted Glazed lint target to use dirs and flags variables
 
+
+## 2026-05-27
+
+Consumed Glazed v1.3.5 downstream, replaced broad Glazed lint allow paths with reasoned file-scoped suppressions, pushed updated rollout PR heads, and retriggered Codex.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/reference/01-glazed-linting-rollout-diary.md — Step 11 records suppression-release downstream cleanup
+- /home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot/Makefile — Representative downstream Makefile now using only shared infrastructure allow paths
+- /home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja/Makefile — Representative downstream Makefile bumped to Glazed lint v1.3.5
+
