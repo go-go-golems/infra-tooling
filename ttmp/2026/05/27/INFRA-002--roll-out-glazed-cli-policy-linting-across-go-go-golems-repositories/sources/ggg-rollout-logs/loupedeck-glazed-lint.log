@@ -1,0 +1,10 @@
+$ cd /home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck
+$ make glazed-lint
+# started: 2026-05-27T13:42:21-04:00
+
+/home/manuel/.hishtory/config.sh: line 72: bind: warning: line editing not enabled
+Building glazed-lint from pinned tool module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.3.4
+GOWORK=off go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/,examples/cmd/,cmd/loupedeck/cmds/doc/,cmd/loupedeck/cmds/verbs/bootstrap.go,cmd/loupedeck/main.go ./cmd/loupedeck ./cmd/loupedeck/cmds/common ./cmd/loupedeck/cmds/doc ./cmd/loupedeck/cmds/run ./cmd/loupedeck/cmds/verbs ./dev-tools/loupe-fps-bench ./docs/help ./examples ./examples/cmd/loupe-js-demo ./examples/cmd/loupe-svg-buttons ./pkg/device ./pkg/jsmetrics ./pkg/scriptmeta ./pkg/xgoja/provider ./runtime/anim ./runtime/easing ./runtime/gfx ./runtime/host ./runtime/js ./runtime/js/env ./runtime/js/module_anim ./runtime/js/module_easing ./runtime/js/module_gfx ./runtime/js/module_metrics ./runtime/js/module_present ./runtime/js/module_scene_metrics ./runtime/js/module_state ./runtime/js/module_ui ./runtime/js/provider ./runtime/metrics ./runtime/present ./runtime/reactive ./runtime/render ./runtime/ui
+
+# finished: 2026-05-27T13:42:22-04:00

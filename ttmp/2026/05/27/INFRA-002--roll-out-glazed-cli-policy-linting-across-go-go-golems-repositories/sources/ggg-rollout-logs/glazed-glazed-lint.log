@@ -1,0 +1,9 @@
+$ cd /home/manuel/workspaces/2026-05-24/add-js-providers/glazed
+$ make glazed-lint
+# started: 2026-05-27T13:42:08-04:00
+
+/home/manuel/.hishtory/config.sh: line 72: bind: warning: line editing not enabled
+go build -o /tmp/glazed-lint ./cmd/tools/glazed-lint
+GOWORK=off go vet -vettool=/tmp/glazed-lint ./cmd/... ./pkg/...
+
+# finished: 2026-05-27T13:42:13-04:00

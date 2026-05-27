@@ -1,0 +1,132 @@
+[
+{
+  "ahead_base": 1,
+  "branch": "infra-002/glazed-lint",
+  "branch_ok": true,
+  "message": "branch state matches rollout expectations",
+  "ok": false,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "pr": "https://github.com/go-go-golems/css-visual-diff/pull/9",
+  "pr_state": "waiting_checks",
+  "repo": "css-visual-diff",
+  "state": "waiting_checks",
+  "terminal": false
+}
+, {
+  "ahead_base": 1,
+  "branch": "infra-002/glazed-lint",
+  "branch_ok": true,
+  "message": "branch state matches rollout expectations",
+  "ok": false,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "pr": "https://github.com/go-go-golems/discord-bot/pull/10",
+  "pr_state": "waiting_checks",
+  "repo": "discord-bot",
+  "state": "waiting_checks",
+  "terminal": false
+}
+, {
+  "ahead_base": 1,
+  "branch": "infra-002/glazed-lint",
+  "branch_ok": true,
+  "message": "branch state matches rollout expectations",
+  "ok": false,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "pr": "https://github.com/go-go-golems/geppetto/pull/363",
+  "pr_state": "waiting_checks",
+  "repo": "geppetto",
+  "state": "waiting_checks",
+  "terminal": false
+}
+, {
+  "ahead_base": 1,
+  "branch": "infra-002/glazed-lint",
+  "branch_ok": true,
+  "message": "branch state matches rollout expectations",
+  "ok": false,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "pr": "https://github.com/go-go-golems/glazed/pull/582",
+  "pr_state": "waiting_checks",
+  "repo": "glazed",
+  "state": "waiting_checks",
+  "terminal": false
+}
+, {
+  "ahead_base": 1,
+  "branch": "infra-002/glazed-lint",
+  "branch_ok": true,
+  "message": "branch state matches rollout expectations",
+  "ok": false,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "pr": "https://github.com/go-go-golems/go-go-goja/pull/42",
+  "pr_state": "waiting_checks",
+  "repo": "go-go-goja",
+  "state": "waiting_checks",
+  "terminal": false
+}
+, {
+  "ahead_base": 1,
+  "branch": "infra-002/glazed-lint",
+  "branch_ok": true,
+  "message": "branch state matches rollout expectations",
+  "ok": false,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "pr": "https://github.com/go-go-golems/goja-git/pull/3",
+  "pr_state": "waiting_checks",
+  "repo": "goja-git",
+  "state": "waiting_checks",
+  "terminal": false
+}
+, {
+  "ahead_base": 1,
+  "branch": "infra-002/glazed-lint",
+  "branch_ok": true,
+  "message": "branch state matches rollout expectations",
+  "ok": false,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "pr": "https://github.com/go-go-golems/go-minitrace/pull/12",
+  "pr_state": "waiting_checks",
+  "repo": "go-minitrace",
+  "state": "waiting_checks",
+  "terminal": false
+}
+, {
+  "ahead_base": 1,
+  "branch": "infra-002/glazed-lint",
+  "branch_ok": true,
+  "message": "branch state matches rollout expectations",
+  "ok": false,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "pr": "https://github.com/go-go-golems/loupedeck/pull/4",
+  "pr_state": "waiting_checks",
+  "repo": "loupedeck",
+  "state": "waiting_checks",
+  "terminal": false
+}
+, {
+  "ahead_base": 1,
+  "branch": "infra-002/glazed-lint",
+  "branch_ok": true,
+  "message": "branch state matches rollout expectations",
+  "ok": false,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "pr": "https://github.com/go-go-golems/pinocchio/pull/161",
+  "pr_state": "waiting_checks",
+  "repo": "pinocchio",
+  "state": "waiting_checks",
+  "terminal": false
+}
+, {
+  "ahead_base": 1,
+  "branch": "infra-002/glazed-lint",
+  "branch_ok": true,
+  "message": "branch state matches rollout expectations",
+  "ok": false,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "pr": "https://github.com/go-go-golems/workspace-manager/pull/21",
+  "pr_state": "waiting_checks",
+  "repo": "workspace-manager",
+  "state": "waiting_checks",
+  "terminal": false
+}
+]

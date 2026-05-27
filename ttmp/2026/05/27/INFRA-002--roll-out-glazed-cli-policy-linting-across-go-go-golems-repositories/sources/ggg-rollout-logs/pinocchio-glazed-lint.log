@@ -1,0 +1,10 @@
+$ cd /home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio
+$ make glazed-lint
+# started: 2026-05-27T13:42:22-04:00
+
+/home/manuel/.hishtory/config.sh: line 72: bind: warning: line editing not enabled
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.3.0
+GOWORK=off go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/,pkg/cmds/cmdlayers/,cmd/pinocchio/cmds/clip.go,cmd/pinocchio/cmds/serve.go ./cmd/... ./pkg/...
+
+# finished: 2026-05-27T13:42:23-04:00

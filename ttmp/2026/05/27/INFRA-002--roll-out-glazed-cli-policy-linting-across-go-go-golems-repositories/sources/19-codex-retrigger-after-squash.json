@@ -1,0 +1,104 @@
+[
+{
+  "action": "triggered",
+  "codex_running": true,
+  "current_feedback": false,
+  "dry_run": false,
+  "eyes": 1,
+  "force": true,
+  "number": 363,
+  "pr": "https://github.com/go-go-golems/geppetto/pull/363",
+  "recent_trigger": true,
+  "recent_trigger_window": "10m0s",
+  "repository": "go-go-golems/geppetto",
+  "signal_url": "https://github.com/go-go-golems/geppetto/pull/363#issuecomment-4557022103",
+  "thumbs_up": 0,
+  "trigger_age_seconds": 60,
+  "trigger_url": "https://github.com/go-go-golems/geppetto/pull/363#issuecomment-4557029919"
+}
+, {
+  "action": "triggered",
+  "codex_running": true,
+  "current_feedback": false,
+  "dry_run": false,
+  "eyes": 1,
+  "force": true,
+  "number": 42,
+  "pr": "https://github.com/go-go-golems/go-go-goja/pull/42",
+  "recent_trigger": true,
+  "recent_trigger_window": "10m0s",
+  "repository": "go-go-golems/go-go-goja",
+  "signal_url": "https://github.com/go-go-golems/go-go-goja/pull/42#issuecomment-4557022348",
+  "thumbs_up": 0,
+  "trigger_age_seconds": 60,
+  "trigger_url": "https://github.com/go-go-golems/go-go-goja/pull/42#issuecomment-4557030144"
+}
+, {
+  "action": "triggered",
+  "codex_running": true,
+  "current_feedback": false,
+  "dry_run": false,
+  "eyes": 1,
+  "force": true,
+  "number": 3,
+  "pr": "https://github.com/go-go-golems/goja-git/pull/3",
+  "recent_trigger": true,
+  "recent_trigger_window": "10m0s",
+  "repository": "go-go-golems/goja-git",
+  "signal_url": "https://github.com/go-go-golems/goja-git/pull/3#issuecomment-4557022641",
+  "thumbs_up": 0,
+  "trigger_age_seconds": 60,
+  "trigger_url": "https://github.com/go-go-golems/goja-git/pull/3#issuecomment-4557030317"
+}
+, {
+  "action": "triggered",
+  "codex_running": true,
+  "current_feedback": false,
+  "dry_run": false,
+  "eyes": 1,
+  "force": true,
+  "number": 12,
+  "pr": "https://github.com/go-go-golems/go-minitrace/pull/12",
+  "recent_trigger": true,
+  "recent_trigger_window": "10m0s",
+  "repository": "go-go-golems/go-minitrace",
+  "signal_url": "https://github.com/go-go-golems/go-minitrace/pull/12#issuecomment-4557022965",
+  "thumbs_up": 0,
+  "trigger_age_seconds": 59,
+  "trigger_url": "https://github.com/go-go-golems/go-minitrace/pull/12#issuecomment-4557030521"
+}
+, {
+  "action": "triggered",
+  "codex_running": false,
+  "current_feedback": false,
+  "dry_run": false,
+  "eyes": 0,
+  "force": true,
+  "number": 4,
+  "pr": "https://github.com/go-go-golems/loupedeck/pull/4",
+  "recent_trigger": true,
+  "recent_trigger_window": "10m0s",
+  "repository": "go-go-golems/loupedeck",
+  "signal_url": "https://github.com/go-go-golems/loupedeck/pull/4#issuecomment-4557023179",
+  "thumbs_up": 0,
+  "trigger_age_seconds": 60,
+  "trigger_url": "https://github.com/go-go-golems/loupedeck/pull/4#issuecomment-4557030704"
+}
+, {
+  "action": "triggered",
+  "codex_running": true,
+  "current_feedback": false,
+  "dry_run": false,
+  "eyes": 1,
+  "force": true,
+  "number": 161,
+  "pr": "https://github.com/go-go-golems/pinocchio/pull/161",
+  "recent_trigger": true,
+  "recent_trigger_window": "10m0s",
+  "repository": "go-go-golems/pinocchio",
+  "signal_url": "https://github.com/go-go-golems/pinocchio/pull/161#issuecomment-4557023372",
+  "thumbs_up": 0,
+  "trigger_age_seconds": 60,
+  "trigger_url": "https://github.com/go-go-golems/pinocchio/pull/161#issuecomment-4557030914"
+}
+]

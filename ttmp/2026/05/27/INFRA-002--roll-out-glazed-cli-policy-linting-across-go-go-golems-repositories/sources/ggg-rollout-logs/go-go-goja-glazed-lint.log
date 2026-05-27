@@ -1,0 +1,10 @@
+$ cd /home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja
+$ make glazed-lint
+# started: 2026-05-27T13:42:13-04:00
+
+/home/manuel/.hishtory/config.sh: line 72: bind: warning: line editing not enabled
+Building glazed-lint from pinned tool module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.3.4
+GOWORK=off go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/,cmd/gen-dts/,cmd/bun-demo/,cmd/jsverbs-example/,cmd/goja-repl/,pkg/hashiplugin/contract/internal/cmd/generate/,pkg/jsverbrepos/bootstrap.go,pkg/jsverbscli/,pkg/replessay/handler.go ./cmd/... ./internal/... ./pkg/...
+
+# finished: 2026-05-27T13:42:17-04:00

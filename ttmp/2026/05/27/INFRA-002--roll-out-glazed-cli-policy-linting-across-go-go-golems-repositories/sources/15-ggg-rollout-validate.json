@@ -1,0 +1,102 @@
+[
+{
+  "command": "glazed-lint",
+  "dry_run": false,
+  "exit_code": 0,
+  "log_path": "/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/ggg-rollout-logs/css-visual-diff-glazed-lint.log",
+  "ok": true,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff",
+  "repo": "css-visual-diff",
+  "run": "make glazed-lint"
+}
+, {
+  "command": "glazed-lint",
+  "dry_run": false,
+  "exit_code": 0,
+  "log_path": "/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/ggg-rollout-logs/discord-bot-glazed-lint.log",
+  "ok": true,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot",
+  "repo": "discord-bot",
+  "run": "make glazed-lint"
+}
+, {
+  "command": "glazed-lint",
+  "dry_run": false,
+  "exit_code": 0,
+  "log_path": "/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/ggg-rollout-logs/geppetto-glazed-lint.log",
+  "ok": true,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/geppetto",
+  "repo": "geppetto",
+  "run": "make glazed-lint"
+}
+, {
+  "command": "glazed-lint",
+  "dry_run": false,
+  "exit_code": 0,
+  "log_path": "/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/ggg-rollout-logs/glazed-glazed-lint.log",
+  "ok": true,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/glazed",
+  "repo": "glazed",
+  "run": "make glazed-lint"
+}
+, {
+  "command": "glazed-lint",
+  "dry_run": false,
+  "exit_code": 0,
+  "log_path": "/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/ggg-rollout-logs/go-go-goja-glazed-lint.log",
+  "ok": true,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja",
+  "repo": "go-go-goja",
+  "run": "make glazed-lint"
+}
+, {
+  "command": "glazed-lint",
+  "dry_run": false,
+  "exit_code": 0,
+  "log_path": "/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/ggg-rollout-logs/goja-git-glazed-lint.log",
+  "ok": true,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/goja-git",
+  "repo": "goja-git",
+  "run": "make glazed-lint"
+}
+, {
+  "command": "glazed-lint",
+  "dry_run": false,
+  "exit_code": 0,
+  "log_path": "/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/ggg-rollout-logs/go-minitrace-glazed-lint.log",
+  "ok": true,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace",
+  "repo": "go-minitrace",
+  "run": "make glazed-lint"
+}
+, {
+  "command": "glazed-lint",
+  "dry_run": false,
+  "exit_code": 0,
+  "log_path": "/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/ggg-rollout-logs/loupedeck-glazed-lint.log",
+  "ok": true,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck",
+  "repo": "loupedeck",
+  "run": "make glazed-lint"
+}
+, {
+  "command": "glazed-lint",
+  "dry_run": false,
+  "exit_code": 0,
+  "log_path": "/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/ggg-rollout-logs/pinocchio-glazed-lint.log",
+  "ok": true,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio",
+  "repo": "pinocchio",
+  "run": "make glazed-lint"
+}
+, {
+  "command": "glazed-lint",
+  "dry_run": false,
+  "exit_code": 0,
+  "log_path": "/home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/ggg-rollout-logs/workspace-manager-glazed-lint.log",
+  "ok": true,
+  "path": "/home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager",
+  "repo": "workspace-manager",
+  "run": "make glazed-lint"
+}
+]

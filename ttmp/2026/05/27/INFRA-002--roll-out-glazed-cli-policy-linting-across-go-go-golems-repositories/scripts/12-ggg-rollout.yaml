@@ -1,0 +1,38 @@
+id: INFRA-002
+name: glazed-lint-rollout
+workspace: /home/manuel/workspaces/2026-05-24/add-js-providers
+branch: infra-002/glazed-lint
+base: origin/main
+commit_message: Run Glazed CLI policy linting
+selection:
+  require_go_mod_contains:
+    - github.com/go-go-golems/glazed
+  include:
+    - css-visual-diff
+    - discord-bot
+    - geppetto
+    - glazed
+    - go-go-goja
+    - goja-git
+    - go-minitrace
+    - loupedeck
+    - pinocchio
+    - workspace-manager
+  exclude: []
+validation:
+  commands:
+    - name: glazed-lint
+      run: make glazed-lint
+  continue_on_error: true
+  log_dir: /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/ggg-rollout-logs
+pull_request:
+  title: Run Glazed CLI policy linting
+  body_file: /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/10-pr-body.md
+  output_prs: /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/10-glazed-lint-prs.yaml
+  no_verify_push: false
+readiness:
+  trigger_codex: true
+  watch: false
+release:
+  mode: tag-patch
+  require_manual_approval: true

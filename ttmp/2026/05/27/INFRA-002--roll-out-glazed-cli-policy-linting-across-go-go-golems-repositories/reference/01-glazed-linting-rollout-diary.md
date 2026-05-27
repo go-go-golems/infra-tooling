@@ -3,20 +3,47 @@ Title: Glazed linting rollout diary
 Ticket: INFRA-002
 Status: active
 Topics:
-  - cli
-  - automation
-  - release
-  - github
+    - cli
+    - automation
+    - release
+    - github
 DocType: reference
 Intent: long-term
 Owners: []
-RelatedFiles: []
+RelatedFiles:
+    - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/css-visual-diff/Makefile
+      Note: Final hardened Glazed lint rollout Makefile
+    - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/discord-bot/Makefile
+      Note: Final hardened Glazed lint rollout Makefile
+    - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/geppetto/Makefile
+      Note: Final hardened Glazed lint rollout Makefile
+    - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/glazed/Makefile
+      Note: Final hardened Glazed lint rollout Makefile
+    - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/go-go-goja/Makefile
+      Note: Final hardened Glazed lint rollout Makefile
+    - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/go-minitrace/Makefile
+      Note: Final hardened Glazed lint rollout Makefile
+    - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/goja-git/Makefile
+      Note: Final hardened Glazed lint rollout Makefile
+    - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/loupedeck/Makefile
+      Note: Final hardened Glazed lint rollout Makefile
+    - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/pinocchio/Makefile
+      Note: Final hardened Glazed lint rollout Makefile
+    - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/workspace-manager/Makefile
+      Note: Final hardened Glazed lint rollout Makefile
+    - Path: internal/cli/rollout
+      Note: Implemented rollout CLI commands
+    - Path: pkg/rollout
+      Note: Implemented rollout primitives
+    - Path: ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/12-ggg-rollout.yaml
+      Note: Rollout config used for validation/status
 ExternalSources: []
 Summary: Chronological diary for rolling out Glazed CLI policy linting across go-go-golems repositories.
 LastUpdated: 2026-05-27T11:20:00-04:00
 WhatFor: Preserve exact steps, commands, failures, validations, PRs, and release actions for the Glazed linting rollout.
 WhenToUse: Read before resuming INFRA-002 or reviewing the rollout.
 ---
+
 
 # Diary
 
@@ -529,3 +556,264 @@ Create a Create  a detailed analysis / design / implementation guide that is for
 
 ### Technical details
 - The document intentionally treats INFRA-002 scripts as evidence rather than permanent tooling.
+
+## Step 7: Implement the first `ggg rollout` command slice
+
+The seventh step implemented the first usable `ggg rollout` slice. The implementation focuses on the operations that were safest to automate immediately: inventory, YAML configuration, cross-repository validation, branch-state inspection, PR push/open plumbing, combined status, and Markdown reporting.
+
+This deliberately stops short of profile-specific Makefile patch planning and applying. Those operations need a stronger idempotent patch model. The first slice still removes a large amount of future ticket-local scripting because it covers discovery, validation logs, branch hygiene, status, and reporting.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Create a detailed list of phases and tasks to build ggg rollout, and then implement it, keeping a diary and committing at appropriate intervals. I'm going out for lunch and I expect you to be done when I come back."
+
+**Assistant interpretation:** Build the initial `ggg rollout` command group, document the phase/task breakdown, keep the INFRA-002 diary current, validate the implementation, and commit coherent slices.
+
+**Inferred user intent:** The user wants the design to become working tooling while they are away, with enough documentation and commits to review later.
+
+**Commit (code):** c6fe082 — "Add ggg rollout operations"
+
+**Commit (code):** 22553ac — "Add rollout status command"
+
+### What I did
+- Added `pkg/rollout` with:
+  - `Config`, `LoadConfig`, `SaveConfig`, and target resolution.
+  - repository inventory and git-state inspection.
+  - validation command execution with per-repo logs.
+  - branch status and guarded commit helper.
+  - PR push/open plumbing.
+  - combined local/remote rollout status.
+  - Markdown report generation.
+- Added `internal/cli/rollout` with Glazed commands:
+  - `ggg rollout inventory`
+  - `ggg rollout init`
+  - `ggg rollout validate`
+  - `ggg rollout branch`
+  - `ggg rollout push-prs`
+  - `ggg rollout status`
+  - `ggg rollout report`
+- Registered `rollout` in `internal/cli/root.go`.
+- Added tests for inventory, config target resolution, and validation logging.
+- Created `scripts/12-ggg-rollout.yaml` for INFRA-002.
+- Ran the new validation command against all ten rollout target repositories.
+- Installed the updated binary to `~/.local/bin/ggg`.
+- Wrote `design-doc/03-ggg-rollout-implementation-phases-and-tasks.md`.
+
+### Why
+- INFRA-002 had too much workflow state encoded in ticket-local scripts.
+- The highest-value reusable operations were the read/validate/status/report steps that make multi-repo work inspectable and resumable.
+
+### What worked
+- `go test ./...` passed after adding the rollout package and CLI command group.
+- `ggg rollout inventory` successfully scanned the active workspace.
+- `ggg rollout validate` ran `make glazed-lint` across all ten target repositories and all passed.
+- `ggg rollout status` combined local branch state with PR readiness and immediately surfaced current Codex feedback.
+- `ggg rollout report` generated a Markdown report from the rollout YAML.
+
+### What didn't work
+- The first CLI smoke failed with:
+  - `error: Flag 'output-file' (usage: Path to write rollout YAML - <string>) already exists`
+- Cause:
+  - `output-file` conflicts with Glazed's output flags.
+- Fix:
+  - Renamed rollout-specific file-writing flags to `--write-to` and row fields to `config_file` / `report_file`.
+
+### What I learned
+- Glazed command schemas already reserve several output-related flags, so new commands should avoid generic names like `output-file`.
+- A rollout status command is more valuable than expected because it catches both local branch hygiene and remote PR readiness regressions in one view.
+
+### What was tricky to build
+- The implementation needed to avoid duplicating existing readiness logic. The status command now calls existing `ghclient.Readiness` / `prready.Report` instead of reimplementing PR classification.
+- The branch checks originally assumed one commit ahead. That is good for final review state, but feedback-fix commits temporarily made branches two commits ahead. I handled that operationally by squashing fix commits back into the original rollout commit.
+
+### What warrants a second pair of eyes
+- `ggg rollout push-prs` has the basic safety gates, but it needs fake GitHub client tests before it should become the default PR creation path.
+- `ggg rollout branch --commit` stages only Makefile and workflow paths for now; future profile-specific staging should come from a patch plan.
+- The inventory parser intentionally uses lightweight go.mod parsing. It may be worth switching to `golang.org/x/mod/modfile` in a follow-up.
+
+### What should be done in the future
+- Implement `ggg rollout plan` and `ggg rollout apply --profile glazed-lint` with idempotent patch operations.
+- Add diagnostic parsing for allow-path suggestions.
+- Add temp-git-repo tests for branch commit behavior.
+- Add command-output fixture tests for all rollout commands.
+
+### Code review instructions
+- Start with `pkg/rollout/config.go` and `pkg/rollout/inventory.go`.
+- Then review `pkg/rollout/validate.go`, `pkg/rollout/branch.go`, and `pkg/rollout/status.go`.
+- Check CLI wiring in `internal/cli/rollout/*.go` and `internal/cli/root.go`.
+- Validate with:
+  - `go test ./...`
+  - `ggg rollout --help`
+  - `ggg rollout inventory --root /home/manuel/workspaces/2026-05-24/add-js-providers --require-module github.com/go-go-golems/glazed --output json`
+
+### Technical details
+- Validation artifacts:
+  - `sources/15-ggg-rollout-validate.json`
+  - `sources/ggg-rollout-logs/`
+- Status artifacts:
+  - `sources/16-ggg-rollout-status.json`
+  - `sources/20-ggg-rollout-status-after-squash.json`
+- Report artifact:
+  - `sources/21-ggg-rollout-report.md`
+
+## Step 8: Fix Codex feedback found by `ggg rollout status`
+
+The eighth step used the newly implemented rollout status command as an operational gate. It found that six existing INFRA-002 PRs had current-head Codex feedback, even though the original local `make glazed-lint` pass had succeeded. I inspected the comments, fixed the Makefile issues, validated the changed repositories, pushed the fixes, squashed the branches back to one rollout commit, and retriggered Codex.
+
+This step was intentionally limited to fixing the open PRs. No PRs were merged.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 7)
+
+**Assistant interpretation:** Continue implementation and validation until the rollout tooling and active rollout PRs are in a reviewable state.
+
+**Inferred user intent:** The user expects the tooling work to surface and handle real rollout issues without leaving known actionable feedback unaddressed.
+
+**Commit (code):** target repositories updated on their existing `infra-002/glazed-lint` branches; infra-tooling doc commit pending.
+
+### What I did
+- Ran `ggg rollout status` against `scripts/12-ggg-rollout.yaml`.
+- Found Codex feedback on:
+  - `geppetto` PR 363
+  - `go-go-goja` PR 42
+  - `goja-git` PR 3
+  - `go-minitrace` PR 12
+  - `loupedeck` PR 4
+  - `pinocchio` PR 161
+- Inspected comments with `ggg pr codex-comments`.
+- Fixed `GLAZED_LINT_DIRS` not being honored in:
+  - `geppetto`
+  - `pinocchio`
+- Replaced the `@latest` fallback with an explicit pinned tool version `v1.3.4` in older Glazed-dependent repos:
+  - `go-go-goja`
+  - `goja-git`
+  - `go-minitrace`
+  - `loupedeck`
+- Ran `make glazed-lint` in each fixed repository.
+- Pushed fixes to the PR branches.
+- Squashed the fixed branches back to one commit ahead of `origin/main`.
+- Force-pushed with lease and `--no-verify` after validation to preserve the focused branch shape without rerunning long local hooks.
+- Retriggered Codex after the final squashed heads.
+
+### Why
+- Codex identified two real review issues:
+  - some Makefiles introduced `GLAZED_LINT_DIRS` but still invoked the vettool with hard-coded dirs;
+  - some older repos used fallback `@latest`, which is not reproducible enough for CI.
+- The rollout branches should remain reviewable and focused.
+
+### What worked
+- The targeted `make glazed-lint` validations passed in all six fixed repositories.
+- Branches were restored to one commit ahead of `origin/main`.
+- `ggg rollout status` showed all local branch checks passing after the squash.
+- Codex was retriggered for the six updated PRs.
+
+### What didn't work
+- The first status after pushing fix commits reported branch hygiene failures because the fixed branches were two commits ahead of `origin/main`.
+- Fix:
+  - soft-reset each affected branch to `origin/main`, recommit the combined rollout changes as one commit, and force-push with lease.
+
+### What I learned
+- `ggg rollout status` should eventually support a configurable expected ahead count or a clearer message that branch hygiene is a policy check, not always a hard correctness failure.
+- Pinned tool versions are preferable to `@latest` in CI-facing Makefile targets.
+
+### What was tricky to build
+- Fixing feedback after Codex comments required preserving the user's preferred review shape. Pushing small fix commits solved the comments but made branches two commits ahead. Squashing restored the branch policy but required retriggering Codex because the reviewed head changed.
+
+### What warrants a second pair of eyes
+- Confirm that `GLAZED_LINT_TOOL_VERSION ?= v1.3.4` is the desired shared tool version policy.
+- Confirm that force-pushing squashed review branches is acceptable for this rollout.
+
+### What should be done in the future
+- Add rollout command support for branch squash/rewrite plans so this workflow is safer and more explicit.
+- Add the pinned tool-version behavior to the future Glazed-lint patch profile.
+
+### Code review instructions
+- Review the six PR diffs and verify the Makefile changes match Codex feedback.
+- Validate with:
+  - `make glazed-lint` in the six affected repositories.
+  - `ggg rollout status scripts/12-ggg-rollout.yaml --output json`.
+
+### Technical details
+- Retrigger artifact before squash:
+  - `sources/17-codex-retrigger-after-fixes.json`
+- Status after fixes but before squash:
+  - `sources/18-ggg-rollout-status-after-fixes.json`
+- Retrigger artifact after squash:
+  - `sources/19-codex-retrigger-after-squash.json`
+- Status after squash:
+  - `sources/20-ggg-rollout-status-after-squash.json`
+
+## Step 9: Apply final Makefile hardening and retrigger all rollout PRs
+
+The ninth step handled the second Codex feedback round and applied the resulting policy consistently across all ten rollout branches. Rather than only patching the three PRs that had immediate comments, I made the Makefile hardening uniform: no `@latest` fallback for the linter tool, and no ambient workspace mode for the standalone Glazed vettool invocation.
+
+After validation, I amended every branch back to one focused rollout commit, force-pushed with lease, and retriggered Codex for all ten PRs. The latest state is clean local branch hygiene and remote PRs waiting for checks/Codex on the final amended heads.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 7)
+
+**Assistant interpretation:** Continue until the implemented rollout tooling and the active rollout PRs are in a clean, reviewable state.
+
+**Inferred user intent:** The user wants the work finished enough that there are no known local validation or branch-shape problems when they return.
+
+**Commit (code):** target repository branches amended; infra-tooling doc commit pending.
+
+### What I did
+- Inspected new Codex feedback after the first fix round.
+- Applied final Makefile hardening across all ten rollout repositories:
+  - introduced or used `GLAZED_LINT_TOOL_VERSION ?= v1.3.4`;
+  - replaced `@latest` fallback installs with the explicit tool version;
+  - prefixed Glazed vettool invocations with `GOWORK=off`.
+- Ran `ggg rollout validate` across all ten repositories; every row passed.
+- Amended each rollout branch to one focused `Run Glazed CLI policy linting` commit.
+- Force-pushed with lease and `--no-verify` after validation.
+- Retriggered Codex on all ten PRs.
+- Captured final rollout status.
+
+### Why
+- Codex correctly identified that `@latest` fallback installs are not reproducible enough for CI-facing lint targets.
+- Codex also correctly identified that standalone `make glazed-lint` should not be affected by ambient parent `go.work` files.
+- Applying these policies consistently prevents the same feedback from appearing repo-by-repo.
+
+### What worked
+- `ggg rollout validate` passed for all ten repositories after the hardening.
+- Final branch status shows all ten branches clean and one commit ahead of `origin/main`.
+- Codex was retriggered for all final amended heads.
+
+### What didn't work
+- After the first final squash, the working trees still had unstaged Makefile changes because the soft reset/commit sequence staged the previous branch diff but not the newly applied hardening edits.
+- Fix:
+  - `git add Makefile`
+  - `git commit --amend --no-edit`
+  - `git push --force-with-lease --no-verify origin HEAD`
+
+### What I learned
+- When using `git reset --soft origin/main` after additional working-tree edits, verify both staged and unstaged state before committing. A soft reset does not automatically stage edits made after the reset baseline.
+
+### What was tricky to build
+- The review branch policy and remote feedback loop interacted tightly. Any force-push that changes the head makes previous Codex feedback stale, so every final amendment needs a new Codex trigger and a fresh readiness check.
+
+### What warrants a second pair of eyes
+- Confirm that `GLAZED_LINT_TOOL_VERSION ?= v1.3.4` is the right cross-repo default.
+- Confirm that `GOWORK=off` should be used for all Glazed vettool invocations, not only standalone `glazed-lint`.
+
+### What should be done in the future
+- Add `GOWORK=off` and pinned tool-version behavior to the eventual `ggg rollout apply --profile glazed-lint` profile.
+- Add a safer `ggg rollout branch squash` operation to avoid manual soft-reset/amend loops.
+
+### Code review instructions
+- Review all ten PR Makefile diffs.
+- Verify the final heads listed in `design-doc/03-ggg-rollout-implementation-phases-and-tasks.md`.
+- Validate with:
+  - `ggg rollout validate scripts/12-ggg-rollout.yaml --output json`
+  - `ggg rollout status scripts/12-ggg-rollout.yaml --output json`
+
+### Technical details
+- Final validation artifact:
+  - `sources/23-ggg-rollout-validate-after-codex-round2.json`
+- Final Codex trigger artifact:
+  - `sources/26-codex-retrigger-final-amended-heads.json`
+- Final status artifact:
+  - `sources/27-ggg-rollout-status-final-amended-heads.json`

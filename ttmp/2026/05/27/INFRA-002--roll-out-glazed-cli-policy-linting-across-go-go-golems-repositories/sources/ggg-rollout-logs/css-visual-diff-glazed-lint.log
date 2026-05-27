@@ -1,0 +1,10 @@
+$ cd /home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff
+$ make glazed-lint
+# started: 2026-05-27T13:42:01-04:00
+
+/home/manuel/.hishtory/config.sh: line 72: bind: warning: line editing not enabled
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.3.0
+GOWORK=off go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/,cmd/build-web/,cmd/css-visual-diff/,internal/cssvisualdiff/driver/,internal/cssvisualdiff/verbcli/bootstrap.go ./cmd/build-web ./cmd/css-visual-diff ./internal/cssvisualdiff/ai ./internal/cssvisualdiff/doc ./internal/cssvisualdiff/driver ./internal/cssvisualdiff/dsl ./internal/cssvisualdiff/jsapi ./internal/cssvisualdiff/llm ./internal/cssvisualdiff/modes ./internal/cssvisualdiff/review ./internal/cssvisualdiff/service ./internal/cssvisualdiff/services ./internal/cssvisualdiff/verbcli ./pkg ./pkg/xgoja/provider
+
+# finished: 2026-05-27T13:42:03-04:00

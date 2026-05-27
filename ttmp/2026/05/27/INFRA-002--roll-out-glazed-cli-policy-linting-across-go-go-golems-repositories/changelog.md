@@ -62,3 +62,32 @@ Added intern-oriented design guide for extending ggg with rollout automation com
 
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/design-doc/02-ggg-rollout-automation-improvements-design.md — Design guide for ggg rollout automation improvements
 
+
+## 2026-05-27
+
+Implemented first ggg rollout slice with inventory, config, validation, branch, push-prs, status, and report commands; used rollout status to fix and retrigger Codex feedback on six active PRs.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/rollout — CLI command group
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/rollout — Core rollout implementation
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/design-doc/03-ggg-rollout-implementation-phases-and-tasks.md — Phase and task breakdown with implementation status
+
+
+## 2026-05-27
+
+Hardened Glazed lint Makefile rollout across all ten PR branches with pinned tool fallback and GOWORK=off vettool runs; amended branches to one commit and retriggered Codex on final heads.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-05-24/add-js-providers/css-visual-diff/Makefile — Final hardened rollout Makefile
+- /home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot/Makefile — Final hardened rollout Makefile
+- /home/manuel/workspaces/2026-05-24/add-js-providers/geppetto/Makefile — Final hardened rollout Makefile
+- /home/manuel/workspaces/2026-05-24/add-js-providers/glazed/Makefile — Final hardened rollout Makefile
+- /home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja/Makefile — Final hardened rollout Makefile
+- /home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace/Makefile — Final hardened rollout Makefile
+- /home/manuel/workspaces/2026-05-24/add-js-providers/goja-git/Makefile — Final hardened rollout Makefile
+- /home/manuel/workspaces/2026-05-24/add-js-providers/loupedeck/Makefile — Final hardened rollout Makefile
+- /home/manuel/workspaces/2026-05-24/add-js-providers/pinocchio/Makefile — Final hardened rollout Makefile
+- /home/manuel/workspaces/2026-05-24/add-js-providers/workspace-manager/Makefile — Final hardened rollout Makefile
+
