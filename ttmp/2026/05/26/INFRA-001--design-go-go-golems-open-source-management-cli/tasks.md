@@ -58,14 +58,14 @@ WhenToUse: Use while executing INFRA-001.
 - [x] Port Codex signal collection, stale reviewed-commit detection, and inline review comment extraction.
 - [x] Implement `ggg pr ready` with Glazed row output and current state names.
 - [x] Preserve current exit-code semantics.
-- [ ] Add golden fixtures for observed XGOJA-015 states.
+- [x] Add golden fixtures for observed XGOJA-015 states.
 
 ## Phase 4: Batch readiness with YAML input
 
 - [x] Implement `ggg batch ready prs.yaml`.
 - [x] Support `--watch`, `--interval`, `--timeout`, and `--trigger-missing-codex`.
 - [x] Preserve batch exit codes including partial-ready exit `5`.
-- [ ] Add tests for aggregation and partial readiness.
+- [x] Add tests for aggregation and partial readiness.
 
 ## Phase 5: Release verbs and Go module verification
 

@@ -74,3 +74,15 @@ Implemented ggg batch ready for YAML PR lists with watch flags, per-PR rows, sum
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/batch/ready.go — Glazed YAML batch readiness command
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/root.go — Registered real batch command group
 
+
+## 2026-05-27
+
+Added readiness exit-code parity using internal/exitcode.Error; ggg pr ready and ggg batch ready now emit rows and then return script-compatible non-ready codes.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/cmd/ggg/main.go — Root command maps typed exit errors to os.Exit(code)
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/batch/ready.go — Batch readiness command now returns summary-based exit codes
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/pr/ready.go — PR readiness command now returns non-ready exit codes
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/exitcode/exitcode.go — Typed exit-code error for script-compatible command exits
+

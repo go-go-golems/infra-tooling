@@ -12,7 +12,9 @@ import (
 	"github.com/go-go-golems/glazed/pkg/middlewares"
 	"github.com/go-go-golems/glazed/pkg/settings"
 	"github.com/go-go-golems/glazed/pkg/types"
+	"github.com/go-go-golems/infra-tooling/internal/exitcode"
 	"github.com/go-go-golems/infra-tooling/pkg/ghclient"
+	"github.com/go-go-golems/infra-tooling/pkg/prready"
 	"github.com/go-go-golems/infra-tooling/pkg/prref"
 	"github.com/spf13/cobra"
 )
@@ -66,6 +68,9 @@ func (c *readyCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 				return err
 			}
 		}
+		if !report.OK {
+			return exitcode.New(exitCodeForState(report.State), "PR not ready: state=%s", report.State)
+		}
 		return nil
 	}
 	row := types.NewRow(
@@ -73,5 +78,24 @@ func (c *readyCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 		types.MRP("ok", report.OK), types.MRP("state", string(report.State)), types.MRP("terminal", report.Terminal),
 		types.MRP("failed_check_kinds", report.FailedCheckKinds), types.MRP("merge_state_status", report.MergeStateStatus), types.MRP("review_decision", report.ReviewDecision), types.MRP("head_ref_oid", report.HeadRefOID),
 	)
-	return gp.AddRow(ctx, row)
+	if err := gp.AddRow(ctx, row); err != nil {
+		return err
+	}
+	if !report.OK {
+		return exitcode.New(exitCodeForState(report.State), "PR not ready: state=%s", report.State)
+	}
+	return nil
+}
+
+func exitCodeForState(state prready.State) int {
+	switch state {
+	case prready.Ready:
+		return 0
+	case prready.CodexFeedback:
+		return 3
+	case prready.FailedChecks:
+		return 4
+	default:
+		return 1
+	}
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/go-go-golems/glazed/pkg/middlewares"
 	"github.com/go-go-golems/glazed/pkg/settings"
 	"github.com/go-go-golems/glazed/pkg/types"
+	"github.com/go-go-golems/infra-tooling/internal/exitcode"
 	"github.com/go-go-golems/infra-tooling/pkg/ghclient"
 	"github.com/go-go-golems/infra-tooling/pkg/prlist"
 	"github.com/go-go-golems/infra-tooling/pkg/prready"
@@ -98,8 +99,8 @@ func (c *readyCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 		}
 		code := summary.exitCode()
 		if !s.Watch || code == 0 || code == 2 || code == 3 || code == 4 || code == 5 {
-			if code != 0 && !s.Watch {
-				return fmt.Errorf("batch not ready: state=%s ready=%d not_ready=%d", summary.State, summary.Ready, summary.NotReady)
+			if code != 0 {
+				return exitcode.New(code, "batch not ready: state=%s ready=%d not_ready=%d", summary.State, summary.Ready, summary.NotReady)
 			}
 			return nil
 		}

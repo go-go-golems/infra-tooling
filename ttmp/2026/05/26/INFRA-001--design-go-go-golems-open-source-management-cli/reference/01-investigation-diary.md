@@ -477,3 +477,80 @@ go run ./cmd/ggg batch ready /tmp/ggg-prs.yaml --output json
 ### Technical details
 
 Successful live smoke emitted a PR row and summary row with `state: ready`.
+
+## Step 6: Add readiness exit-code parity
+
+The sixth step added the compatibility layer needed for the Go CLI to replace the shell scripts in automation. The commands already emitted Glazed rows, but they still needed to return meaningful process exit codes for waiting, Codex feedback, failed checks, and partial batch readiness.
+
+I added a typed exit-code error and taught the root `ggg` entry point to translate it into `os.Exit(code)`. The PR and batch readiness commands now emit their rows first, then return the same class of exit code as the scripts they replace.
+
+### Prompt Context
+
+**User prompt (verbatim):** "go ahead"
+
+**Assistant interpretation:** Continue implementation by addressing the previously discussed exit-code parity gap.
+
+**Inferred user intent:** The user wants the Go CLI to become script-compatible, not just produce human/structured rows.
+
+**Commit (code):** pending — exit-code parity implementation validated and ready to commit.
+
+### What I did
+- Added `internal/exitcode.Error` with a numeric `Code` and message.
+- Updated `cmd/ggg/main.go` to detect `exitcode.Error` and exit with its code.
+- Updated `ggg pr ready` so non-ready states return:
+  - `1` for waiting/no Codex/not-ready states;
+  - `3` for `codex_feedback`;
+  - `4` for `failed_checks`.
+- Updated `ggg batch ready` so batch summary states return:
+  - `0` all ready;
+  - `1` waiting;
+  - `2` tool/API errors;
+  - `3` Codex feedback;
+  - `4` failed checks;
+  - `5` partial readiness.
+
+### Why
+- Existing wait and batch scripts use exit codes as control flow. Without parity, existing automation could not safely replace the scripts with `ggg`.
+
+### What worked
+- `go test ./...` passed.
+- A live non-go-go-golems PR smoke returned a non-ready row and exited non-zero for `no_codex`.
+- Glazed still emitted rows before the typed error reached Cobra/root handling.
+
+### What didn't work
+- Using `go run` masks exact non-zero exit codes as a generic `go run` failure in the shell output. Exact code checks should use a built binary when testing codes `3`, `4`, or `5`.
+
+### What I learned
+- Returning an error from `RunIntoGlazeProcessor` after `gp.AddRow` still lets Glazed emit the row, which is what we need for structured diagnostics plus script control flow.
+
+### What was tricky to build
+- The command must both emit structured data and signal failure. The ordering matters: add rows first, then return the typed exit-code error.
+
+### What warrants a second pair of eyes
+- Whether Cobra should suppress the `Error: ...` line for expected non-ready states in a future UX pass.
+- Whether batch watch should emit an explicit final summary row before exiting with code `5` in partial-ready cases; it currently does.
+
+### What should be done in the future
+- Add tests that build the binary and assert exact process exit codes for fixture-backed readiness states.
+- Add fixture-backed batch aggregation tests.
+
+### Code review instructions
+- Start with `internal/exitcode/exitcode.go` and `cmd/ggg/main.go`.
+- Then review the post-row error returns in `internal/cli/pr/ready.go` and `internal/cli/batch/ready.go`.
+- Validate with:
+
+```bash
+go test ./...
+go build -o /tmp/ggg ./cmd/ggg
+/tmp/ggg pr ready <non-ready-pr> --output json; echo $?
+```
+
+### Technical details
+
+Observed non-ready smoke with `go run`:
+
+```text
+state: no_codex
+Error: PR not ready: state=no_codex
+exit status 1
+```
