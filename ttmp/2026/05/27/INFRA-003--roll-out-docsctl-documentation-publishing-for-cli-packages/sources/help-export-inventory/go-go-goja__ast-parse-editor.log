@@ -1,0 +1,7 @@
+repo=go-go-goja
+cmd_dir=./cmd/ast-parse-editor
+branch=infra-002/glazed-lint
+head=0bc1ff1
+command=GOWORK=off go run ./cmd/ast-parse-editor help export --format sqlite --output-path /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/help-export-inventory/sqlite/go-go-goja/ast-parse-editor/help.sqlite
+Error: usage: ast-parse-editor [file.js]
+exit status 1

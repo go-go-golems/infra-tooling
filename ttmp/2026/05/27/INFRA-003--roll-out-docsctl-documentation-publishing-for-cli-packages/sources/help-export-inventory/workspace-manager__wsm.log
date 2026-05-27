@@ -1,0 +1,5 @@
+repo=workspace-manager
+cmd_dir=./cmd/wsm
+branch=infra-002/glazed-lint
+head=64ce4aa
+command=GOWORK=off go run ./cmd/wsm help export --format sqlite --output-path /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/help-export-inventory/sqlite/workspace-manager/wsm/help.sqlite

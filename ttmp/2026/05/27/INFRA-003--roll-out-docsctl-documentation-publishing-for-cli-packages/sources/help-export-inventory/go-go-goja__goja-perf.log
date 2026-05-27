@@ -1,0 +1,13 @@
+repo=go-go-goja
+cmd_dir=./cmd/goja-perf
+branch=infra-002/glazed-lint
+head=0bc1ff1
+command=GOWORK=off go run ./cmd/goja-perf help export --format sqlite --output-path /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/help-export-inventory/sqlite/go-go-goja/goja-perf/help.sqlite
+Error: unknown flag: --format
+Usage:
+  goja-perf help [command] [flags]
+
+Flags:
+  -h, --help   help for help
+
+exit status 1

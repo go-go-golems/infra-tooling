@@ -1,0 +1,26 @@
+Error: help database contains no sections
+Usage:
+  docsctl validate [flags]
+
+Flags:
+      --config-file string    Explicit config file path to load via middlewares - <string>
+      --file string           Path to the SQLite help export to validate - <string>
+  -h, --help                  help for validate
+      --json                  Emit validation result as JSON - <bool>
+      --package string        Package name to publish, for example pinocchio - <string>
+      --print-parsed-fields   Print the parsed fields - <bool>
+      --print-schema          Print the command's schema - <bool>
+      --print-yaml            Print the command's YAML - <bool>
+      --version string        Package version to publish, for example v1.2.3 - <string>
+
+Global Flags:
+      --log-area strings     Per-area log level override, for example app.view:debug or app.db=warn
+      --log-config strings   Additional logcopter profile/config file; repeatable
+      --log-file string      Log file (default: stderr)
+      --log-format string    Log format (json, text) (default "text")
+      --log-level string     Log level (trace, debug, info, warn, error, fatal) (default "info")
+      --log-to-stdout        Log to stdout even when log-file is set
+      --strict-log-areas     Fail when configured log areas do not match known generated logcopter areas
+      --with-caller          Log caller information
+
+help database contains no sections

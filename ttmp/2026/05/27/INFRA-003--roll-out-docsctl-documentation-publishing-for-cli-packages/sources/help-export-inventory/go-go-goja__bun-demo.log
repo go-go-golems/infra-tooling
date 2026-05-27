@@ -1,0 +1,7 @@
+repo=go-go-goja
+cmd_dir=./cmd/bun-demo
+branch=infra-002/glazed-lint
+head=0bc1ff1
+command=GOWORK=off go run ./cmd/bun-demo help export --format sqlite --output-path /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/help-export-inventory/sqlite/go-go-goja/bun-demo/help.sqlite
+2026/05/27 17:13:59 require ./assets/bundle.cjs: GoError: Invalid module at github.com/dop251/goja_nodejs/require.(*RequireModule).require-fm (native)
+exit status 1

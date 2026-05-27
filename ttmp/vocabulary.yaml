@@ -13,6 +13,8 @@ topics:
       description: Release train and package publishing workflows
     - slug: automation
       description: Scripts, workflows, and repeatable operational automation
+    - slug: docsctl
+      description: docsctl documentation publishing, validation, and docs.yolo registry workflows
 docTypes:
     - slug: design-doc
       description: Structured rationale and architecture notes

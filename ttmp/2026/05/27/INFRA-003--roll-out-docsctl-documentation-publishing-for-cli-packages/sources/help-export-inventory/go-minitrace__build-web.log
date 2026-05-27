@@ -1,0 +1,235 @@
+repo=go-minitrace
+cmd_dir=./cmd/build-web
+branch=infra-002/glazed-lint
+head=28dc3df
+command=GOWORK=off go run ./cmd/build-web help export --format sqlite --output-path /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/help-export-inventory/sqlite/go-minitrace/build-web/help.sqlite
+Downloading CLI... OK!
+Creating new Engine session... OK!
+Establishing connection to Engine... [95m1   : [0m[90;2m[0mconnect
+[95m1   : [0m[90;2m[0m[90m[0.0s] [0m[90m|[0m cloud [2murl=[0mhttps://dagger.cloud/traces/setup
+[95m2   : [0m[90;2m┆ [0mstarting engine
+[95m3   : [0m[90;2m┆ ┆ [0mcreate container
+[95m4   : [0m[90;2m┆ ┆ ┆ [0mexec docker ps -a --format {{.Names}}
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m dagger-engine-v0.20.6
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m go-go-host-keycloak
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m go-go-host-keycloak-postgres
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m go-go-host-postgres
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m almanach-render-service-render-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m almanach-render-service-chrome-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m 2026-03-16--gec-rag-mysql-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m keycloak-keycloak-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m ttc-db-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m pyxis-db
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m simplecal-postgres
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m deploy-keycloak-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m stale-connections-redis
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m scraper-redis-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m docker-test-dovecot-testcot-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m fcvm-local-vault
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m goldeneaglecoincom-db-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m 2026-03-24--draft-review-postgres-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m tuplespace-server
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m tuplespace-postgres
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m hair-booking-container-smoke
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m z2m
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m z2m-mosquitto
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m blissful_agnesi
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m admiring_feistel
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m moments-elasticsearch-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m moments-db-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0m[90m[0.0s] [0m[90m|[0m moments-redis-1
+[95m4   : [0m[90;2m┆ ┆ ┆ [0mexec docker ps -a --format {{.Names}}[32m DONE[0m[90m [0.0s][0m
+[95m5   : [0m[90;2m┆ ┆ ┆ [0mexec docker run --name dagger-engine-v0.20.5 -d --init --restart always -v /var/lib/dagger --privileged registry.dagger.io/engine:v0.20.5 --debug
+[95m5   : [0m[90;2m┆ ┆ ┆ [0m[90m[4.4s] [0m[90m|[0m d0fc0aeecee89dd7efaf9b153f8d74e448a953e968813c743e349e42b683c23e
+[95m5   : [0m[90;2m┆ ┆ ┆ [0mexec docker run --name dagger-engine-v0.20.5 -d --init --restart always -v /var/lib/dagger --privileged registry.dagger.io/engine:v0.20.5 --debug[32m DONE[0m[90m [4.5s][0m
+[95m6   : [0m[90;2m┆ ┆ ┆ [0mexec docker rm -fv dagger-engine-v0.20.6
+[95m6   : [0m[90;2m┆ ┆ ┆ [0m[90m[1.3s] [0m[90m|[0m dagger-engine-v0.20.6
+[95m6   : [0m[90;2m┆ ┆ ┆ [0mexec docker rm -fv dagger-engine-v0.20.6[32m DONE[0m[90m [1.3s][0m
+[95m3   : [0m[90;2m┆ ┆ [0mcreate container[32m DONE[0m[90m [5.9s][0m
+[95m2   : [0m[90;2m┆ [0mstarting engine[32m DONE[0m[90m [5.9s][0m
+[95m7   : [0m[90;2m┆ [0mconnecting to engine
+[95m7   : [0m[90;2m┆ [0mconnecting to engine[32m DONE[0m[90m [0.1s][0m
+[95m8   : [0m[90;2m┆ [0mstarting session
+[95m7   : [0m[90;2m┆ [0mconnecting to engine[32m DONE[0m[90m [0.1s][0m
+[95m7   : [0m[90;2m┆ [0m[90m[0.1s] [0m[90m|[0m [2m17:14:17[0m [92mINF[0m connected [2mname=[0md0fc0aeecee8 [2mclient-version=[0mv0.20.5 [2mserver-version=[0mv0.20.5
+OK!
+
+[95m9   : [0m[90;2m[0mdagger-0.20.5 session --label dagger.io/sdk.name:go --label dagger.io/sdk.version:0.20.5
+[95m1   : [0m[90;2m┆ [0mconnect
+[95m8   : [0m[90;2m┆ ┆ [0mstarting session[32m DONE[0m[90m [0.4s][0m
+[95m1   : [0m[90;2m┆ [0mconnect[32m DONE[0m[90m [6.5s][0m
+
+[95m10  : [0m[90;2m[0mconsuming /v1/traces
+[95m10  : [0m[90;2m[0mconsuming /v1/traces[32m DONE[0m[90m [0.1s][0m
+
+[95m11  : [0m[90;2m[0mconsuming /v1/logs
+[95m11  : [0m[90;2m[0mconsuming /v1/logs[32m DONE[0m[90m [0.0s][0m
+
+[95m12  : [0m[90;2m[0mconsuming /v1/metrics
+[95m12  : [0m[90;2m[0mconsuming /v1/metrics[32m DONE[0m[90m [0.0s][0m
+
+[95m9   : [0m[90;2m[0mdagger-0.20.5 session --label dagger.io/sdk.name:go --label dagger.io/sdk.version:0.20.5
+[95m13  : [0m[90;2m┆ [0m[1mhost[0m[2m: Host![0m
+[95m13  : [0m[90;2m┆ [0m[1mhost[0m[32m DONE[0m[90m [0.0s][0m
+[95m14  : [0m[90;2m┆ [0mHost.[1mdirectory[0m([36mpath: [0m[33m"/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace/web"[0m, [36mexclude: [0m[[33m"dist"[0m, [33m"node_modules"[0m, [33m"storybook-static"[0m, [33m"tsconfig.tsbuildinfo"[0m, [33m"tsconfig.app.tsbuildinfo"[0m, [33m"tsconfig.node.tsbuildinfo"[0m])[2m: Directory![0m
+
+[95m15  : [0m[90;2m[0m[1mcontainer[0m[2m: Container![0m
+[95m15  : [0m[90;2m[0m[1mcontainer[0m[32m DONE[0m[90m [0.0s][0m
+
+[95m16  : [0m[90;2m[0mContainer.[1mfrom[0m([36maddress: [0m[33m"node:22-bookworm"[0m)[2m: Container![0m
+
+[95m9   : [0m[90;2m[0mdagger-0.20.5 session --label dagger.io/sdk.name:go --label dagger.io/sdk.version:0.20.5
+[95m14  : [0m[90;2m┆ [0mHost.[1mdirectory[0m[32m DONE[0m[90m [0.0s][0m
+
+[95m17  : [0m[90;2m[0mremotes.docker.resolver.HTTPRequest
+[95m18  : [0m[90;2m┆ [0mHTTP HEAD
+[95m18  : [0m[90;2m┆ [0mHTTP HEAD[31m ERROR[0m[90m [0.1s][0m
+[95m17  : [0m[90;2m[0mremotes.docker.resolver.HTTPRequest[31m ERROR[0m[90m [0.1s][0m
+
+[95m19  : [0m[90;2m[0mContainer.[1mdirectory[0m([36mpath: [0m[33m"/src/web/dist"[0m)[2m: Directory![0m
+
+[95m20  : [0m[90;2m[0m[34mwithEnvVariable[0m PNPM_HOME=/pnpm
+[95m20  : [0m[90;2m[0mContainer.[1mwithEnvVariable[0m[32m DONE[0m[90m [0.0s][0m
+
+[95m21  : [0m[90;2m[0m[34mwithEnvVariable[0m PATH=/pnpm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+[95m21  : [0m[90;2m[0mContainer.[1mwithEnvVariable[0m[32m DONE[0m[90m [0.0s][0m
+
+[95m22  : [0m[90;2m[0mContainer.[1mwithMountedCache[0m(
+[95m22  : [0m[90;2m┆ [0m[36mpath:[0m [33m"/pnpm/store"[0m
+[95m22  : [0m[90;2m┆ [0m[36mcache:[0m [1mcacheVolume[0m([36mkey: [0m[33m"go-minitrace-web-pnpm-store"[0m)[2m: CacheVolume![0m
+[95m22  : [0m[90;2m[0m)[2m: Container![0m
+[95m22  : [0m[90;2m[0mContainer.[1mwithMountedCache[0m[32m DONE[0m[90m [0.0s][0m
+
+[95m23  : [0m[90;2m[0mContainer.[1mwithDirectory[0m(
+[95m23  : [0m[90;2m┆ [0m[36mpath:[0m [33m"/src/web"[0m
+[95m23  : [0m[90;2m┆ [0m[36msource:[0m Host.[1mdirectory[0m([36mpath: [0m[33m"/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace/web"[0m, [36mexclude: [0m[[33m"dist"[0m, [33m"node_modules"[0m, [33m"storybook-static"[0m, [33m"tsconfig.tsbuildinfo"[0m, [33m"tsconfig.app.tsbuildinfo"[0m, [33m"tsconfig.node.tsbuildinfo"[0m])[2m: Directory![0m
+[95m23  : [0m[90;2m[0m)[2m: Container![0m
+[95m23  : [0m[90;2m[0mContainer.[1mwithDirectory[0m[32m DONE[0m[90m [0.0s][0m
+
+[95m24  : [0m[90;2m[0m[34mwithWorkdir[0m /src/web
+[95m24  : [0m[90;2m[0mContainer.[1mwithWorkdir[0m[32m DONE[0m[90m [0.0s][0m
+
+[95m25  : [0m[90;2m[0m[34mwithExec[0m sh -lc 'corepack enable && corepack prepare pnpm@10.15.0 --activate'
+[95m25  : [0m[90;2m[0mContainer.[1mwithExec[0m[34m CACHED[0m[90m [0.0s][0m
+
+[95m26  : [0m[90;2m[0m[34mwithExec[0m pnpm install --frozen-lockfile
+[95m26  : [0m[90;2m[0mContainer.[1mwithExec[0m[34m CACHED[0m[90m [0.0s][0m
+
+[95m27  : [0m[90;2m[0m[34mwithExec[0m pnpm run build
+[95m27  : [0m[90;2m[0mContainer.[1mwithExec[0m[32m DONE[0m[90m [0.0s][0m
+
+[95m16  : [0m[90;2m[0mContainer.[1mfrom[0m[32m DONE[0m[90m [19.0s][0m
+
+[95m25  : [0m[90;2m[0mContainer.[1mwithExec[0m[32m DONE[0m[90m [0.4s][0m
+[95m25  : [0m[90;2m[0m[90m[18.4s] [0m[90m|[0m Preparing pnpm@10.15.0 for immediate activation...
+
+[95m26  : [0m[90;2m[0mContainer.[1mwithExec[0m[32m DONE[0m[90m [0.8s][0m
+[95m26  : [0m[90;2m[0m[90m[20.9s] [0m[90m|[0m Lockfile is up to date, resolution step is skipped
+[95m26  : [0m[90;2m[0m[90m[20.9s] [0m[90m|[0m Progress: resolved 1, reused 0, downloaded 0, added 0
+[95m26  : [0m[90;2m[0m[90m[21.1s] [0m[90m|[0m Packages: +524
+[95m26  : [0m[90;2m[0m[90m[21.1s] [0m[90m|[0m ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+[95m26  : [0m[90;2m[0m[90m[21.6s] [0m[90m|[0m 
+[95m26  : [0m[90;2m[0m[90m[21.6s] [0m[90m|[0m    ╭──────────────────────────────────────────────╮
+[95m26  : [0m[90;2m[0m[90m[21.6s] [0m[90m|[0m    │                                              │
+[95m26  : [0m[90;2m[0m[90m[21.6s] [0m[90m|[0m    │     Update available! 10.15.0 → 11.4.0.      │
+[95m26  : [0m[90;2m[0m[90m[21.6s] [0m[90m|[0m    │     Changelog: https://pnpm.io/v/11.4.0      │
+[95m26  : [0m[90;2m[0m[90m[21.6s] [0m[90m|[0m    │   To update, run: corepack use pnpm@11.4.0   │
+[95m26  : [0m[90;2m[0m[90m[21.6s] [0m[90m|[0m    │                                              │
+[95m26  : [0m[90;2m[0m[90m[21.6s] [0m[90m|[0m    ╰──────────────────────────────────────────────╯
+[95m26  : [0m[90;2m[0m[90m[21.6s] [0m[90m|[0m 
+[95m26  : [0m[90;2m[0m[90m[21.9s] [0m[90m|[0m Progress: resolved 524, reused 0, downloaded 85, added 84
+[95m26  : [0m[90;2m[0m[90m[22.9s] [0m[90m|[0m Progress: resolved 524, reused 0, downloaded 221, added 217
+[95m26  : [0m[90;2m[0m[90m[23.9s] [0m[90m|[0m Progress: resolved 524, reused 0, downloaded 335, added 332
+[95m26  : [0m[90;2m[0m[90m[24.9s] [0m[90m|[0m Progress: resolved 524, reused 0, downloaded 468, added 467
+[95m26  : [0m[90;2m[0m[90m[25.9s] [0m[90m|[0m Progress: resolved 524, reused 0, downloaded 524, added 523
+[95m26  : [0m[90;2m[0m[90m[28.3s] [0m[90m|[0m Progress: resolved 524, reused 0, downloaded 524, added 524
+[95m26  : [0m[90;2m[0m[90m[28.3s] [0m[90m|[0m Progress: resolved 524, reused 0, downloaded 524, added 524, done
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m 
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m dependencies:
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @bufbuild/protobuf 2.11.0
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @codemirror/commands 6.10.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @codemirror/lang-sql 6.10.0
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @codemirror/state 6.6.0
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @codemirror/theme-one-dark 6.1.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @codemirror/view 6.41.0
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @emotion/react 11.14.0
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @emotion/styled 11.14.1
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @mui/icons-material 7.3.9
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @mui/material 7.3.9
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @mui/x-data-grid 8.28.2
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @reduxjs/toolkit 2.11.2
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + codemirror 6.0.2
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + react 19.2.4
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + react-dom 19.2.4
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + react-markdown 10.1.0
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + react-redux 9.2.0
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + react-router 7.13.2
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m 
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m devDependencies:
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @chromatic-com/storybook 5.1.1
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @eslint/js 9.39.4
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @storybook/addon-a11y 10.3.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @storybook/addon-docs 10.3.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @storybook/addon-onboarding 10.3.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @storybook/addon-vitest 10.3.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @storybook/react 10.3.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @storybook/react-vite 10.3.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @types/node 24.12.0
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @types/react 19.2.14
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @types/react-dom 19.2.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @vitejs/plugin-react 6.0.1
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @vitest/browser-playwright 4.1.2
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + @vitest/coverage-v8 4.1.2
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + eslint 9.39.4
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + eslint-plugin-react-hooks 7.0.1
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + eslint-plugin-react-refresh 0.5.2
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + eslint-plugin-storybook 10.3.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + globals 17.4.0
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + msw 2.12.14
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + playwright 1.59.1
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + storybook 10.3.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + typescript 5.9.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + typescript-eslint 8.58.0
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + vite 8.0.3
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m + vitest 4.1.2
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m 
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m ╭ Warning ─────────────────────────────────────────────────────────────────────╮
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m │                                                                              │
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m │   Ignored build scripts: esbuild, msw.                                       │
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m │   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m │   to run scripts.                                                            │
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m │                                                                              │
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m ╰──────────────────────────────────────────────────────────────────────────────╯
+[95m26  : [0m[90;2m[0m[90m[28.5s] [0m[90m|[0m 
+[95m26  : [0m[90;2m[0m[90m[28.6s] [0m[90m|[0m Done in 8.2s using pnpm v10.15.0
+
+[95m27  : [0m[90;2m[0mContainer.[1mwithExec[0m[32m DONE[0m[90m [1.0s][0m
+[95m27  : [0m[90;2m[0m[90m[29.6s] [0m[90m|[0m 
+[95m27  : [0m[90;2m[0m[90m[29.6s] [0m[90m|[0m > web@0.0.0 build /src/web
+[95m27  : [0m[90;2m[0m[90m[29.6s] [0m[90m|[0m > tsc -b && vite build
+[95m27  : [0m[90;2m[0m[90m[29.6s] [0m[90m|[0m 
+[95m27  : [0m[90;2m[0m[90m[38.9s] [0m[90m|[0m vite v8.0.3 building client environment for production...
+[95m27  : [0m[90;2m[0m[90m[39.0s] [0m[90m|[0m [2Ktransforming...✓ 955 modules transformed.
+[95m27  : [0m[90;2m[0m[90m[39.1s] [0m[90m|[0m rendering chunks...
+[95m27  : [0m[90;2m[0m[90m[39.5s] [0m[90m|[0m computing gzip size...
+[95m27  : [0m[90;2m[0m[90m[39.5s] [0m[90m|[0m dist/index.html                    0.37 kB │ gzip:   0.26 kB
+[95m27  : [0m[90;2m[0m[90m[39.5s] [0m[90m|[0m dist/static/index-W38BX5-C.js  1,226.39 kB │ gzip: 382.45 kB
+[95m27  : [0m[90;2m[0m[90m[39.5s] [0m[90m|[0m 
+[95m27  : [0m[90;2m[0m[90m[39.5s] [0m[90m|[0m ✓ built in 681ms
+[95m27  : [0m[90;2m[0m[90m[39.5s] [0m[90m|[0m [plugin builtin:vite-reporter] 
+[95m27  : [0m[90;2m[0m[90m[39.5s] [0m[90m|[0m (!) Some chunks are larger than 500 kB after minification. Consider:
+[95m27  : [0m[90;2m[0m[90m[39.5s] [0m[90m|[0m - Using dynamic import() to code-split the application
+[95m27  : [0m[90;2m[0m[90m[39.5s] [0m[90m|[0m - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+[95m27  : [0m[90;2m[0m[90m[39.5s] [0m[90m|[0m - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+[95m28  : [0m[90;2m[0mDirectory.[1mexport[0m([36mpath: [0m[33m"/home/manuel/workspaces/2026-05-24/add-js-providers/go-minitrace/cmd/go-minitrace/cmds/serve/frontend"[0m)[2m: String![0m
+[95m28  : [0m[90;2m[0mDirectory.[1mexport[0m[32m DONE[0m[90m [0.0s][0m
+
+[95m19  : [0m[90;2m[0mContainer.[1mdirectory[0m[32m DONE[0m[90m [39.7s][0m
+
+[95m9   : [0m[90;2m[0mdagger-0.20.5 session --label dagger.io/sdk.name:go --label dagger.io/sdk.version:0.20.5[32m DONE[0m[90m [47.2s][0m
+
+
+[33mA new release of dagger is available: [0m[36mv0.20.5[0m → [36mv0.21.0[0m
+To upgrade, see https://docs.dagger.io/install
+[33mhttps://github.com/dagger/dagger/releases/tag/v0.21.0[0m

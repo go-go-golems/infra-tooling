@@ -1,0 +1,5 @@
+repo=css-visual-diff
+cmd_dir=./cmd/css-visual-diff
+branch=infra-002/glazed-lint
+head=feb93c4
+command=GOWORK=off go run ./cmd/css-visual-diff help export --format sqlite --output-path /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/help-export-inventory/sqlite/css-visual-diff/css-visual-diff/help.sqlite

@@ -1,0 +1,24 @@
+repo=glazed
+cmd_dir=./cmd/docsctl
+branch=infra-002/glazed-lint
+head=56c3664
+command=GOWORK=off go run ./cmd/docsctl help export --format sqlite --output-path /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/help-export-inventory/sqlite/glazed/docsctl/help.sqlite
+Error: unknown flag: --format
+Usage:
+  docsctl help [command] [flags]
+
+Flags:
+  -h, --help   help for help
+
+Global Flags:
+      --log-area strings     Per-area log level override, for example app.view:debug or app.db=warn
+      --log-config strings   Additional logcopter profile/config file; repeatable
+      --log-file string      Log file (default: stderr)
+      --log-format string    Log format (json, text) (default "text")
+      --log-level string     Log level (trace, debug, info, warn, error, fatal) (default "info")
+      --log-to-stdout        Log to stdout even when log-file is set
+      --strict-log-areas     Fail when configured log areas do not match known generated logcopter areas
+      --with-caller          Log caller information
+
+unknown flag: --format
+exit status 1

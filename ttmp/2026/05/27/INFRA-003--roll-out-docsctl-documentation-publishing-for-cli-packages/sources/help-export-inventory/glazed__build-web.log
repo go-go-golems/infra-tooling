@@ -1,0 +1,21 @@
+repo=glazed
+cmd_dir=./cmd/build-web
+branch=infra-002/glazed-lint
+head=56c3664
+command=GOWORK=off go run ./cmd/build-web help export --format sqlite --output-path /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/help-export-inventory/sqlite/glazed/build-web/help.sqlite
+Error: unknown flag: --format
+Usage:
+  build-web [flags]
+
+Flags:
+      --builder-image string   Container image used by the Dagger build - <string> (default "node:22")
+      --config-file string     Explicit config file path to load via middlewares - <string>
+  -h, --help                   help for build-web
+      --local                  Run local pnpm instead of Dagger - <bool>
+      --pnpm-version string    pnpm version to activate; defaults to packageManager in web/package.json, then 10.15.0 - <string>
+      --print-parsed-fields    Print the parsed fields - <bool>
+      --print-schema           Print the command's schema - <bool>
+      --print-yaml             Print the command's YAML - <bool>
+
+2026/05/27 17:13:54 build-web failed: unknown flag: --format
+exit status 1

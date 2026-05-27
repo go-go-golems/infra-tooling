@@ -1,0 +1,5 @@
+repo=goja-git
+cmd_dir=./cmd/XXX
+branch=infra-002/glazed-lint
+head=5fd5736
+command=GOWORK=off go run ./cmd/XXX help export --format sqlite --output-path /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/help-export-inventory/sqlite/goja-git/XXX/help.sqlite

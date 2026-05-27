@@ -1,0 +1,7 @@
+repo=go-go-goja
+cmd_dir=./cmd/smalltalk-inspector
+branch=infra-002/glazed-lint
+head=0bc1ff1
+command=GOWORK=off go run ./cmd/smalltalk-inspector help export --format sqlite --output-path /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/help-export-inventory/sqlite/go-go-goja/smalltalk-inspector/help.sqlite
+Error: could not open a new TTY: open /dev/tty: no such device or address
+exit status 1

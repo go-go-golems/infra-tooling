@@ -1,0 +1,41 @@
+repo=glazed
+cmd_dir=./cmd/docs-registry
+branch=infra-002/glazed-lint
+head=56c3664
+command=GOWORK=off go run ./cmd/docs-registry help export --format sqlite --output-path /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/help-export-inventory/sqlite/glazed/docs-registry/help.sqlite
+Error: unknown flag: --format
+Usage:
+  docs-registry [flags]
+
+Flags:
+      --address string                       HTTP listen address - <string> (default ":8090")
+      --allow-overwrite                      Allow publishing different bytes over an existing package version; disabled by default - <bool>
+      --auth-mode string                     Publisher auth mode: static-catalog or vault-oidc-jwt - <string> (default "static-catalog")
+      --config-file string                   Explicit config file path to load via middlewares - <string>
+  -h, --help                                 help for docs-registry
+      --jwt-client-id string                 Expected JWT audience/client ID for --auth-mode vault-oidc-jwt - <string>
+      --jwt-issuer string                    Expected OIDC issuer URL for --auth-mode vault-oidc-jwt, for example https://vault.example/v1/identity/oidc - <string>
+      --log-area strings                     Per-area log level override, for example app.view:debug or app.db=warn
+      --log-config strings                   Additional logcopter profile/config file; repeatable
+      --log-file string                      Log file (default: stderr)
+      --log-format string                    Log format (json, text) (default "text")
+      --log-level string                     Log level (trace, debug, info, warn, error, fatal) (default "info")
+      --log-to-stdout                        Log to stdout even when log-file is set
+      --max-concurrent-uploads int           Maximum concurrent publish uploads; 0 disables the limit - <int> (default 2)
+      --max-package-bytes int                Maximum total stored bytes per package; 0 disables the quota - <int>
+      --max-upload-bytes int                 Maximum SQLite upload size in bytes - <int> (default 67108864)
+      --max-versions-per-package int         Maximum stored versions per package; 0 disables the quota - <int>
+      --package-root string                  Root directory where package/version SQLite DBs are published - <string>
+      --print-parsed-fields                  Print the parsed fields - <bool>
+      --print-schema                         Print the command's schema - <bool>
+      --print-yaml                           Print the command's YAML - <bool>
+      --publisher-catalog string             JSON file with static publisher token hashes; required for --auth-mode static-catalog - <string>
+      --rate-limit-burst int                 Per-client per-route rate limit burst size; ignored when rate limiting is disabled - <int> (default 10)
+      --rate-limit-requests-per-minute int   Per-client per-route request rate limit; 0 disables rate limiting - <int> (default 60)
+      --strict-log-areas                     Fail when configured log areas do not match known generated logcopter areas
+      --temp-dir string                      Directory for temporary uploads - <string>
+  -v, --version                              version for docs-registry
+      --with-caller                          Log caller information
+
+unknown flag: --format
+exit status 1
