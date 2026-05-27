@@ -1,0 +1,3 @@
+# Generated SQLite help exports are reproducible inventory artifacts.
+# Keep summary/log files in git, but do not commit binary SQLite databases.
+sqlite/

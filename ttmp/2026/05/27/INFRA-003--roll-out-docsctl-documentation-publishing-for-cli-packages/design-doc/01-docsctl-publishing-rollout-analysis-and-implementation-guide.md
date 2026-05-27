@@ -195,7 +195,7 @@ The ticket scripts generated evidence under:
 /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/help-export-inventory
 ```
 
-The inventory command shape was:
+The inventory command shape was (the generated SQLite files are intentionally ignored in git; the summary and validation logs are tracked):
 
 ```bash
 GOWORK=off go run ./cmd/<binary> help export --format sqlite --output-path <ticket>/sources/help-export-inventory/sqlite/<repo>/<binary>/help.sqlite
