@@ -194,11 +194,29 @@ def codex_findings(pr: dict[str, Any], codex_re: re.Pattern[str]) -> list[Findin
     if not signals:
         return [Finding(False, "no Codex-authored review/comment signal found")]
     latest = signals[-1]
+    authored_signals = [s for s in signals if s.get("codexAuthored")]
+    latest_authored = authored_signals[-1] if authored_signals else None
+
     thumbs = reaction_count(latest, "THUMBS_UP")
     eyes = reaction_count(latest, "EYES")
     body = latest.get("body") or ""
     where = f"latest Codex signal ({latest['kind']}) by {latest.get('login') or '<unknown>'}: {latest.get('url')}"
     findings: list[Finding] = [Finding(True, where)]
+
+    # A newer human "@codex review" trigger is not enough to hide substantive
+    # Codex review comments that are already present. Release-train automation
+    # should stop on those comments so an operator can either fix them or decide
+    # to wait for the retriggered review intentionally.
+    if latest_authored is not None:
+        authored_body = latest_authored.get("body") or ""
+        authored_where = f"latest Codex-authored signal ({latest_authored['kind']}) by {latest_authored.get('login') or '<unknown>'}: {latest_authored.get('url')}"
+        findings.append(Finding(True, authored_where))
+        if not codex_body_is_benign(authored_body):
+            preview = re.sub(r"\s+", " ", authored_body.strip())[:240]
+            findings.append(Finding(False, f"latest Codex-authored body contains substantive comments: {preview!r}"))
+        else:
+            findings.append(Finding(True, "latest Codex-authored body is empty/benign/satisfied"))
+
     body_satisfied = latest.get("codexAuthored") and codex_body_is_satisfied(body)
     if thumbs <= 0 and not body_satisfied:
         findings.append(Finding(False, "latest Codex signal has no thumbs-up reaction or satisfied thumbs-up body"))
@@ -210,13 +228,8 @@ def codex_findings(pr: dict[str, Any], codex_re: re.Pattern[str]) -> list[Findin
         findings.append(Finding(False, f"latest Codex signal has {eyes} eyes reaction(s), review may still be running"))
     else:
         findings.append(Finding(True, "latest Codex signal has no eyes reaction"))
-    if latest.get("codexAuthored") and not codex_body_is_benign(body):
-        preview = re.sub(r"\s+", " ", body.strip())[:240]
-        findings.append(Finding(False, f"latest Codex-authored body contains substantive comments: {preview!r}"))
-    elif latest.get("codexAuthored"):
-        findings.append(Finding(True, "latest Codex-authored body is empty/benign/satisfied"))
-    else:
-        findings.append(Finding(True, "latest signal is a human @codex review trigger; body comments are not treated as review findings"))
+    if not latest.get("codexAuthored"):
+        findings.append(Finding(True, "latest signal is a human @codex review trigger; trigger does not mask existing Codex-authored findings"))
     return findings
 
 
