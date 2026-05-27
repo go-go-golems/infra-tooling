@@ -658,3 +658,92 @@ The final state is that all four requested improvement areas are implemented: pl
   - `ggg batch ready <prs.yaml> --markdown-report`
   - `ggg batch codex-comments <prs.yaml> --group-by-message --output json`
   - `ggg rollout docsctl plan --workspace <workspace> --include go-go-goja --cmd go-go-goja=./cmd/goja-repl --output yaml`
+
+## Step 11: Apply Vault roles and verify the first docsctl release
+
+I applied the merged Terraform/Vault publisher-role change, tagged `go-go-golems/loupedeck` as `v0.1.1`, watched the release workflow, and verified that the new docsctl publish job uploaded documentation to the live docs browser.
+
+This was the first end-to-end proof that the rollout works after the Terraform-first sequencing: GitHub tag push, GoReleaser jobs, reusable docsctl workflow, Vault OIDC login, package-specific publish token minting, docs-registry upload, and public docs browsing all succeeded.
+
+### Prompt Context
+
+**User prompt (verbatim):** "apply terraform, tag loupedeck, check that it works once done. Keep detailed diary, esp. wrt improving ggg as needed"
+
+**Assistant interpretation:** Apply the already-merged Terraform roles, release/tag Loupedeck, verify docs publishing, and record operational lessons plus any ggg improvements.
+
+**Inferred user intent:** Prove the docsctl rollout is actually deployable, not just merged, and improve the automation where the live operator flow exposes sharp edges.
+
+**Commit (code):** pending — "Avoid detached checkout when tagging releases"
+
+### What I did
+- Applied Terraform from `/home/manuel/code/wesen/terraform/vault/github-actions/envs/k3s` with:
+  - `AWS_PROFILE=manuel`
+  - `VAULT_ADDR=https://vault.yolo.scapegoat.dev`
+  - `VAULT_TOKEN` loaded from `~/.vault-token`
+- Planned and applied the merged docsctl publisher roles:
+  - plan: `18 to add, 1 to change, 0 to destroy`
+  - apply: `Apply complete! Resources: 18 added, 1 changed, 0 destroyed.`
+- Tagged Loupedeck with:
+  - `ggg release tag-patch --yes --output json`
+  - created `v0.1.1` at `bca2bea3ecb6f90fe0de74a2822c26510a8ccbf0`
+  - proxy verification succeeded for `github.com/go-go-golems/loupedeck@v0.1.1`
+- Watched release run:
+  - `https://github.com/go-go-golems/loupedeck/actions/runs/26543228613`
+- Verified docs publish job succeeded.
+- Verified public docs at:
+  - `https://docs.yolo.scapegoat.dev/loupedeck/v0.1.1`
+- Saved the release verification note in:
+  - `sources/14-loupedeck-release-v0.1.1-verification.txt`
+- Improved `ggg release tag-*` so future tag commands do not leave the repo in detached HEAD state.
+
+### Why
+- Merging the workflow PR does not publish docs by itself; release-tag workflows publish docs.
+- The Vault roles must exist before tag workflows can authenticate to publish package docs.
+
+### What worked
+- Terraform backend and Vault access worked once `AWS_PROFILE=manuel` and `VAULT_TOKEN` were explicitly exported.
+- The release workflow succeeded end-to-end.
+- The `Publish docs / publish-docs` reusable workflow job succeeded, including Vault login, JWT minting, publishing, and package API verification.
+- The public docs page has title `Loupedeck v0.1.1 Documentation — Glazed Help Browser` and lists 4 sections.
+
+### What didn't work
+- Running Terraform earlier without AWS credentials failed with:
+  - `Error: No valid credential sources found`
+- The `ggg release tag-patch` implementation tagged correctly but left the local checkout detached because its plan was:
+  - `git checkout --detach origin/main`
+  - `git tag v0.1.1`
+- This is bad operator ergonomics in repos that also have active worktrees/branches.
+
+### What I learned
+- The docsctl reusable workflow's internal verification is useful: the job reached `Verify package appears in docs API` and completed successfully before I did manual browser/curl verification.
+- Public docs can be validated from the preloaded HTML state even when the exact API endpoint shape is not obvious. The page HTML included package `loupedeck`, version `v0.1.1`, and section count `4`.
+
+### What was tricky to build
+- The live release path crosses three separate systems: GitHub release workflow, Vault OIDC roles, and docs-registry. A failure in any one looks like a release failure unless the operator can quickly see which job/step failed.
+- `ggg release tag-patch` did not fail, so the detached-checkout issue was an ergonomics bug rather than a correctness bug. I fixed it by changing the tag operation from checkout-then-tag to direct target tagging: `git tag <tag> <commit>`.
+
+### What warrants a second pair of eyes
+- The Terraform apply created publisher roles for all planned packages and corrected Pinocchio's workflow filename. Review the apply scope against the merged Terraform PR if audit traceability is needed.
+- The docs page is live, but we should still validate one Markdown alternate URL and one section URL before tagging the rest of the packages.
+
+### What should be done in the future
+- Add a `ggg release watch` or `ggg release verify-docs` command that can wait for a tag run, identify the docs job, and test the public docs URL.
+- Teach `ggg release tag-*` to optionally emit the GitHub Actions run URL after pushing a tag.
+- Add docs URL/API endpoint discovery to the docsctl rollout playbook so operators do not have to guess API paths.
+
+### Code review instructions
+- Review `pkg/release/release.go`.
+- Validate with:
+  - `go test ./...`
+  - `ggg release tag-patch --dry-run --yes --output json` in a clean repo; confirm the plan no longer includes `git checkout --detach`.
+
+### Technical details
+- Terraform apply command shape:
+  - `terraform plan -out=/tmp/infra-003-docsctl-publishers-apply.tfplan`
+  - `terraform apply -auto-approve /tmp/infra-003-docsctl-publishers-apply.tfplan`
+- Loupedeck release command:
+  - `ggg release tag-patch --yes --output json`
+- Release run:
+  - `https://github.com/go-go-golems/loupedeck/actions/runs/26543228613`
+- Public docs URL:
+  - `https://docs.yolo.scapegoat.dev/loupedeck/v0.1.1`

@@ -102,3 +102,14 @@ Completed validation/bookkeeping for ggg docsctl rollout automation improvements
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/reference/01-investigation-diary.md — Final validation diary step
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/tasks.md — Marked Phase 5 bookkeeping complete
 
+
+## 2026-05-27
+
+Applied docsctl Vault publisher roles, tagged loupedeck v0.1.1, verified docs publishing, and improved ggg release tagging ergonomics.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/release/release.go — Changed release tagging to avoid detached checkouts
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/14-loupedeck-release-v0.1.1-verification.txt — End-to-end release/docs verification artifact
+- /home/manuel/code/wesen/terraform/vault/github-actions/envs/k3s/main.tf — Applied docsctl publisher roles
+

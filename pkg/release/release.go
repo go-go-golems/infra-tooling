@@ -93,7 +93,7 @@ func TagWithOptions(ctx context.Context, opts Options) (Result, error) {
 	if tag == "" {
 		return Result{}, fmt.Errorf("svu %s returned empty tag", opts.Mode)
 	}
-	res := Result{RepoDir: opts.RepoDir, Mode: opts.Mode, Module: module, CurrentTag: currentTag, Tag: tag, Commit: commit, Target: opts.Target, Dirty: dirty, Plan: []string{"git fetch origin main --tags", "git checkout --detach " + opts.Target, "git tag " + tag, "git push origin refs/tags/" + tag, "GOPROXY=proxy.golang.org go list -m " + module + "@" + tag}}
+	res := Result{RepoDir: opts.RepoDir, Mode: opts.Mode, Module: module, CurrentTag: currentTag, Tag: tag, Commit: commit, Target: opts.Target, Dirty: dirty, Plan: []string{"git fetch origin main --tags", "git tag " + tag + " " + commit, "git push origin refs/tags/" + tag, "GOPROXY=proxy.golang.org go list -m " + module + "@" + tag}}
 	if exists, existingCommit, err := tagExists(ctx, opts.RepoDir, tag); err != nil {
 		return Result{}, err
 	} else if exists {
@@ -110,10 +110,7 @@ func TagWithOptions(ctx context.Context, opts Options) (Result, error) {
 	if !opts.Yes {
 		return res, fmt.Errorf("refusing to push tag without --yes (planned tag %s at %s)", tag, commit)
 	}
-	if _, err := run(ctx, opts.RepoDir, "git", "checkout", "--detach", opts.Target); err != nil {
-		return Result{}, err
-	}
-	if _, err := run(ctx, opts.RepoDir, "git", "tag", tag); err != nil {
+	if _, err := run(ctx, opts.RepoDir, "git", "tag", tag, commit); err != nil {
 		return Result{}, err
 	}
 	if _, err := run(ctx, opts.RepoDir, "git", "push", "origin", "refs/tags/"+tag); err != nil {

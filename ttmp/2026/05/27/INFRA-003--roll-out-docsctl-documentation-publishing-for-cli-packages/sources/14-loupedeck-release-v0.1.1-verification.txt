@@ -1,0 +1,28 @@
+Terraform apply:
+- Directory: /home/manuel/code/wesen/terraform/vault/github-actions/envs/k3s
+- Environment: AWS_PROFILE=manuel, VAULT_ADDR=https://vault.yolo.scapegoat.dev, VAULT_TOKEN from ~/.vault-token
+- Plan: 18 to add, 1 to change, 0 to destroy
+- Apply result: Apply complete! Resources: 18 added, 1 changed, 0 destroyed.
+
+Loupedeck tag/release:
+- Repository: go-go-golems/loupedeck
+- Tag: v0.1.1
+- Commit: bca2bea3ecb6f90fe0de74a2822c26510a8ccbf0
+- ggg release tag-patch verified proxy.golang.org for github.com/go-go-golems/loupedeck@v0.1.1
+- GitHub Actions run: https://github.com/go-go-golems/loupedeck/actions/runs/26543228613
+- Release run conclusion: success
+- Publish docs / publish-docs job conclusion: success
+
+Docs verification:
+- URL: https://docs.yolo.scapegoat.dev/loupedeck/v0.1.1
+- HTML title: Loupedeck v0.1.1 Documentation — Glazed Help Browser
+- Preloaded state includes package loupedeck, version v0.1.1, sectionCount 4.
+- Published sections include:
+  - loupedeck-js-api-reference
+  - reusable-goja-js-metrics-subpackage
+  - loupedeck-jsverbs-scenes
+  - loupedeck-js-first-live-script
+
+Operational note:
+- ggg release tag-patch worked but left the loupedeck worktree detached because it implemented tagging as `git checkout --detach origin/main` then `git tag`.
+- Fixed infra-tooling so future tag commands create the tag directly at the target commit (`git tag <tag> <commit>`) and do not mutate the operator's checkout.
