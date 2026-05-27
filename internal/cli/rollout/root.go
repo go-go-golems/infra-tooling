@@ -7,6 +7,7 @@ func NewCommand() (*cobra.Command, error) {
 	for _, factory := range []func() (*cobra.Command, error){
 		newInventoryCommand,
 		newInitCommand,
+		newPlanCommand,
 		newValidateCommand,
 		newBranchCommand,
 		newPushPRsCommand,
