@@ -114,3 +114,15 @@ Consumed Glazed v1.3.5 downstream, replaced broad Glazed lint allow paths with r
 - /home/manuel/workspaces/2026-05-24/add-js-providers/discord-bot/Makefile — Representative downstream Makefile now using only shared infrastructure allow paths
 - /home/manuel/workspaces/2026-05-24/add-js-providers/go-go-goja/Makefile — Representative downstream Makefile bumped to Glazed lint v1.3.5
 
+
+## 2026-05-27
+
+Added conflict-aware ggg readiness, updated Codex trigger/playbook policy, resolved remaining rollout PR blockers, and verified all ten INFRA-002 PRs ready.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/docs/go-go-golems/playbooks/pr-readiness-check-scripts.md — Updated operator playbook
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/pr/watch.go — New single-PR watch command
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/prready.go — Merge-state readiness classification
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/38-batch-ready-all-after-conflict-codex-fixes.json — Final all-ready batch readiness artifact
+

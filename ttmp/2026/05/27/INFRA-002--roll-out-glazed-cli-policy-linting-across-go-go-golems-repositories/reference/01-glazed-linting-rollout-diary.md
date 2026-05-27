@@ -41,10 +41,16 @@ RelatedFiles:
         Allow-list tightened to shared infrastructure paths after Glazed v1.3.5
     - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/workspace-manager/Makefile
       Note: Final hardened Glazed lint rollout Makefile
+    - Path: internal/cli/pr/codex_trigger.go
+      Note: Codex trigger now skips satisfied signals by default
+    - Path: internal/cli/pr/watch.go
+      Note: Single-PR watch command added in Step 12
     - Path: internal/cli/rollout
       Note: Implemented rollout CLI commands
     - Path: internal/cli/rollout/plan.go
       Note: Step 10 rollout plan CLI
+    - Path: pkg/prready/prready.go
+      Note: Merge conflict classification added in Step 12
     - Path: pkg/rollout
       Note: Implemented rollout primitives
     - Path: pkg/rollout/plan.go
@@ -57,6 +63,7 @@ LastUpdated: 2026-05-27T11:20:00-04:00
 WhatFor: Preserve exact steps, commands, failures, validations, PRs, and release actions for the Glazed linting rollout.
 WhenToUse: Read before resuming INFRA-002 or reviewing the rollout.
 ---
+
 
 
 
@@ -1001,3 +1008,93 @@ This step intentionally did not merge any rollout PRs. It pushed updated branch 
   - `sources/35-codex-retrigger-after-suppression-release-dry-run.json` (dry-run capture after the real trigger)
 - Batch readiness artifact:
   - `sources/36-batch-ready-after-suppression-release.json`
+
+## Step 12: Make readiness conflict-aware and finish rollout PR readiness
+
+The twelfth step fixed an important readiness blind spot: `ggg pr ready` was reporting PRs as ready when checks and Codex were satisfied even if GitHub marked the PR as conflicted. The concrete example was Glazed PR 582, which had a satisfied Codex signal but `mergeStateStatus=DIRTY`; the readiness gate now treats dirty/blocked mergeability as a terminal `merge_conflict` state.
+
+I also updated the operator playbooks to avoid unnecessary Codex retriggers. PR creation usually starts Codex automatically after a short delay, so the playbooks now say to wait 20-30 seconds before manually triggering, and `ggg pr codex-trigger` now skips when a satisfied Codex signal is already present unless `--force` is explicitly requested.
+
+### Prompt Context
+
+**User prompt (verbatim):** "the pr ready needs to check for merge conflicts, for example glazed 582 has conflicts, but also for some reason we restarted codex review on it multiple times, even though it must hae been thumbs up anyway? Also, opening a PR triggers codex automatically,it might just take 20-30 seconds to apprear.
+
+Update your playbooks, update ggg to track conflicts, and continue."
+
+**Assistant interpretation:** Fix `ggg` readiness so merge conflicts block readiness, reduce unnecessary Codex triggers, update playbooks with the correct operational behavior, and continue driving the INFRA-002 PRs to readiness.
+
+**Inferred user intent:** The user wants the automation to reflect the real merge gate and avoid noisy/redundant Codex review requests during rollouts.
+
+**Commit (code):** `467d9bb` — "Add conflict-aware PR watch readiness"
+
+### What I did
+- Added `merge_conflict` readiness state in `pkg/prready`.
+- Added mergeability findings from `mergeStateStatus` before checks/Codex findings.
+- Treated `DIRTY`, blocked, and unclean mergeability as terminal readiness failures.
+- Added exit code `6` for merge conflicts / blocked mergeability.
+- Added `ggg pr watch <pr>` and installed it to `~/.local/bin/ggg`.
+- Updated Codex trigger behavior so satisfied Codex signals skip by default unless `--force` is used.
+- Updated playbooks:
+  - `docs/go-go-golems/playbooks/pr-readiness-check-scripts.md`
+  - `docs/go-go-golems/package-publishing-release-train.md`
+  - `docs/go-go-golems/playbooks/logcopter-package-rollout-playbook.md`
+  - `docs/go-go-golems/logcopter-rollout-colleague-instructions.md`
+- Validated with `go test ./...`.
+- Verified `ggg pr ready https://github.com/go-go-golems/glazed/pull/582 --output json` reported `merge_conflict` before the branch was updated.
+- Resolved Glazed PR 582 conflicts by merging `origin/main` into `infra-002/glazed-lint`, resolving the Makefile conflict, validating `make glazed-lint`, and pushing commit `56c3664`.
+- Fixed Goja Git PR 3 by expanding `GLAZED_LINT_DIRS` to `./...`, validating `make glazed-lint`, and pushing commit `5fd5736`.
+- Addressed Pinocchio PR 161 Codex feedback by replacing file-scoped suppressions with explicit narrow allow paths for the three legacy files Codex requested, validating `make glazed-lint`, and pushing commit `1ca48c0`.
+- Reran the failed `css-visual-diff` test workflow; it passed on rerun.
+- Captured final batch readiness: all ten INFRA-002 PRs are now `ready`.
+
+### Why
+- A PR with green checks and satisfied Codex can still be unmergeable due to conflicts. Readiness must represent the real merge gate.
+- Repeated Codex retriggers create noise and can obscure whether a PR already has an acceptable review.
+- Waiting briefly after PR creation aligns the workflow with Codex's automatic review behavior.
+
+### What worked
+- The new conflict-aware readiness check detected Glazed PR 582 as `merge_conflict` while GitHub reported `mergeStateStatus=DIRTY`.
+- After merging `origin/main` into the Glazed rollout branch, PR 582 became ready.
+- `ggg pr codex-trigger` correctly skipped Glazed PR 582 with `action=skipped_satisfied` once a satisfied signal was present.
+- Final `ggg batch ready` reported all ten rollout PRs ready.
+
+### What didn't work
+- Pinocchio Codex initially objected to `//glazedclilint:file-ignore` and later to `v1.3.5` visibility. The file-ignore feedback was addressed by reverting those three files to explicit narrow allow paths. The version feedback appeared to be module-proxy propagation delay; I verified `GOPROXY=proxy.golang.org go list -m github.com/go-go-golems/glazed@v1.3.5` and posted that evidence before forcing one fresh Codex review.
+- The first `css-visual-diff` CI test run failed on `TestNearestGitRootDetectsGitDirectory`; a focused local package test and a rerun of the failed GitHub job passed, so I treated it as transient/flaky rather than editing product code.
+
+### What I learned
+- `mergeStateStatus` must be part of the readiness classifier, not just a field emitted for humans.
+- Codex review timing matters: PR open can auto-trigger review, and manual triggers should be delayed/guarded.
+- `ggg pr codex-trigger --force` is still needed sometimes, but only when replacing a stale/current negative review after external conditions change.
+
+### What was tricky to build
+- Mergeability states are not identical to check failures. The classifier now evaluates them separately and reports `merge_conflict`, which lets watch/batch commands exit immediately with a distinct next action.
+- The trigger guard needs to avoid both duplicate running reviews and duplicate satisfied reviews, while still permitting explicit `--force` for stale or externally-invalid feedback.
+
+### What warrants a second pair of eyes
+- The exact list of merge states classified as terminal should be reviewed against GitHub's enum behavior. `DIRTY` is definitely a conflict; `BLOCKED`/`DRAFT` are also terminal for merge readiness, but `UNSTABLE` is currently allowed because checks encode the actionable status.
+- Pinocchio now uses narrow allow paths instead of file-scoped suppressions for the three legacy findings to satisfy review feedback; this is less ideal than reasoned suppressions but keeps the allow scope exact.
+
+### What should be done in the future
+- Do not merge INFRA-002 PRs automatically; they are ready for the user's manual review.
+- Consider adding a rollout-specific policy document that defines when file-scoped suppressions are preferred over exact allow paths.
+- Add fixture coverage for `ggg pr codex-trigger` satisfied-signal skipping at the CLI layer if the command grows more policy branches.
+
+### Code review instructions
+- Review `pkg/prready/prready.go` for merge-state classification and state precedence.
+- Review `internal/cli/pr/watch.go` for single-PR watch output and next-action strings.
+- Review `internal/cli/pr/codex_trigger.go` for the new satisfied-signal skip.
+- Validate with:
+  - `go test ./...`
+  - `ggg pr ready https://github.com/go-go-golems/glazed/pull/582 --output json`
+  - `ggg batch ready ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/10-glazed-lint-prs.yaml --output json`
+
+### Technical details
+- Conflict-aware `ggg` commit:
+  - `467d9bb Add conflict-aware PR watch readiness`
+- Downstream PR fix commits:
+  - Glazed PR 582: `56c3664 Merge main into Glazed lint rollout`
+  - Goja Git PR 3: `5fd5736 Include root packages in Glazed lint`
+  - Pinocchio PR 161: `1ca48c0 Use explicit allow paths for Pinocchio legacy commands`
+- Final readiness artifact:
+  - `sources/38-batch-ready-all-after-conflict-codex-fixes.json`
