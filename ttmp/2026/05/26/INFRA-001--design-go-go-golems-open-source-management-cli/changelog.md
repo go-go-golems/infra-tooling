@@ -132,3 +132,12 @@ Added minimal prready.Snapshot JSON fixtures and table-driven classifier tests f
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/testdata/codex_feedback_current_head.json — Codex feedback fixture derived from live unsafe PR scenario
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/testdata/ready.json — Ready fixture derived from live readiness-control scenario
 
+
+## 2026-05-27
+
+Added and ran a cleanup script for live readiness test PRs; closed PRs 5, 6, and 7 and deleted their disposable test branches after fixture creation.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/scripts/04-cleanup-readiness-test-prs.sh — Cleanup script for disposable live readiness PRs
+

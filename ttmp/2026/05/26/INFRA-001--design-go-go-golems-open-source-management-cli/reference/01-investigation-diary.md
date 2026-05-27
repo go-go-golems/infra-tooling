@@ -907,3 +907,75 @@ waiting_codex_running.json              -> waiting_codex / terminal false
 stale_codex_feedback_waiting.json       -> waiting_codex / terminal false
 truncated_current_head_feedback.json    -> codex_feedback / terminal true
 ```
+
+## Step 11: Clean up live readiness test PRs
+
+The eleventh step cleaned up the disposable GitHub PRs used for live readiness validation. The test behavior is now preserved in local fixtures, so keeping the intentionally failing and unsafe PRs open would only create repository noise.
+
+I added a cleanup script to the ticket scripts directory before running it, so the exact cleanup operation is reproducible and auditable.
+
+### Prompt Context
+
+**User prompt (verbatim):** "go ahead"
+
+**Assistant interpretation:** Proceed with the next recommended task: clean up the live readiness test PRs now that fixtures have been created.
+
+**Inferred user intent:** The user wants the live test artifacts removed once they have served their purpose.
+
+**Commit (code):** pending — cleanup script and diary update ready to commit.
+
+### What I did
+- Added `scripts/04-cleanup-readiness-test-prs.sh` to the INFRA-001 ticket.
+- Ran the cleanup script.
+- Closed PRs 5, 6, and 7.
+- Deleted remote branches:
+  - `test/infra-001-ready-control`
+  - `test/infra-001-failing-tests`
+  - `test/infra-001-codex-feedback-bait`
+- Verified no open PRs 5, 6, or 7 remained.
+- Marked the live PR cleanup task complete.
+
+### Why
+- The PRs were intentionally disposable test fixtures and not meant to merge.
+- Their behavior is now represented in `pkg/prready/testdata`, so they no longer need to stay open.
+
+### What worked
+- `gh pr close --delete-branch` closed each PR and deleted each test branch.
+
+### What didn't work
+- My first cleanup command used a mistyped ticket path:
+
+```text
+ttmp/2026/05/26/INFRA-001--design-go-golems-open-source-management-cli/scripts/04-cleanup-readiness-test-prs.sh: No such file or directory
+```
+
+The actual directory includes `go-go-golems`, and rerunning with the correct path succeeded.
+
+### What I learned
+- Ticket script paths are long enough that it is worth copy/pasting from `find`/shell completion rather than retyping them.
+
+### What was tricky to build
+- The cleanup script should tolerate already-closed or missing PRs because cleanup may be rerun. It checks PR state before closing.
+
+### What warrants a second pair of eyes
+- N/A.
+
+### What should be done in the future
+- If more live test PRs are created, add them to the cleanup script or make the script read from the YAML PR list.
+
+### Code review instructions
+- Review `scripts/04-cleanup-readiness-test-prs.sh`.
+- Confirm PRs 5, 6, and 7 are closed in GitHub.
+
+### Technical details
+
+Successful cleanup output:
+
+```text
+✓ Closed pull request #5 (INFRA-001 readiness control PR)
+✓ Deleted branch test/infra-001-ready-control
+✓ Closed pull request #6 (INFRA-001 intentionally failing checks PR)
+✓ Deleted branch test/infra-001-failing-tests
+✓ Closed pull request #7 (INFRA-001 intentionally unsafe Codex feedback PR)
+✓ Deleted branch test/infra-001-codex-feedback-bait
+```

@@ -130,4 +130,4 @@ WhenToUse: Use while executing INFRA-001.
 - [x] Add a ticket script for synthetic commit statuses when repository Actions do not report checks.
 - [x] Verify `ggg pr ready` classifies ready, failed-check, and Codex-feedback PRs correctly.
 - [x] Verify built-binary exit codes for ready, failed-check, Codex-feedback, and batch Codex-feedback states.
-- [ ] Close or otherwise clean up the live test PRs after the validation window.
+- [x] Close or otherwise clean up the live test PRs after the validation window.
