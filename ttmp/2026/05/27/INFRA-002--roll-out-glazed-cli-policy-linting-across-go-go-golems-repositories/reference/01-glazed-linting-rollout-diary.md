@@ -414,3 +414,48 @@ Initial batch readiness summary:
 state=waiting ready=0 not_ready=10 codex_feedback=0 failed_checks=0 errors=0
 exit=1
 ```
+
+## Step 6: Add per-repository rollout action document
+
+The sixth step created a focused reference document listing exactly what had to be done in each repository to get `make glazed-lint` running and passing. The document is intended for PR review: it explains the Makefile/CI wiring, the allow paths, the diagnostics that motivated the allow paths, and the validation result for each repository.
+
+### Prompt Context
+
+**User prompt (verbatim):** "I want a document with a list of what you had to do in each of these repositories to get them to run. Store in ticket."
+
+**Assistant interpretation:** Create a ticket document that summarizes repository-by-repository actions and decisions for the Glazed lint rollout.
+
+**Inferred user intent:** The user wants a review aid that explains why each PR contains its specific Makefile, CI, and allow-path changes.
+
+**Commit (code):** pending — reference document ready to commit.
+
+### What I did
+- Added `reference/02-repository-rollout-actions.md`.
+- Included all ten target repositories, PR URLs, commit hashes, changed files, allow paths, and validation notes.
+- Related the document to final lint logs and PR YAML with `docmgr doc relate`.
+
+### Why
+- The PRs are similar but not identical. A single per-repository document makes the review surface clear and preserves why allow paths exist.
+
+### What worked
+- Existing ticket logs contained enough evidence to reconstruct each repository's required work.
+
+### What didn't work
+- N/A.
+
+### What I learned
+- The rollout fell into three categories: repos already partially wired (`geppetto`, `glazed`, `pinocchio`), repos needing only generic wiring/fallback (`goja-git`), and repos needing narrow legacy allow paths.
+
+### What was tricky to build
+- Final lint logs no longer contain diagnostics after the allow paths, so the document cites the earlier diagnostic pass plus final logs.
+
+### What warrants a second pair of eyes
+- The allow-path justifications should be reviewed before merging PRs.
+
+### What should be done in the future
+- Use this document as a checklist when reviewing each PR.
+
+### Code review instructions
+- Start with `reference/02-repository-rollout-actions.md`.
+- Compare each repo's `GLAZED_LINT_FLAGS` with the allow-path list in the document.
+- Confirm final `make glazed-lint` logs under `sources/glazed-lint-logs/`.

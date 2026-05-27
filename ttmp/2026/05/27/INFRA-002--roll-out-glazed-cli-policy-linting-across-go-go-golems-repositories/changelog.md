@@ -44,3 +44,12 @@ Opened ten Glazed lint rollout PRs, stored the PR YAML, triggered Codex with ggg
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/10-glazed-lint-prs.yaml — Batch PR list for ggg readiness
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/11-push-and-open-prs-no-verify.sh — Traceable PR publication script used after local pre-push hook failure
 
+
+## 2026-05-27
+
+Added a per-repository rollout action document describing the Makefile/CI changes, allow paths, diagnostics, and validation result for each Glazed lint PR.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/reference/02-repository-rollout-actions.md — Per-repository review aid for Glazed lint rollout
+
