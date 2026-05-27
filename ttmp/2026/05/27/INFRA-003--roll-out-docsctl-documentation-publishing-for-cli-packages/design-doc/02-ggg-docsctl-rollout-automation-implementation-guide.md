@@ -3,24 +3,32 @@ Title: GGG Docsctl Rollout Automation Implementation Guide
 Ticket: INFRA-003
 Status: active
 Topics:
-  - cli
-  - automation
-  - release
-  - github
-  - docsctl
+    - cli
+    - automation
+    - release
+    - github
+    - docsctl
 DocType: design-doc
 Intent: long-term
 Owners: []
 RelatedFiles:
-  - /home/manuel/code/wesen/go-go-golems/infra-tooling/docs/go-go-golems/playbooks/docsctl-docs-publishing-rollout-playbook.md
-  - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/batch/ready.go
-  - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/pr/codex_comments.go
-  - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/rollout/root.go
-Summary: Implementation guide for the next docsctl rollout ergonomics improvements: playbook fixes, batch readiness reports, grouped Codex feedback, and ggg rollout docsctl inventory/validate/plan.
+    - Path: docs/go-go-golems/playbooks/docsctl-docs-publishing-rollout-playbook.md
+      Note: Patched docsctl playbook guidance
+    - Path: internal/cli/batch/codex_comments.go
+      Note: Implemented grouped batch Codex comments
+    - Path: internal/cli/batch/ready.go
+      Note: Implemented summary-only and Markdown batch readiness reports
+    - Path: internal/cli/pr/codex_comments.go
+    - Path: internal/cli/rollout/docsctl.go
+      Note: Implemented docsctl rollout inventory/validate/plan profile
+    - Path: internal/cli/rollout/root.go
+ExternalSources: []
+Summary: 'Implementation guide for the next docsctl rollout ergonomics improvements: playbook fixes, batch readiness reports, grouped Codex feedback, and ggg rollout docsctl inventory/validate/plan.'
 LastUpdated: 2026-05-27T18:10:00-04:00
 WhatFor: Guide implementation of ggg and playbook improvements discovered during the INFRA-003 docsctl rollout.
 WhenToUse: Before changing ggg batch/Codex/rollout commands or the docsctl publishing playbook.
 ---
+
 
 # GGG Docsctl Rollout Automation Implementation Guide
 

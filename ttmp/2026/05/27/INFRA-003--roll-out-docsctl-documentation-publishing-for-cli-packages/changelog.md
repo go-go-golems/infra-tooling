@@ -68,7 +68,7 @@ Added ggg batch readiness summary-only and Markdown report modes.
 
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/batch/ready.go — Added summary-only and markdown report output modes
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/07-batch-ready-summary-only.json — Validation artifact for summary-only output
-- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/08-batch-ready-markdown-report.md — Validation artifact for Markdown report output
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/08-batch-ready-markdown-report.txt — Validation artifact for Markdown report output
 
 
 ## 2026-05-27
@@ -91,4 +91,14 @@ Added ggg rollout docsctl inventory, validate, and plan commands.
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/rollout/docsctl.go — New docsctl rollout profile
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/rollout/root.go — Registered docsctl rollout command
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/13-ggg-docsctl-plan-go-go-goja.yaml — Validation artifact for command override planning
+
+
+## 2026-05-27
+
+Completed validation/bookkeeping for ggg docsctl rollout automation improvements and installed updated ggg.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/reference/01-investigation-diary.md — Final validation diary step
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/tasks.md — Marked Phase 5 bookkeeping complete
 

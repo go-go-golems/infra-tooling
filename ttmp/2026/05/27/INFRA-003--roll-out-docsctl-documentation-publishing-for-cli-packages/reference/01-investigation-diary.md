@@ -437,7 +437,7 @@ The implementation refactors batch readiness into collection and emission phases
 - Added grouped categories for ready, Codex feedback, failed checks, merge conflicts, waiting checks, waiting Codex, missing Codex, and other states.
 - Saved validation artifacts:
   - `sources/07-batch-ready-summary-only.json`
-  - `sources/08-batch-ready-markdown-report.md`
+  - `sources/08-batch-ready-markdown-report.txt`
 
 ### Why
 - The default batch output is precise but noisy.
@@ -597,4 +597,64 @@ The command supports package and command overrides so multi-CLI repositories can
   - `go test ./...`
   - `ggg rollout docsctl inventory --workspace <workspace> --include css-visual-diff --output yaml`
   - `ggg rollout docsctl validate --workspace <workspace> --include css-visual-diff --output yaml`
+  - `ggg rollout docsctl plan --workspace <workspace> --include go-go-goja --cmd go-go-goja=./cmd/goja-repl --output yaml`
+
+## Step 10: Final validation and installation of improved `ggg`
+
+I ran the final validation pass for the implemented playbook and `ggg` improvements, installed the updated `ggg` binary, related the key implementation files back to the guide, and fixed a docmgr hygiene issue caused by storing a generated Markdown report as a `.md` file without frontmatter.
+
+The final state is that all four requested improvement areas are implemented: playbook patch, batch readiness reports, grouped batch Codex comments, and docsctl rollout inventory/validate/plan commands.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 5)
+
+**Assistant interpretation:** Finish execution, validate, and keep documentation/bookkeeping current.
+
+**Inferred user intent:** Leave the repo in a reviewed, committed, continuation-friendly state.
+
+**Commit (code):** pending — final bookkeeping commit after implementation commits.
+
+### What I did
+- Ran `go test ./...` successfully.
+- Built and installed `~/.local/bin/ggg`.
+- Related implementation files to the automation guide with `docmgr doc relate`.
+- Ran `docmgr doctor --ticket INFRA-003 --stale-after 30`.
+- Renamed the generated Markdown report artifact from `.md` to `.txt` because docmgr treats `.md` files as managed docs requiring frontmatter.
+- Marked the final Phase 5 bookkeeping task complete.
+
+### Why
+- The installed `ggg` should match the committed implementation.
+- Ticket artifacts should pass docmgr validation.
+
+### What worked
+- `go test ./...` passed.
+- `docmgr doctor --ticket INFRA-003 --stale-after 30` passed after renaming the generated Markdown report artifact.
+
+### What didn't work
+- Doctor initially failed on `sources/08-batch-ready-markdown-report.md` with:
+  - `frontmatter delimiters '---' not found`
+- Fixed by renaming it to `sources/08-batch-ready-markdown-report.txt` and updating references.
+
+### What I learned
+- Generated Markdown snippets stored under ticket `sources/` should use `.txt` unless they are intended to be managed docmgr documents with frontmatter.
+
+### What was tricky to build
+- The code changes were straightforward; the main sharp edge was docmgr treating every `.md` under the ticket as a frontmatter-bearing document.
+
+### What warrants a second pair of eyes
+- Review the direct-output CLI choices:
+  - `batch ready --markdown-report` prints raw Markdown directly.
+  - `rollout docsctl` prints direct table/JSON/YAML rather than Glazed rows.
+
+### What should be done in the future
+- Add tests for the docsctl rollout profile and Codex title normalization.
+- Consider adding workflow/Terraform patching after the read-only docsctl profile is used in another rollout.
+
+### Code review instructions
+- Run `go test ./...`.
+- Try:
+  - `ggg batch ready <prs.yaml> --summary-only --output json`
+  - `ggg batch ready <prs.yaml> --markdown-report`
+  - `ggg batch codex-comments <prs.yaml> --group-by-message --output json`
   - `ggg rollout docsctl plan --workspace <workspace> --include go-go-goja --cmd go-go-goja=./cmd/goja-repl --output yaml`

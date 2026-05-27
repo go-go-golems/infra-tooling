@@ -66,4 +66,4 @@ WhenToUse: Before editing package release workflows or Terraform/Vault docsctl p
 - [x] Add `ggg batch codex-comments --group-by-message`.
 - [x] Add `ggg rollout docsctl inventory`, `validate`, and `plan`.
 - [x] Validate new commands against the INFRA-003 PR list and active workspace.
-- [ ] Update diary/changelog and commit at appropriate intervals.
+- [x] Update diary/changelog and commit at appropriate intervals.
