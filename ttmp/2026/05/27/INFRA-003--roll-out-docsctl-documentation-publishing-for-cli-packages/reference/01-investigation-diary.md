@@ -470,3 +470,58 @@ The implementation refactors batch readiness into collection and emission phases
   - `go test ./...`
   - `ggg batch ready <prs.yaml> --summary-only --output json`
   - `ggg batch ready <prs.yaml> --markdown-report`
+
+## Step 8: Add grouped batch Codex comments
+
+I added `ggg batch codex-comments` so rollout operators can inspect Codex feedback across a YAML PR list without running the single-PR command repeatedly. The command can emit individual Codex comments or group them by normalized message title.
+
+This directly addresses the pattern from the docsctl rollout where Codex flagged the same OIDC scoping issue in multiple PRs. Grouping makes repeated feedback visible as one rollout-wide fix instead of isolated PR comments.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 5)
+
+**Assistant interpretation:** Execute improvement 3 by adding grouped Codex feedback reporting for batch PR lists.
+
+**Inferred user intent:** Make repeated Codex feedback across rollout PRs easier to detect and fix systematically.
+
+**Commit (code):** pending — "Add batch Codex comment grouping"
+
+### What I did
+- Added `internal/cli/batch/codex_comments.go`.
+- Registered `codex-comments` in `internal/cli/batch/root.go`.
+- Added flags:
+  - `--full-body`
+  - `--current-head`
+  - `--group-by-message`
+- Reused `prlist.Load`, `ghclient.Client{}.Snapshot`, and `prready.SortedSignals`.
+- Saved validation output in `sources/09-batch-codex-comments-grouped.json`.
+
+### Why
+- Rollout PRs often receive identical or closely related Codex feedback.
+- The operator should be able to group repeated findings before patching only one repo.
+
+### What worked
+- `go test ./...` passed.
+- `ggg batch codex-comments <prs.yaml> --group-by-message --output json` emitted grouped current-head Codex signals for the live INFRA-003 PRs.
+
+### What didn't work
+- The current live PR set mostly has satisfied Codex messages, so this validation did not show repeated actionable feedback. The command path is still validated against real PR data.
+
+### What I learned
+- Codex satisfied messages vary in wording, so exact title grouping is most useful for structured review comments rather than satisfied top-level comments.
+
+### What was tricky to build
+- Codex messages include HTML, badges, Markdown, and generated boilerplate. The title normalization strips common markup but intentionally stays conservative.
+
+### What warrants a second pair of eyes
+- The grouping key may need refinement after seeing more inline review comments with badges and severity labels.
+
+### What should be done in the future
+- Add tests around `codexMessageTitle` normalization with real Codex feedback samples.
+
+### Code review instructions
+- Review `internal/cli/batch/codex_comments.go` and `internal/cli/batch/root.go`.
+- Validate with:
+  - `go test ./...`
+  - `ggg batch codex-comments <prs.yaml> --group-by-message --output json`

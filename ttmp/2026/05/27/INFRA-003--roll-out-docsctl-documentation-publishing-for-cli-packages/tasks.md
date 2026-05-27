@@ -63,7 +63,7 @@ WhenToUse: Before editing package release workflows or Terraform/Vault docsctl p
 - [x] Add implementation guide for playbook and `ggg` improvements 1-4.
 - [x] Patch the docsctl publishing playbook: validation flags, job-level OIDC, package identity checklist, exact workflow filename warning.
 - [x] Add `ggg batch ready --summary-only` and `--markdown-report`.
-- [ ] Add `ggg batch codex-comments --group-by-message`.
+- [x] Add `ggg batch codex-comments --group-by-message`.
 - [ ] Add `ggg rollout docsctl inventory`, `validate`, and `plan`.
 - [ ] Validate new commands against the INFRA-003 PR list and active workspace.
 - [ ] Update diary/changelog and commit at appropriate intervals.

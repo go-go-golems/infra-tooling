@@ -8,6 +8,10 @@ func NewCommand() (*cobra.Command, error) {
 	if err != nil {
 		return nil, err
 	}
-	root.AddCommand(ready)
+	comments, err := newCodexCommentsCommand()
+	if err != nil {
+		return nil, err
+	}
+	root.AddCommand(ready, comments)
 	return root, nil
 }

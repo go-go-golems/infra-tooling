@@ -70,3 +70,14 @@ Added ggg batch readiness summary-only and Markdown report modes.
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/07-batch-ready-summary-only.json — Validation artifact for summary-only output
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/08-batch-ready-markdown-report.md — Validation artifact for Markdown report output
 
+
+## 2026-05-27
+
+Added ggg batch codex-comments with grouped Codex message reporting.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/batch/codex_comments.go — New batch Codex comments command
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/batch/root.go — Registered batch codex-comments
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/09-batch-codex-comments-grouped.json — Validation artifact for grouped Codex output
+
