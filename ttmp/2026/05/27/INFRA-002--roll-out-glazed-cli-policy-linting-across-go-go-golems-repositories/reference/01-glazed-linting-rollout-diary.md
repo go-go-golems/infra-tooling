@@ -223,3 +223,105 @@ ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golem
 ```
 
 Final result: all ten target repositories passed `make glazed-lint`.
+
+## Step 4: Commit rollout branches and repair branch bases before PR creation
+
+The fourth step turned the validated workspace edits into local commits, one per target repository. Before pushing PRs, I checked whether each branch contained only the Glazed lint rollout commit relative to `origin/main`. That check found two branches with historical xgoja rollout commits still ahead of `origin/main`, so I rebased/cherry-picked the lint commit onto the current upstream main before any push.
+
+This step is important because a PR that accidentally includes old release-train commits would be hard to review and could reopen already-completed work. The branch-base check is now part of the rollout evidence.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Remember to write a diary, if you haven't or if it's saprse, backfill it."
+
+**Assistant interpretation:** Stop and make sure the diary captures the detailed rollout steps already taken, including any repair work and current safety rules.
+
+**Inferred user intent:** The user wants the rollout trace to remain complete enough to audit, review, or resume later.
+
+**Commit (code):** target repositories now have local commits; infra-tooling diary update pending.
+
+### What I did
+- Added `scripts/09-commit-workspace-repos.sh`.
+- Ran it to create branch `infra-002/glazed-lint` and commit only `Makefile` plus `.github/workflows/lint.yml` in each target repo.
+- Confirmed commit hashes:
+  - `css-visual-diff`: `1f744ec` initially.
+  - `discord-bot`: `649c57c`.
+  - `geppetto`: `ca54680f`.
+  - `glazed`: `c30fe7c`.
+  - `go-go-goja`: `0e060f9` initially.
+  - `goja-git`: `14f9e43`.
+  - `go-minitrace`: `35e785b`.
+  - `loupedeck`: `b660498` initially.
+  - `pinocchio`: `40ed4c4`.
+  - `workspace-manager`: `7c71cca`.
+- Removed untracked `css-visual-diff/.bin/`, which was a local tool-install artifact and not part of the rollout.
+- Checked `origin/main..HEAD` commit counts for every repo.
+- Found `go-go-goja` and `loupedeck` were not clean one-commit PR branches:
+  - `go-go-goja` had 10 commits ahead of `origin/main` because old XGOJA-015 ticket commits were still on the branch base.
+  - `loupedeck` had 14 commits ahead of `origin/main` because old xgoja rollout commits were still on the branch base.
+- Rebased each of those lint commits onto current `origin/main`:
+  - `go-go-goja`: now `43f61ad Run Glazed CLI policy linting`.
+  - `loupedeck`: now `7ddd733 Run Glazed CLI policy linting`.
+- Re-created/reset branch `infra-002/glazed-lint` at those rebased commits.
+- Re-ran `make glazed-lint` for `go-go-goja` and `loupedeck` after the rebase; both passed.
+- Verified all ten target repos now have exactly one commit ahead of `origin/main`.
+
+### Why
+- Every PR should contain only the lint rollout diff for that repository.
+- Detached HEAD and stale task-branch history are common in long multi-repo workspaces, so checking the PR branch base before pushing is required.
+
+### What worked
+- All target repos are now on branch `infra-002/glazed-lint`.
+- All target repos are one commit ahead of `origin/main`.
+- No target repo has unstaged rollout changes after committing.
+- The accidental `.bin/` artifact in `css-visual-diff` was removed before push.
+
+### What didn't work
+- The first commit pass was not sufficient for `go-go-goja` and `loupedeck` because their local branch bases included old xgoja release-train commits.
+- `git rebase --onto origin/main HEAD~1 HEAD` updated detached HEAD in those repos, so I explicitly reset `infra-002/glazed-lint` to the rebased commit afterward with `git switch -C infra-002/glazed-lint`.
+
+### What I learned
+- In this workspace, branch names alone are not enough evidence that a PR will be clean. Always check `git rev-list --count origin/main..HEAD` before pushing.
+- The active workspace contains a mix of normal branches, detached HEAD checkouts, and branches whose upstream remote branch was deleted.
+
+### What was tricky to build
+- The rollout script created branches consistently, but it could not know whether a repository's current base had already diverged from `origin/main`. That needed an explicit post-commit audit.
+
+### What warrants a second pair of eyes
+- The final PR diffs should be reviewed to confirm they contain only Makefile and lint workflow changes.
+- The rebased `go-go-goja` and `loupedeck` commits should be treated as the authoritative commits, not the earlier pre-rebase hashes.
+
+### What should be done in the future
+- Add a script that verifies all target branches are exactly one commit ahead of `origin/main` before pushing.
+- Push branches and open PRs, but do not merge any PRs. The user explicitly wants to review them after they pass.
+
+### Code review instructions
+- For every target repo, review `git diff origin/main..HEAD -- Makefile .github/workflows/lint.yml`.
+- Confirm `git rev-list --count origin/main..HEAD` is `1` before PR creation.
+- Validate with `make glazed-lint` or the ticket validation script.
+
+### Technical details
+
+Branch-base audit command:
+
+```bash
+for d in css-visual-diff discord-bot geppetto glazed go-go-goja goja-git go-minitrace loupedeck pinocchio workspace-manager; do
+  git -C "$d" fetch origin main --quiet
+  git -C "$d" rev-list --count origin/main..HEAD
+done
+```
+
+Final one-commit branch status:
+
+```text
+css-visual-diff    ahead=1
+discord-bot        ahead=1
+geppetto           ahead=1
+glazed             ahead=1
+go-go-goja         ahead=1
+goja-git           ahead=1
+go-minitrace       ahead=1
+loupedeck          ahead=1
+pinocchio          ahead=1
+workspace-manager  ahead=1
+```

@@ -25,3 +25,12 @@ Applied Glazed lint Makefile and CI wiring to the ten active add-js-providers wo
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/06-run-glazed-lint.sh — Validation runner for make glazed-lint
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/glazed-lint-logs — Per-repository lint logs
 
+
+## 2026-05-27
+
+Committed Glazed lint rollout changes locally in all ten target repositories, removed an incidental css-visual-diff .bin artifact, and rebased go-go-goja/loupedeck lint commits onto origin/main so each future PR is exactly one commit ahead.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/09-commit-workspace-repos.sh — Script that committed the focused rollout files in each target repo
+

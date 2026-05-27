@@ -1,0 +1,69 @@
+=== css-visual-diff ===
+M	.github/workflows/lint.yml
+M	Makefile
+[infra-002/glazed-lint 1f744ec] Run Glazed CLI policy linting
+ 2 files changed, 27 insertions(+), 4 deletions(-)
+## infra-002/glazed-lint
+?? .bin/
+1f744eced3d8fb0ac59162234a7e5010897adcf1
+=== discord-bot ===
+M	.github/workflows/lint.yml
+M	Makefile
+[infra-002/glazed-lint 649c57c] Run Glazed CLI policy linting
+ 2 files changed, 26 insertions(+), 3 deletions(-)
+## infra-002/glazed-lint
+649c57c7299830becc29d8647876f0f14f8e3bd0
+=== geppetto ===
+M	Makefile
+[infra-002/glazed-lint ca54680f] Run Glazed CLI policy linting
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+## infra-002/glazed-lint
+ca54680fb09abc4e2cf4fbba1e5077bed9385ad0
+=== glazed ===
+M	.github/workflows/lint.yml
+M	Makefile
+[infra-002/glazed-lint c30fe7c] Run Glazed CLI policy linting
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+## infra-002/glazed-lint
+c30fe7c9feb68566365dcad8ee40a1367cefdd5f
+=== go-go-goja ===
+M	.github/workflows/lint.yml
+M	Makefile
+[infra-002/glazed-lint 0e060f9] Run Glazed CLI policy linting
+ 2 files changed, 27 insertions(+), 4 deletions(-)
+## infra-002/glazed-lint
+0e060f925bfea468a61660726ddedc91e9b6f632
+=== goja-git ===
+M	.github/workflows/lint.yml
+M	Makefile
+[infra-002/glazed-lint 14f9e43] Run Glazed CLI policy linting
+ 2 files changed, 27 insertions(+), 4 deletions(-)
+## infra-002/glazed-lint
+14f9e43bf4bd71865c7d21f3a19e67f0394f194d
+=== go-minitrace ===
+M	.github/workflows/lint.yml
+M	Makefile
+[infra-002/glazed-lint 35e785b] Run Glazed CLI policy linting
+ 2 files changed, 26 insertions(+), 3 deletions(-)
+## infra-002/glazed-lint
+35e785b2c04ed0481b402c8cacb06febd8493633
+=== loupedeck ===
+M	.github/workflows/lint.yml
+M	Makefile
+[infra-002/glazed-lint b660498] Run Glazed CLI policy linting
+ 2 files changed, 27 insertions(+), 4 deletions(-)
+## infra-002/glazed-lint
+b660498b3f612840a6433b7284ef0ac780829e5a
+=== pinocchio ===
+M	Makefile
+[infra-002/glazed-lint 40ed4c4] Run Glazed CLI policy linting
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+## infra-002/glazed-lint
+40ed4c45370b81e061e50d82fd05e15e47cad238
+=== workspace-manager ===
+M	.github/workflows/lint.yml
+M	Makefile
+[infra-002/glazed-lint 7c71cca] Run Glazed CLI policy linting
+ 2 files changed, 27 insertions(+), 4 deletions(-)
+## infra-002/glazed-lint
+7c71cca9e7adc4d513d9dd21db708b4bed88195e
