@@ -37,3 +37,14 @@ Recorded package decisions: workspace-manager publishes as workspace-manager, an
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/reference/01-investigation-diary.md — Recorded Step 4 decision update
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/tasks.md — Marked package-scope decision tasks complete
 
+
+## 2026-05-27
+
+Added implementation guide and tasks for docsctl rollout playbook and ggg automation improvements.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/design-doc/02-ggg-docsctl-rollout-automation-implementation-guide.md — Implementation guide for improvements 1-4
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/reference/01-investigation-diary.md — Recorded Step 5 planning
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/tasks.md — Added Phase 5 implementation tasks
+

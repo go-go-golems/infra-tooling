@@ -305,3 +305,61 @@ I updated the design guide so the rollout can proceed without ambiguity in Terra
 - Public docs URLs implied by the decisions:
   - `https://docs.yolo.scapegoat.dev/workspace-manager/<version>`
   - `https://docs.yolo.scapegoat.dev/go-go-goja/<version>`
+
+## Step 5: Plan the next `ggg` and playbook improvements
+
+After the initial package PRs were open, the user asked to turn the top four improvement ideas into tracked work and implementation guidance, then execute them. I created a second design document focused on `ggg` and playbook ergonomics so the implementation has a clear target before code changes begin.
+
+This step also records that the rollout implementation has already progressed beyond the original guide: Terraform and package PRs are open, OIDC permissions were fixed to job-level scope after Codex feedback, and the remaining package PRs are mostly waiting on checks.
+
+### Prompt Context
+
+**User prompt (verbatim):** "add tasks and implementation guide for 1. - 4. and then execute, committing at appropriate intervals, keeping a detailed diary"
+
+**Assistant interpretation:** Add ticket tasks and an implementation guide for the first four recommended improvements, then implement them in focused commits while maintaining the diary.
+
+**Inferred user intent:** The user wants to institutionalize lessons from this rollout immediately, not leave them as informal suggestions.
+
+**Commit (code):** N/A — planning step before implementation commits.
+
+### What I did
+- Added `design-doc/02-ggg-docsctl-rollout-automation-implementation-guide.md`.
+- Added Phase 5 tasks to `tasks.md` for:
+  - docsctl playbook fixes;
+  - `ggg batch ready --summary-only` / `--markdown-report`;
+  - `ggg batch codex-comments --group-by-message`;
+  - `ggg rollout docsctl inventory|validate|plan`.
+- Updated Phase 4 tasks to reflect opened Terraform/package PRs and outstanding apply/merge/release steps.
+
+### Why
+- The first docsctl rollout already exposed repeated manual work and one security-sensitive playbook gap: OIDC permissions should be job-scoped.
+- A guide reduces the chance that code changes drift from the intended operator workflow.
+
+### What worked
+- The implementation guide now has concrete CLI UX, pseudocode, phases, and validation commands.
+
+### What didn't work
+- N/A.
+
+### What I learned
+- The docsctl rollout automation should start with discovery/reporting primitives before attempting workflow/Terraform patch automation.
+
+### What was tricky to build
+- Scope control: “1-4” refers to a mixed set of docs and code changes. I split them into explicit phases so each can be committed independently.
+
+### What warrants a second pair of eyes
+- Review whether `--markdown-report` should be raw stdout or a Glazed row field. The guide recommends raw stdout for copy/paste usability.
+
+### What should be done in the future
+- Execute the Phase 5 tasks in order and update this diary after each commit.
+
+### Code review instructions
+- Start with `design-doc/02-ggg-docsctl-rollout-automation-implementation-guide.md`.
+- Check `tasks.md` Phase 5 for the implementation checklist.
+
+### Technical details
+- The implementation guide references:
+  - `internal/cli/batch/ready.go`
+  - `internal/cli/pr/codex_comments.go`
+  - `internal/cli/rollout/root.go`
+  - `docs/go-go-golems/playbooks/docsctl-docs-publishing-rollout-playbook.md`

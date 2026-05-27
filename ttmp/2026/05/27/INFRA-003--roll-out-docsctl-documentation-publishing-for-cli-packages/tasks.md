@@ -51,8 +51,19 @@ WhenToUse: Before editing package release workflows or Terraform/Vault docsctl p
 
 - [x] Resolve package identity for `workspace-manager`: publish as `workspace-manager`.
 - [x] Resolve canonical docs export for `go-go-goja`: use `./cmd/goja-repl`.
+- [x] Open Terraform/Vault publisher role PR for approved candidate packages.
+- [x] Add release workflow `publish-docs` jobs for approved candidate packages.
+- [x] Open PRs, trigger Codex with `ggg`, and wait for readiness.
 - [ ] Apply Terraform/Vault publisher roles for approved candidate packages.
-- [ ] Add release workflow `publish-docs` jobs for approved candidate packages.
-- [ ] Open PRs, trigger Codex with `ggg`, and wait for readiness.
 - [ ] Merge approved PRs and publish docs on the next package release tags.
 - [ ] Verify docs.yolo package/version visibility after releases.
+
+## Phase 5: Improve `ggg` and playbooks for the next docsctl rollout
+
+- [x] Add implementation guide for playbook and `ggg` improvements 1-4.
+- [ ] Patch the docsctl publishing playbook: validation flags, job-level OIDC, package identity checklist, exact workflow filename warning.
+- [ ] Add `ggg batch ready --summary-only` and `--markdown-report`.
+- [ ] Add `ggg batch codex-comments --group-by-message`.
+- [ ] Add `ggg rollout docsctl inventory`, `validate`, and `plan`.
+- [ ] Validate new commands against the INFRA-003 PR list and active workspace.
+- [ ] Update diary/changelog and commit at appropriate intervals.

@@ -1,0 +1,160 @@
+[
+{
+  "attempt": 1,
+  "failed_check_kinds": [],
+  "failed_checks": null,
+  "head_ref_oid": "55df28791db1ac3a62d4bc9746f07d169d126c17",
+  "merge_state_status": "CLEAN",
+  "next_action": "wait_for_codex",
+  "number": 10,
+  "ok": false,
+  "pending_checks": null,
+  "pr": "https://github.com/go-go-golems/css-visual-diff/pull/10",
+  "repository": "go-go-golems/css-visual-diff",
+  "state": "waiting_codex",
+  "terminal": false,
+  "terminal_reason": "",
+  "trigger_url": ""
+}
+, {
+  "attempt": 1,
+  "failed_check_kinds": [],
+  "failed_checks": null,
+  "head_ref_oid": "74f6b214a4f2cdd1deb98234a1d5d8c3fe7a17a5",
+  "merge_state_status": "CLEAN",
+  "next_action": "wait_for_codex",
+  "number": 11,
+  "ok": false,
+  "pending_checks": null,
+  "pr": "https://github.com/go-go-golems/discord-bot/pull/11",
+  "repository": "go-go-golems/discord-bot",
+  "state": "waiting_codex",
+  "terminal": false,
+  "terminal_reason": "",
+  "trigger_url": ""
+}
+, {
+  "attempt": 1,
+  "failed_check_kinds": [
+    "pending_checks"
+  ],
+  "failed_checks": null,
+  "head_ref_oid": "afc587509aa6384f21b085ef09de47c6b2cbf31d",
+  "merge_state_status": "UNSTABLE",
+  "next_action": "inspect_and_address_codex_feedback",
+  "number": 43,
+  "ok": false,
+  "pending_checks": [
+    "Analyze: status=IN_PROGRESS",
+    "test: status=IN_PROGRESS"
+  ],
+  "pr": "https://github.com/go-go-golems/go-go-goja/pull/43",
+  "repository": "go-go-golems/go-go-goja",
+  "state": "codex_feedback",
+  "terminal": true,
+  "terminal_reason": "codex_feedback",
+  "trigger_url": ""
+}
+, {
+  "attempt": 1,
+  "failed_check_kinds": [
+    "pending_checks"
+  ],
+  "failed_checks": null,
+  "head_ref_oid": "34f8be20ae1dec94caf1359fe1fa580ebfe5dc86",
+  "merge_state_status": "UNSTABLE",
+  "next_action": "wait_for_pending_checks",
+  "number": 13,
+  "ok": false,
+  "pending_checks": [
+    "Analyze: status=IN_PROGRESS"
+  ],
+  "pr": "https://github.com/go-go-golems/go-minitrace/pull/13",
+  "repository": "go-go-golems/go-minitrace",
+  "state": "waiting_checks",
+  "terminal": false,
+  "terminal_reason": "",
+  "trigger_url": ""
+}
+, {
+  "attempt": 1,
+  "failed_check_kinds": [
+    "pending_checks"
+  ],
+  "failed_checks": null,
+  "head_ref_oid": "c26365e257bee088463c5c984b82d3e75b43a643",
+  "merge_state_status": "UNSTABLE",
+  "next_action": "wait_for_pending_checks",
+  "number": 5,
+  "ok": false,
+  "pending_checks": [
+    "GoSec Security Scan: status=IN_PROGRESS"
+  ],
+  "pr": "https://github.com/go-go-golems/loupedeck/pull/5",
+  "repository": "go-go-golems/loupedeck",
+  "state": "waiting_checks",
+  "terminal": false,
+  "terminal_reason": "",
+  "trigger_url": ""
+}
+, {
+  "attempt": 1,
+  "failed_check_kinds": [
+    "pending_checks"
+  ],
+  "failed_checks": null,
+  "head_ref_oid": "e4a41fdc33c41f5b8f995498aac097f125e51a57",
+  "merge_state_status": "UNSTABLE",
+  "next_action": "wait_for_pending_checks",
+  "number": 22,
+  "ok": false,
+  "pending_checks": [
+    "test: status=IN_PROGRESS",
+    "Analyze (javascript-typescript): status=IN_PROGRESS",
+    "GoSec Security Scan: status=IN_PROGRESS"
+  ],
+  "pr": "https://github.com/go-go-golems/workspace-manager/pull/22",
+  "repository": "go-go-golems/workspace-manager",
+  "state": "waiting_checks",
+  "terminal": false,
+  "terminal_reason": "",
+  "trigger_url": ""
+}
+, {
+  "attempt": 1,
+  "failed_check_kinds": [
+    "pending_checks"
+  ],
+  "failed_checks": null,
+  "head_ref_oid": "6d9b4dee99cc8bf4592592a2144f1450380f2520",
+  "merge_state_status": "UNSTABLE",
+  "next_action": "inspect_and_address_codex_feedback",
+  "number": 162,
+  "ok": false,
+  "pending_checks": [
+    "Analyze: status=IN_PROGRESS",
+    "lint: status=IN_PROGRESS",
+    "GoSec Security Scan: status=IN_PROGRESS"
+  ],
+  "pr": "https://github.com/go-go-golems/pinocchio/pull/162",
+  "repository": "go-go-golems/pinocchio",
+  "state": "codex_feedback",
+  "terminal": true,
+  "terminal_reason": "codex_feedback",
+  "trigger_url": ""
+}
+, {
+  "attempt": 1,
+  "codex_feedback": 2,
+  "errors": 0,
+  "failed_checks": 0,
+  "merge_conflicts": 0,
+  "not_ready": 7,
+  "number": 0,
+  "ok": false,
+  "pr": "",
+  "ready": 0,
+  "repository": "summary",
+  "state": "codex_feedback"
+}
+]
