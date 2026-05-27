@@ -101,7 +101,7 @@ ggg release watch \
   --package <package>
 ```
 
-Use `--no-stream --output json` when saving rollout evidence to a ticket.
+Use `--no-stream --output json` when saving rollout evidence to a ticket. If the release fails, inspect the emitted `failed_log_command` first.
 
 ### 2. Bump downstream go-go-golems dependencies
 

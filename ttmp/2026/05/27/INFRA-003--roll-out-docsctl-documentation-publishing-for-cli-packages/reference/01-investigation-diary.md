@@ -1078,3 +1078,47 @@ This does not fully summarize logs yet, but it shortens the next operator step a
 
 ### Code review instructions
 - Review `internal/cli/release/watch.go` and the failed css-visual-diff artifact.
+
+## Step 18: Patch playbooks with failed release diagnostics
+
+I added a short note to the docsctl and release-train playbooks explaining that `ggg release watch` emits `failed_log_command` when a release fails.
+
+This ties the css-visual-diff failure back into the operator documentation so the next failed release immediately points to the right GitHub CLI diagnostic command.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 12)
+
+**Assistant interpretation:** Keep playbooks aligned with the latest `ggg` release-watch output.
+
+**Inferred user intent:** Ensure operational failures improve the reusable workflow documentation.
+
+**Commit (code):** pending — "Document release watch failed log hints"
+
+### What I did
+- Updated `docsctl-docs-publishing-rollout-playbook.md`.
+- Updated `package-publishing-release-train.md`.
+
+### Why
+- Failed release outputs now include an explicit next diagnostic command; operators should know to use it.
+
+### What worked
+- The playbooks now mention `failed_log_command` in the release watch guidance.
+
+### What didn't work
+- N/A
+
+### What I learned
+- Small failure-output conventions should be documented near the command examples, not only in the CLI help.
+
+### What was tricky to build
+- N/A
+
+### What warrants a second pair of eyes
+- N/A
+
+### What should be done in the future
+- Add a richer failed-release triage section if more release failures appear.
+
+### Code review instructions
+- Review the two playbook snippets around `ggg release watch`.

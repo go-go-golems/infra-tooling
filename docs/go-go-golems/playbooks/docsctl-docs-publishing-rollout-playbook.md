@@ -364,7 +364,7 @@ ggg release watch \
   --package <package>
 ```
 
-This waits for the tag-triggered GitHub Actions run, streams `gh run watch` output by default, then verifies the public docs browser URL. Use `--no-stream --output json` for scripts and ticket artifacts.
+This waits for the tag-triggered GitHub Actions run, streams `gh run watch` output by default, then verifies the public docs browser URL. Use `--no-stream --output json` for scripts and ticket artifacts. If the release fails, the JSON includes `failed_log_command` with the exact `gh run view ... --log-failed` command to run next.
 
 You can also use GitHub CLI directly:
 
