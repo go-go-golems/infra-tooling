@@ -126,3 +126,14 @@ Added conflict-aware ggg readiness, updated Codex trigger/playbook policy, resol
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/prready.go — Merge-state readiness classification
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/sources/38-batch-ready-all-after-conflict-codex-fixes.json — Final all-ready batch readiness artifact
 
+
+## 2026-05-27
+
+Added richer ggg readiness output, Codex auto-wait trigger behavior, and configurable batch watch stop modes.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/batch/ready.go — Added --until watch modes
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/pr/codex_trigger.go — Added --wait-for-auto and improved dry-run skip ordering
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/actions.go — Shared terminal reason and next-action helpers
+

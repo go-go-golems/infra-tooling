@@ -41,14 +41,20 @@ RelatedFiles:
         Allow-list tightened to shared infrastructure paths after Glazed v1.3.5
     - Path: ../../../../../../../../../../workspaces/2026-05-24/add-js-providers/workspace-manager/Makefile
       Note: Final hardened Glazed lint rollout Makefile
+    - Path: internal/cli/batch/ready.go
+      Note: Batch --until watch semantics added in Step 13
     - Path: internal/cli/pr/codex_trigger.go
-      Note: Codex trigger now skips satisfied signals by default
+      Note: |-
+        Codex trigger now skips satisfied signals by default
+        Codex --wait-for-auto behavior added in Step 13
     - Path: internal/cli/pr/watch.go
       Note: Single-PR watch command added in Step 12
     - Path: internal/cli/rollout
       Note: Implemented rollout CLI commands
     - Path: internal/cli/rollout/plan.go
       Note: Step 10 rollout plan CLI
+    - Path: pkg/prready/actions.go
+      Note: Shared richer readiness output helpers added in Step 13
     - Path: pkg/prready/prready.go
       Note: Merge conflict classification added in Step 12
     - Path: pkg/rollout
@@ -63,6 +69,7 @@ LastUpdated: 2026-05-27T11:20:00-04:00
 WhatFor: Preserve exact steps, commands, failures, validations, PRs, and release actions for the Glazed linting rollout.
 WhenToUse: Read before resuming INFRA-002 or reviewing the rollout.
 ---
+
 
 
 
@@ -1098,3 +1105,84 @@ Update your playbooks, update ggg to track conflicts, and continue."
   - Pinocchio PR 161: `1ca48c0 Use explicit allow paths for Pinocchio legacy commands`
 - Final readiness artifact:
   - `sources/38-batch-ready-all-after-conflict-codex-fixes.json`
+
+## Step 13: Add richer readiness output, Codex auto-wait, and configurable batch watch modes
+
+This step implemented the three follow-up ergonomics improvements that fell out of the conflict-aware rollout work. `ggg pr ready` and `ggg batch ready` now expose the same actionable fields operators were mentally deriving from state codes: `terminal_reason`, `next_action`, `pending_checks`, and `failed_checks`.
+
+The Codex trigger command also gained `--wait-for-auto`, so playbooks no longer rely on a human remembering to sleep after PR creation. Batch watch gained `--until actionable|all-ready|terminal|first-ready`, which lets release trains wake on partial readiness while dashboard-style monitoring can continue until every PR is ready.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok, add tasks for 1.-3. and then execute."
+
+**Assistant interpretation:** Add ticket tasks for the first three proposed `ggg`/playbook improvements, then implement and validate them.
+
+**Inferred user intent:** The user wants the immediately useful rollout automation improvements captured in ticket bookkeeping and shipped, not just listed as ideas.
+
+**Commit (code):** `25570c4` — "Improve ggg readiness watch ergonomics"
+
+### What I did
+- Added Phase 6 tasks to `tasks.md` and marked them complete after implementation.
+- Added `pkg/prready/actions.go` with shared helpers:
+  - `TerminalReason(report)`
+  - `NextAction(report)`
+  - `PendingChecks(report)`
+  - `FailedChecksSummary(report)`
+- Updated `ggg pr ready` rows to include:
+  - `terminal_reason`
+  - `next_action`
+  - `pending_checks`
+  - `failed_checks`
+- Updated `ggg batch ready` rows to include the same richer per-PR fields plus merge/head metadata.
+- Added `--wait-for-auto` to `ggg pr codex-trigger`.
+- Made dry-run Codex trigger output honor skip reasons such as `skipped_satisfied` rather than always saying `would_trigger`.
+- Added `--until actionable|all-ready|terminal|first-ready` to `ggg batch ready --watch`.
+- Updated rollout/release playbooks to use `--wait-for-auto 30s` and document `--until` modes.
+- Rebuilt and installed `~/.local/bin/ggg`.
+
+### Why
+- Operators need to know what to do next without reverse-engineering state strings.
+- Codex auto-review timing should be handled by the tool rather than by ad-hoc sleeps in shell history.
+- Different watch workflows need different stop behavior: release trains want actionable partial readiness, while monitoring runs may want all-ready.
+
+### What worked
+- `go test ./...` passed.
+- `ggg pr ready https://github.com/go-go-golems/glazed/pull/582 --output json` now emits `terminal_reason`, `next_action`, and check detail fields.
+- `ggg pr codex-trigger ... --wait-for-auto 1s --dry-run --output json` against already-satisfied Glazed PR 582 now reports `action=skipped_satisfied`.
+- `ggg batch ready ... --watch --until all-ready --timeout-seconds 1 --interval-seconds 1 --output json` returned all ten ready PR rows successfully.
+
+### What didn't work
+- The first dry-run implementation reported `would_trigger` before evaluating skip guards. I changed the order so skip reasons are reported even in dry-run mode, and only truly triggerable PRs report `would_trigger`.
+
+### What I learned
+- Shared action/terminal helper functions avoid subtle drift between `pr ready`, `pr watch`, and `batch ready` output.
+- Dry-run modes are more useful when they answer "what would policy decide?" rather than only "would this code path avoid mutation?".
+
+### What was tricky to build
+- `--wait-for-auto` needs to wait only until a meaningful Codex state appears: running `EYES`, current-head feedback, a satisfied signal, or a recent manual trigger. Waiting for any historical signal would return too early on old PRs.
+- `--until` semantics needed to preserve the existing release-train default while adding all-ready monitoring without breaking current scripts. I kept `actionable` as the default.
+
+### What warrants a second pair of eyes
+- The exact `--until terminal` behavior currently stops on all-ready or terminal blockers, not partial readiness. This is intentional but should be checked against operator expectations.
+- `--wait-for-auto` currently polls every five seconds; that is simple but may deserve a configurable interval if used heavily.
+
+### What should be done in the future
+- Consider adding a top-level `ggg batch report` handoff generator for manual review queues.
+- Consider adding CLI tests around `codex-trigger` policy ordering if command policy grows further.
+
+### Code review instructions
+- Review `pkg/prready/actions.go` first for shared output semantics.
+- Review `internal/cli/pr/codex_trigger.go` for `--wait-for-auto` polling and dry-run skip ordering.
+- Review `internal/cli/batch/ready.go` for `--until` watch semantics.
+- Validate with:
+  - `go test ./...`
+  - `ggg pr ready https://github.com/go-go-golems/glazed/pull/582 --output json`
+  - `ggg pr codex-trigger https://github.com/go-go-golems/glazed/pull/582 --wait-for-auto 1s --dry-run --output json`
+  - `ggg batch ready ttmp/2026/05/27/INFRA-002--roll-out-glazed-cli-policy-linting-across-go-go-golems-repositories/scripts/10-glazed-lint-prs.yaml --watch --until all-ready --timeout-seconds 1 --interval-seconds 1 --output json`
+
+### Technical details
+- `--until actionable` preserves existing behavior: stop on all-ready, terminal blockers, or partial readiness.
+- `--until all-ready` keeps polling through partial readiness but stops on terminal blockers.
+- `--until terminal` stops on all-ready or terminal blockers.
+- `--until first-ready` stops as soon as at least one PR is ready or a terminal blocker appears.
