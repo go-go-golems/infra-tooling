@@ -46,9 +46,9 @@ func newCodexTriggerCommand() (*cobra.Command, error) {
 		cmds.WithLong(`Trigger Codex review by posting the standard '@codex review' comment.
 
 By default the command first checks the latest Codex signal and skips PRs that
-already have an EYES reaction, which indicates that a Codex run may still be in
-progress. Use --force to post another trigger anyway. Use --file with a YAML PR
-list:
+already have an EYES reaction, have current-head Codex feedback, have a recent
+manual trigger, or already have a satisfied Codex signal. Use --force to post
+another trigger anyway. Use --file with a YAML PR list:
 
 prs:
   - https://github.com/go-go-golems/discord-bot/pull/9
@@ -92,6 +92,7 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 		action := "triggered"
 		url := ""
 		currentFeedback := prready.HasCurrentAuthoredFeedback(snap)
+		satisfied := prready.HasSatisfiedCodexSignal(snap)
 		_, recentTrigger, triggerAge := prready.RecentTrigger(snap, time.Now(), window)
 		if s.DryRun {
 			action = "would_trigger"
@@ -101,6 +102,8 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 			action = "skipped_current_feedback"
 		} else if recentTrigger && !s.Force {
 			action = "skipped_recent_trigger"
+		} else if satisfied && !s.Force {
+			action = "skipped_satisfied"
 		} else {
 			url, err = client.TriggerCodex(ctx, ref)
 			if err != nil {
@@ -116,6 +119,7 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 			types.MRP("dry_run", s.DryRun),
 			types.MRP("codex_running", status.Running),
 			types.MRP("current_feedback", currentFeedback),
+			types.MRP("satisfied", satisfied),
 			types.MRP("recent_trigger", recentTrigger),
 			types.MRP("trigger_age_seconds", int(triggerAge.Seconds())),
 			types.MRP("recent_trigger_window", window.String()),

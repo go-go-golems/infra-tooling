@@ -373,7 +373,7 @@ After pushing a repository's logcopter branch, create or update the PR and use t
 
 ```bash
 gh pr create --fill --base main --head task/logcopter
-# then trigger Codex when needed:
+# wait 20-30 seconds for automatic Codex review to appear; then trigger only if needed:
 ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<number>
 ```
 
@@ -386,19 +386,20 @@ ggg pr ready https://github.com/go-go-golems/<repo>/pull/<number> --findings
 
 `ggg pr ready` returns success only when:
 
+- GitHub mergeability is clean (no conflicts / blocked merge state);
 - Actions/status checks exist and have completed successfully;
 - a Codex signal exists;
 - the latest Codex signal has a thumbs-up reaction or a satisfied Codex body;
 - the latest Codex signal has no eyes reaction;
 - Codex did not leave current-head substantive body feedback or inline review comments.
 
-If it reports an eyes reaction, Codex is still reviewing. If it reports `codex_feedback`, inspect the feedback with:
+If it reports an eyes reaction, Codex is still reviewing. If it reports `merge_conflict`, rebase or merge the base branch before checking readiness again. If it reports `codex_feedback`, inspect the feedback with:
 
 ```bash
 ggg pr codex-comments https://github.com/go-go-golems/<repo>/pull/<number>
 ```
 
-Fix the review comments, push, and trigger another Codex review with `ggg pr codex-trigger`.
+Fix the review comments, push, wait briefly for automatic Codex review, and only then trigger another Codex review with `ggg pr codex-trigger` if no automatic/satisfied signal appears.
 
 For a large dependency-order rollout, keep a simple queue:
 

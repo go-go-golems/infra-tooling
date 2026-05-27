@@ -41,12 +41,13 @@ Use the installed `ggg` CLI for go-go-golems pull-request readiness. The old she
 
 `ggg` checks the same merge gate we use in release trains:
 
-1. status checks exist;
-2. every check/status is successful, skipped, or neutral;
-3. a Codex signal exists;
-4. Codex is not still running (`EYES` reaction);
-5. Codex did not leave current-head substantive review comments;
-6. stale Codex feedback from older commits does not block the current head.
+1. GitHub mergeability is clean (no conflicts / blocked merge state);
+2. status checks exist;
+3. every check/status is successful, skipped, or neutral;
+4. a Codex signal exists;
+5. Codex is not still running (`EYES` reaction);
+6. Codex did not leave current-head substantive review comments;
+7. stale Codex feedback from older commits does not block the current head.
 
 The commands emit concise table output by default and row-oriented structured output with Glazed flags such as `--output json`, `--output yaml`, or `--output csv`.
 
@@ -58,6 +59,7 @@ ggg pr ready <pr> --findings       # include finding rows for debugging
 ggg pr codex-trigger <pr>          # post @codex review when safe
 ggg pr codex-trigger --file prs.yaml
 ggg pr codex-comments <pr>         # list Codex review bodies and inline comments
+ggg pr watch <pr>                  # poll one PR until ready or actionable
 ggg batch ready prs.yaml           # classify many PRs
 ggg batch ready prs.yaml --watch   # poll until there is operator work
 ```
@@ -98,7 +100,9 @@ Show detailed findings when a PR is not ready:
 ggg pr ready https://github.com/go-go-golems/<repo>/pull/<number> --findings
 ```
 
-Trigger Codex review if no review is running and current-head feedback is not already present:
+After opening a PR, wait briefly before manually triggering Codex. GitHub/Codex often starts an automatic review within 20-30 seconds, and an immediate manual trigger can create duplicate review runs.
+
+Trigger Codex review only if no review appeared after that short delay, no review is running, no satisfied signal already exists, and current-head feedback is not already present:
 
 ```bash
 ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<number>
@@ -109,6 +113,7 @@ Safety behavior:
 - If the latest signal has an `EYES` reaction, `ggg pr codex-trigger` skips by default.
 - If a human recently posted `@codex review`, it skips by default to avoid duplicate trigger spam.
 - If current-head Codex feedback already exists, it skips by default.
+- If Codex is already satisfied (thumbs-up reaction or satisfied Codex body) for the current head, it skips by default.
 - Use `--force` only when you intentionally want a new Codex pass despite those guards.
 - Use `--dry-run --output json` to inspect what would happen without posting a comment.
 
@@ -134,7 +139,13 @@ Check many PRs once:
 ggg batch ready /path/to/prs.yaml
 ```
 
-Watch until there is something for the operator to do:
+Watch one PR until it is ready or actionable:
+
+```bash
+ggg pr watch https://github.com/go-go-golems/<repo>/pull/<number> --interval-seconds 30 --timeout-seconds 1800
+```
+
+Watch a batch until there is something for the operator to do:
 
 ```bash
 ggg batch ready /path/to/prs.yaml --watch --interval-seconds 30 --timeout-seconds 1800
@@ -145,6 +156,7 @@ Watch mode stops when:
 - every PR is ready;
 - any PR reaches terminal Codex feedback;
 - any PR has failed checks;
+- any PR has merge conflicts or blocked mergeability;
 - any PR reports an API/tool error;
 - or some PR becomes ready while others are still waiting.
 
@@ -162,6 +174,7 @@ Use a built/installed `ggg` binary when exact process status matters. `go run` w
 | `3` | Current-head Codex feedback requires operator action. |
 | `4` | Failed checks require operator action. |
 | `5` | Batch partial readiness: at least one PR is ready while others still wait. |
+| `6` | Merge conflicts or blocked mergeability require operator action. |
 
 ## Readiness states
 
@@ -172,6 +185,7 @@ Known `state` values include:
 - `waiting_codex`
 - `no_codex`
 - `failed_checks`
+- `merge_conflict`
 - `codex_feedback`
 - `not_ready`
 - `error`

@@ -16,6 +16,10 @@ func NewCommand() (*cobra.Command, error) {
 	if err != nil {
 		return nil, err
 	}
-	root.AddCommand(trigger, ready, comments)
+	watch, err := newWatchCommand()
+	if err != nil {
+		return nil, err
+	}
+	root.AddCommand(trigger, ready, comments, watch)
 	return root, nil
 }

@@ -98,7 +98,7 @@ func (c *readyCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 			return err
 		}
 		code := summary.exitCode()
-		if !s.Watch || code == 0 || code == 2 || code == 3 || code == 4 || code == 5 {
+		if !s.Watch || code == 0 || code == 2 || code == 3 || code == 4 || code == 5 || code == 6 {
 			if code != 0 {
 				exitcode.Request(code)
 			}
@@ -117,12 +117,13 @@ func (c *readyCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 }
 
 type batchSummary struct {
-	Ready         int
-	NotReady      int
-	CodexFeedback int
-	FailedChecks  int
-	Errors        int
-	State         string
+	Ready          int
+	NotReady       int
+	CodexFeedback  int
+	FailedChecks   int
+	MergeConflicts int
+	Errors         int
+	State          string
 }
 
 func runOnce(ctx context.Context, client ghclient.Client, refs []prref.Ref, triggerMissing bool, attempt int, gp middlewares.Processor) (batchSummary, error) {
@@ -152,6 +153,8 @@ func runOnce(ctx context.Context, client ghclient.Client, refs []prref.Ref, trig
 			summary.CodexFeedback++
 		case prready.FailedChecks:
 			summary.FailedChecks++
+		case prready.MergeConflict:
+			summary.MergeConflicts++
 		}
 		row := types.NewRow(
 			types.MRP("attempt", attempt),
@@ -180,6 +183,7 @@ func runOnce(ctx context.Context, client ghclient.Client, refs []prref.Ref, trig
 		types.MRP("not_ready", summary.NotReady),
 		types.MRP("codex_feedback", summary.CodexFeedback),
 		types.MRP("failed_checks", summary.FailedChecks),
+		types.MRP("merge_conflicts", summary.MergeConflicts),
 		types.MRP("errors", summary.Errors),
 	)
 	return summary, gp.AddRow(ctx, row)
@@ -191,6 +195,9 @@ func (s batchSummary) state() string {
 	}
 	if s.Errors > 0 {
 		return "error"
+	}
+	if s.MergeConflicts > 0 {
+		return "merge_conflict"
 	}
 	if s.CodexFeedback > 0 {
 		return "codex_feedback"
@@ -216,6 +223,8 @@ func (s batchSummary) exitCode() int {
 		return 4
 	case "partial_ready":
 		return 5
+	case "merge_conflict":
+		return 6
 	default:
 		return 1
 	}

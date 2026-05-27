@@ -33,11 +33,25 @@ func TestClassifyStaleCodexFeedbackWaitsForNewCodex(t *testing.T) {
 
 func TestClassifyReady(t *testing.T) {
 	report := Classify(Snapshot{
-		PR: prref.Ref{Owner: "o", Repo: "r", Number: 1}, HeadRefOID: "abc123",
+		PR: prref.Ref{Owner: "o", Repo: "r", Number: 1}, HeadRefOID: "abc123", MergeStateStatus: "CLEAN",
 		Checks:  []Check{{Kind: "CheckRun", Name: "test", Status: "COMPLETED", Conclusion: "SUCCESS"}},
 		Signals: []CodexSignal{{Kind: "review", Author: "chatgpt-codex-connector", Time: "2026-01-01T00:00:00Z", CodexAuthored: true, Body: "Didn't find any major issues. :+1:"}},
 	})
 	if !report.OK || report.State != Ready {
 		t.Fatalf("state=%s ok=%v findings=%#v", report.State, report.OK, report.Findings)
+	}
+}
+
+func TestClassifyMergeConflict(t *testing.T) {
+	report := Classify(Snapshot{
+		PR: prref.Ref{Owner: "o", Repo: "r", Number: 1}, HeadRefOID: "abc123", MergeStateStatus: "DIRTY",
+		Checks:  []Check{{Kind: "CheckRun", Name: "test", Status: "COMPLETED", Conclusion: "SUCCESS"}},
+		Signals: []CodexSignal{{Kind: "review", Author: "chatgpt-codex-connector", Time: "2026-01-01T00:00:00Z", CodexAuthored: true, Body: "Didn't find any major issues. :+1:"}},
+	})
+	if report.OK || report.State != MergeConflict || !report.Terminal {
+		t.Fatalf("state=%s ok=%v terminal=%v findings=%#v", report.State, report.OK, report.Terminal, report.Findings)
+	}
+	if len(report.FailedCheckKinds) != 1 || report.FailedCheckKinds[0] != "merge_conflict" {
+		t.Fatalf("failed kinds=%#v", report.FailedCheckKinds)
 	}
 }

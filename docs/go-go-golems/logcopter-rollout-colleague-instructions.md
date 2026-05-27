@@ -141,7 +141,7 @@ git commit -m "Adopt logcopter package loggers"
 git push <remote> <branch>
 ```
 
-Open a PR. Trigger Codex if needed:
+Open a PR. Wait 20-30 seconds for the automatic Codex review to appear, then trigger Codex only if no run/satisfied signal appears:
 
 ```bash
 ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<n>
@@ -161,14 +161,20 @@ ggg pr codex-trigger --file /tmp/prs.yaml
 ggg batch ready /tmp/prs.yaml
 ```
 
-Wait until CI and Codex are ready for one PR:
+Wait until CI, mergeability, and Codex are ready for one PR:
+
+```bash
+ggg pr watch https://github.com/go-go-golems/<repo>/pull/<n> --interval-seconds 30 --timeout-seconds 1800
+```
+
+For batch work, keep using:
 
 ```bash
 printf "prs:\n  - https://github.com/go-go-golems/<repo>/pull/<n>\n" > /tmp/prs.yaml
 ggg batch ready /tmp/prs.yaml --watch --interval-seconds 30 --timeout-seconds 1800
 ```
 
-Merge only after readiness succeeds.
+Merge only after readiness succeeds. If readiness reports `merge_conflict`, rebase or merge the base branch first.
 
 ## 9. Downstream bump after upstream release
 

@@ -44,6 +44,21 @@ func HasCurrentAuthoredFeedback(s Snapshot) bool {
 	return signal.CommentsTruncated || len(signal.Comments) > 0 || !BodyIsBenign(signal.Body)
 }
 
+func HasSatisfiedCodexSignal(s Snapshot) bool {
+	latest, ok := LatestSignal(s)
+	if !ok || latest.Eyes > 0 {
+		return false
+	}
+	if latest.ThumbsUp <= 0 && !(latest.CodexAuthored && BodyIsSatisfied(latest.Body)) {
+		return false
+	}
+	if HasCurrentAuthoredFeedback(s) {
+		return false
+	}
+	authored, ok := LatestAuthoredSignal(s)
+	return !ok || SignalReviewedCurrentHead(authored, s.HeadRefOID)
+}
+
 func RecentTrigger(s Snapshot, now time.Time, window time.Duration) (CodexSignal, bool, time.Duration) {
 	if window <= 0 {
 		return CodexSignal{}, false, 0

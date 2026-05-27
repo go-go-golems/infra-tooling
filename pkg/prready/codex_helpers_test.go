@@ -35,3 +35,17 @@ func TestClassifyTruncatedCurrentReviewAsFeedback(t *testing.T) {
 		t.Fatalf("state = %s, want %s", report.State, CodexFeedback)
 	}
 }
+
+func TestHasSatisfiedCodexSignal(t *testing.T) {
+	snap := Snapshot{HeadRefOID: "abcdef", Signals: []CodexSignal{{Kind: "review", Author: "chatgpt-codex-connector", CodexAuthored: true, Time: "2026-01-01T00:00:00Z", Body: "Reviewed commit:** `abcdef`\n\nDidn't find any major issues. :+1:"}}}
+	if !HasSatisfiedCodexSignal(snap) {
+		t.Fatalf("expected satisfied codex signal")
+	}
+}
+
+func TestHasSatisfiedCodexSignalRejectsStaleFeedback(t *testing.T) {
+	snap := Snapshot{HeadRefOID: "abcdef", Signals: []CodexSignal{{Kind: "review", Author: "chatgpt-codex-connector", CodexAuthored: true, Time: "2026-01-01T00:00:00Z", Body: "Reviewed commit:** `123456`\n\nDidn't find any major issues. :+1:"}}}
+	if HasSatisfiedCodexSignal(snap) {
+		t.Fatalf("stale authored signal should not be treated as satisfied for current head")
+	}
+}

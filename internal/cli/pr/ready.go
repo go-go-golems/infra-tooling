@@ -95,6 +95,8 @@ func exitCodeForState(state prready.State) int {
 		return 3
 	case prready.FailedChecks:
 		return 4
+	case prready.MergeConflict:
+		return 6
 	default:
 		return 1
 	}

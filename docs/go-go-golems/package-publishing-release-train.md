@@ -141,11 +141,13 @@ git push <remote> <branch>
 
 ### 5. Trigger or wait for Codex review
 
-If a PR needs a fresh Codex review after the push:
+After opening a PR, wait 20-30 seconds before manually triggering Codex because Codex often starts an automatic review shortly after PR creation. If no automatic review appears, or if a later push needs a fresh review, trigger it without `--force` first:
 
 ```bash
 ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<n>
 ```
+
+Do not repeatedly force-trigger Codex when `ggg pr ready` already reports a satisfied signal; use `--force` only when intentionally replacing a stale or stuck run.
 
 Check readiness once, or include detailed findings when debugging:
 
@@ -154,7 +156,13 @@ ggg pr ready https://github.com/go-go-golems/<repo>/pull/<n>
 ggg pr ready https://github.com/go-go-golems/<repo>/pull/<n> --findings
 ```
 
-For watch behavior, put the PR in a YAML list and use batch watch:
+For single-PR watch behavior, use:
+
+```bash
+ggg pr watch https://github.com/go-go-golems/<repo>/pull/<n> --interval-seconds 30 --timeout-seconds 1800
+```
+
+For batch watch behavior, put the PRs in a YAML list and use batch watch:
 
 ```bash
 printf "prs:\n  - https://github.com/go-go-golems/<repo>/pull/<n>\n" > /tmp/prs.yaml
@@ -163,6 +171,7 @@ ggg batch ready /tmp/prs.yaml --watch --interval-seconds 30 --timeout-seconds 18
 
 A PR is considered ready when:
 
+- GitHub mergeability is clean (no conflicts / blocked merge state);
 - status checks exist;
 - every status check is completed successfully, skipped, or neutral;
 - a Codex signal exists;
@@ -192,6 +201,7 @@ Then retry the merge.
 - `go generate ./...` is mutating. For generated-file drift checks, run the non-mutating checker first.
 - A merged upstream PR is not the same as a published upstream module version. Check tags/module versions before bumping downstream.
 - Codex `EYES` reactions mean review may still be running; do not merge until the readiness checker accepts the latest signal.
+- Merge conflicts or blocked mergeability are terminal readiness failures. Rebase/merge the base branch and rerun readiness instead of trusting green checks or Codex alone.
 - If Codex leaves substantive review text, treat the PR as not ready even when Actions are green. `ggg pr ready` and `ggg batch ready` exit immediately with status `3` in this case so the operator can inspect and address the review instead of looping until timeout.
 - If `govulncheck` reports standard-library vulnerabilities, bump the repo's Go directive/toolchain to the fixed Go version and rerun `GOWORK=off govulncheck ./...`.
 - If `golangci-lint-action` fails because its binary was built with an older Go version than the repo target, bump the action version or switch to a repo-managed lint install after `actions/setup-go`.

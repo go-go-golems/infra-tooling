@@ -23,6 +23,7 @@ const (
 	WaitingCodex  State = "waiting_codex"
 	NoCodex       State = "no_codex"
 	FailedChecks  State = "failed_checks"
+	MergeConflict State = "merge_conflict"
 	CodexFeedback State = "codex_feedback"
 	NotReady      State = "not_ready"
 )
@@ -88,9 +89,35 @@ type ReviewComment struct {
 }
 
 func Classify(s Snapshot) Report {
-	findings := append(checkFindings(s.Checks), codexFindings(s)...)
+	findings := append(mergeFindings(s.MergeStateStatus), checkFindings(s.Checks)...)
+	findings = append(findings, codexFindings(s)...)
 	state, terminal, kinds := classifyFindings(findings)
 	return Report{OK: state == Ready, State: state, Terminal: terminal, FailedCheckKinds: kinds, PR: s.PR, URL: s.URL, MergeStateStatus: s.MergeStateStatus, ReviewDecision: s.ReviewDecision, HeadRefOID: s.HeadRefOID, Findings: findings}
+}
+
+func mergeFindings(status string) []Finding {
+	s := strings.ToUpper(strings.TrimSpace(status))
+	switch s {
+	case "", "CLEAN", "HAS_HOOKS", "UNSTABLE":
+		return []Finding{{OK: true, Kind: "merge", Message: "merge state is " + printableMergeState(status)}}
+	case "UNKNOWN":
+		return []Finding{{OK: false, Kind: "merge", Message: "merge state is UNKNOWN; GitHub has not computed mergeability yet"}}
+	case "DIRTY":
+		return []Finding{{OK: false, Kind: "merge", Message: "merge conflict: mergeStateStatus=DIRTY"}}
+	case "BEHIND":
+		return []Finding{{OK: false, Kind: "merge", Message: "merge conflict or blocked mergeability: mergeStateStatus=BEHIND"}}
+	case "BLOCKED", "DRAFT":
+		return []Finding{{OK: false, Kind: "merge", Message: "merge is blocked: mergeStateStatus=" + s}}
+	default:
+		return []Finding{{OK: false, Kind: "merge", Message: "mergeability is not clean: mergeStateStatus=" + s}}
+	}
+}
+
+func printableMergeState(status string) string {
+	if strings.TrimSpace(status) == "" {
+		return "unreported"
+	}
+	return strings.ToUpper(strings.TrimSpace(status))
 }
 
 func checkFindings(checks []Check) []Finding {
@@ -188,6 +215,11 @@ func classifyFindings(findings []Finding) (State, bool, []string) {
 	}
 	kinds := failedCheckKinds(failed)
 	for _, msg := range failed {
+		if strings.Contains(msg, "merge conflict") || strings.Contains(msg, "merge is blocked") || strings.Contains(msg, "mergeability is not clean") {
+			return MergeConflict, true, kinds
+		}
+	}
+	for _, msg := range failed {
 		if strings.Contains(msg, "code review comment") || strings.Contains(msg, "substantive comments") || strings.Contains(msg, "comments are truncated") {
 			return CodexFeedback, true, kinds
 		}
@@ -219,6 +251,10 @@ func failedCheckKinds(failed []string) []string {
 	set := map[string]bool{}
 	for _, msg := range failed {
 		lower := strings.ToLower(msg)
+		if strings.Contains(lower, "merge conflict") || strings.Contains(lower, "merge is blocked") || strings.Contains(lower, "mergeability is not clean") {
+			set["merge_conflict"] = true
+			continue
+		}
 		if strings.Contains(lower, "pending checks:") {
 			set["pending_checks"] = true
 			continue
