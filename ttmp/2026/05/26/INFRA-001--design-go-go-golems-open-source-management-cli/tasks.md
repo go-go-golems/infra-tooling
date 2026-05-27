@@ -62,9 +62,9 @@ WhenToUse: Use while executing INFRA-001.
 
 ## Phase 4: Batch readiness with YAML input
 
-- [ ] Implement `ggg batch ready prs.yaml`.
-- [ ] Support `--watch`, `--interval`, `--timeout`, and `--trigger-missing-codex`.
-- [ ] Preserve batch exit codes including partial-ready exit `5`.
+- [x] Implement `ggg batch ready prs.yaml`.
+- [x] Support `--watch`, `--interval`, `--timeout`, and `--trigger-missing-codex`.
+- [x] Preserve batch exit codes including partial-ready exit `5`.
 - [ ] Add tests for aggregation and partial readiness.
 
 ## Phase 5: Release verbs and Go module verification

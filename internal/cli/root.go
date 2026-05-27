@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"github.com/go-go-golems/infra-tooling/internal/cli/batch"
 	"github.com/go-go-golems/infra-tooling/internal/cli/pr"
 	"github.com/go-go-golems/infra-tooling/internal/cli/release"
 	"github.com/spf13/cobra"
@@ -22,8 +23,11 @@ func NewRootCommand() (*cobra.Command, error) {
 	if err != nil {
 		return nil, err
 	}
-	root.AddCommand(prCmd, releaseCmd)
-	root.AddCommand(&cobra.Command{Use: "batch", Short: "Batch PR readiness commands (planned)"})
+	batchCmd, err := batch.NewCommand()
+	if err != nil {
+		return nil, err
+	}
+	root.AddCommand(prCmd, releaseCmd, batchCmd)
 	root.AddCommand(&cobra.Command{Use: "repo", Short: "Repository dependency and validation commands (planned)"})
 	root.AddCommand(&cobra.Command{Use: "train", Short: "Release-train orchestration commands (planned)"})
 	return root, nil

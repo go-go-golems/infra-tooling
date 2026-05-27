@@ -406,3 +406,74 @@ Successful live smoke output included:
   "repository": "go-go-golems/discord-bot"
 }
 ```
+
+## Step 5: Add YAML batch readiness command
+
+The fifth step implemented the first Go replacement for `05-batch-pr-ready.sh`. The new command reads the YAML PR-list format introduced in the design update and emits Glazed rows for every PR plus a summary row.
+
+The command supports watch mode and keeps the important operator semantics from the shell script: all-ready, terminal Codex feedback, failed checks, errors, and partial readiness are all actionable states.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 4)
+
+**Assistant interpretation:** Continue implementing the next phase after `ggg pr ready`, now moving into batch readiness with YAML input.
+
+**Inferred user intent:** The user wants the new Go CLI to replace the existing scripts incrementally while preserving release-train behavior.
+
+**Commit (code):** pending — batch readiness implementation validated and ready to commit.
+
+### What I did
+- Added `internal/cli/batch` command group.
+- Replaced the placeholder `batch` root command with a real command group.
+- Added `ggg batch ready <prs.yaml>` as a Glazed command.
+- Implemented flags:
+  - `--watch`
+  - `--interval-seconds`
+  - `--timeout-seconds`
+  - `--trigger-missing-codex`
+- The command emits one row per PR and one summary row.
+- The command uses the Go `pkg/prlist` YAML loader and `pkg/ghclient.Readiness` classifier.
+
+### Why
+- Batch readiness is the operator-facing loop for release trains. Moving it to Go makes YAML input, structured output, and future release-train orchestration possible.
+
+### What worked
+- `go test ./...` passed.
+- A live YAML smoke file with Discord Bot PR 9 returned a `ready` PR row and a `ready` summary row using `--output json`.
+
+### What didn't work
+- N/A in this implementation pass.
+
+### What I learned
+- Glazed structured output works well for batch readiness because PR rows and summary rows can share columns while still being machine-readable.
+- The command can preserve shell-script semantics internally even before exact process exit-code parity is fully implemented.
+
+### What was tricky to build
+- Watch mode needs to emit rows per attempt without losing structured output. The command adds an `attempt` column so repeated checks remain interpretable.
+
+### What warrants a second pair of eyes
+- Whether summary rows should be emitted in the same stream as PR rows or separated into a different output/table in a future version.
+- Whether non-ready one-shot batch checks should return a non-zero process status even when rows were emitted successfully.
+
+### What should be done in the future
+- Add unit tests for batch aggregation without live GitHub calls.
+- Add exact exit-code parity for shell-script replacements.
+- Add `ggg batch trigger-codex` or make `--trigger-missing-codex` safer with confirmation.
+
+### Code review instructions
+- Start with `internal/cli/batch/ready.go`.
+- Validate with:
+
+```bash
+go test ./...
+cat > /tmp/ggg-prs.yaml <<'YAML'
+prs:
+  - https://github.com/go-go-golems/discord-bot/pull/9
+YAML
+go run ./cmd/ggg batch ready /tmp/ggg-prs.yaml --output json
+```
+
+### Technical details
+
+Successful live smoke emitted a PR row and summary row with `state: ready`.

@@ -64,3 +64,13 @@ Implemented first Go PR readiness parity slice with pkg/prready classifier, GitH
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/ghclient/readiness.go — GitHub GraphQL readiness query and decoding
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/prready.go — Go readiness classifier for checks and Codex signals
 
+
+## 2026-05-27
+
+Implemented ggg batch ready for YAML PR lists with watch flags, per-PR rows, summary row, and live JSON smoke against Discord Bot PR 9.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/batch/ready.go — Glazed YAML batch readiness command
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/root.go — Registered real batch command group
+
