@@ -339,18 +339,34 @@ The PR description should include:
 
 Docs publishing runs on tag push. A workflow file merged to `main` is not enough proof; the publish job must run in the release/tag context because Vault roles bind release tag claims.
 
-After merge, create or reuse the normal release process. For example:
+After merge, create or reuse the normal release process. Prefer the `ggg` release helpers for Go modules because they compute the next semantic version, push the tag, and verify the module through `proxy.golang.org`:
 
 ```bash
-git tag vX.Y.Z
-git push origin vX.Y.Z
+ggg release tag-patch --yes --output json
+# or: ggg release tag-minor --yes --output json
+# or: ggg release tag-major --yes --output json
 ```
 
-If releases are created by GoReleaser or another release process, use that process instead of hand-pushing tags.
+Use `--dry-run --yes --output json` first when you want to inspect the exact tag and commit before pushing. The command tags the target commit directly and should not leave your worktree in detached HEAD state.
+
+If releases are created by another release process, use that process instead of hand-pushing tags.
 
 ## Step 8: watch the release workflow
 
-Use GitHub CLI:
+Use `ggg` when the repository follows the standard release workflow shape:
+
+```bash
+ggg release watch \
+  --repo go-go-golems/<repo> \
+  --workflow release.yaml \
+  --tag vX.Y.Z \
+  --verify-docs \
+  --package <package>
+```
+
+This waits for the tag-triggered GitHub Actions run, streams `gh run watch` output by default, then verifies the public docs browser URL. Use `--no-stream --output json` for scripts and ticket artifacts.
+
+You can also use GitHub CLI directly:
 
 ```bash
 gh run list --workflow release.yaml --limit 5
@@ -374,16 +390,16 @@ The decoded JWT claims step should print only non-sensitive claims such as repos
 
 ## Step 9: verify production docs
 
-After the workflow succeeds, check the API:
+After the workflow succeeds, prefer `ggg release verify-docs`:
 
 ```bash
-curl -fsS https://docs.yolo.scapegoat.dev/api/packages \
-  | jq '.packages // .'
+ggg release verify-docs \
+  --package <package> \
+  --version vX.Y.Z \
+  --output json
 ```
 
-Look for the package and version.
-
-Then check the browser URL:
+The verifier checks the public browser page and its preloaded package/version state. For manual inspection, check the browser URL:
 
 ```bash
 open https://docs.yolo.scapegoat.dev/<package>/<version>

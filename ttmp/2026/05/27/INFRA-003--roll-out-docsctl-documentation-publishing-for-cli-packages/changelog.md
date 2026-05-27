@@ -133,3 +133,13 @@ Added ggg release watch and verify-docs commands for tag/docs verification.
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/release/watch.go — New release run watcher
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/18-ggg-release-watch-loupedeck.json — Validation artifact
 
+
+## 2026-05-27
+
+Updated playbooks to use ggg release watch and verify-docs for docsctl release verification.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/docs/go-go-golems/package-publishing-release-train.md — General release train ggg release guidance
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/docs/go-go-golems/playbooks/docsctl-docs-publishing-rollout-playbook.md — Docsctl release verification flow
+

@@ -813,3 +813,51 @@ This converts the manual curl/gh sequence from Step 11 into repeatable CLI opera
 ### Code review instructions
 - Review `internal/cli/release/watch.go`, `internal/cli/release/verify_docs.go`, and `internal/cli/release/root.go`.
 - Validate with the Loupedeck v0.1.1 commands above.
+
+## Step 13: Update playbooks for release/docs verification
+
+I updated the docsctl rollout and package release-train playbooks to use the new `ggg release watch` and `ggg release verify-docs` commands. The playbooks now describe the tag-first docs publishing model and give operators a structured path for saving verification artifacts.
+
+This closes the documentation loop from the Loupedeck proof: after Terraform is applied, a package release tag should be watched with `ggg`, and the public docs URL should be verified with `ggg` instead of hand-written curl probes.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 12)
+
+**Assistant interpretation:** Update operational docs to reflect the new release/docs verification commands.
+
+**Inferred user intent:** Make the improved workflow reusable for the next package tags and future operators.
+
+**Commit (code):** pending — "Document release docs verification workflow"
+
+### What I did
+- Updated `docs/go-go-golems/playbooks/docsctl-docs-publishing-rollout-playbook.md`.
+- Updated `docs/go-go-golems/package-publishing-release-train.md`.
+- Replaced hand-pushed tag examples with `ggg release tag-*` guidance.
+- Added `ggg release watch --verify-docs` examples.
+- Added `ggg release verify-docs` examples for post-release proof.
+
+### Why
+- The previous playbook still implied manual `gh run watch` and curl checks were the primary path.
+- The docsctl rollout now has a tool-supported verification workflow.
+
+### What worked
+- The playbooks now align with the actual Loupedeck release path.
+
+### What didn't work
+- The first edit collapsed multiline shell examples into single-line commands; I corrected the examples back to readable continuation-style snippets.
+
+### What I learned
+- Documentation examples for release operations should bias toward copy/paste-friendly multiline commands because operators often paste them into ticket scripts.
+
+### What was tricky to build
+- The playbook has both docsctl-specific and general release-train sections; both needed updates so operators do not learn two different release verification flows.
+
+### What warrants a second pair of eyes
+- Confirm whether the docsctl playbook should still mention the older `/api/packages` manual check now that `ggg release verify-docs` checks the public browser page.
+
+### What should be done in the future
+- Add a short example showing `--no-stream --output json | tee sources/...` for docmgr ticket evidence.
+
+### Code review instructions
+- Review both playbook diffs and ensure commands are copy/pasteable.

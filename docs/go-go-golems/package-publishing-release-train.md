@@ -10,7 +10,9 @@ Installed CLI:
 - `ggg pr codex-trigger` — posts `@codex review` when it is safe to do so; supports `--file prs.yaml`, `--wait-for-auto`, `--dry-run`, and `--force`.
 - `ggg pr codex-comments` — lists Codex-authored review bodies and inline review comments.
 - `ggg batch ready` — checks or watches a YAML PR list without blocking on one PR.
-- `ggg release tag-patch`, `ggg release tag-minor`, and `ggg release tag-major` — compute, create, push, and proxy-verify Go module release tags.
+- `ggg release tag-patch`, `ggg release tag-minor`, and `ggg release tag-major` — compute, create, push, and proxy-verify Go module release tags without detaching the operator worktree.
+- `ggg release watch` — wait for a tag-triggered release workflow and optionally verify docs publishing.
+- `ggg release verify-docs` — verify that `docs.yolo.scapegoat.dev/<package>/<version>` is live and contains the requested package/version.
 
 Historical scripts remain under `scripts/go-go-golems/`, but new operator workflows should use the installed `ggg` binary.
 
@@ -80,6 +82,26 @@ git describe origin/main --tags --always
 ```
 
 If `origin/main` is ahead of the latest tag and downstream needs those commits, publish a new release before proceeding downstream.
+
+For Go module releases, prefer:
+
+```bash
+ggg release tag-patch --dry-run --yes --output json
+ggg release tag-patch --yes --output json
+```
+
+If the package also publishes docs through docsctl, watch the release and verify the docs URL:
+
+```bash
+ggg release watch \
+  --repo go-go-golems/<repo> \
+  --workflow release.yaml \
+  --tag vX.Y.Z \
+  --verify-docs \
+  --package <package>
+```
+
+Use `--no-stream --output json` when saving rollout evidence to a ticket.
 
 ### 2. Bump downstream go-go-golems dependencies
 
