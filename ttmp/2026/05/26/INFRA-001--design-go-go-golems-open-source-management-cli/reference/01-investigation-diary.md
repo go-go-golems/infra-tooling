@@ -979,3 +979,62 @@ Successful cleanup output:
 ✓ Closed pull request #7 (INFRA-001 intentionally unsafe Codex feedback PR)
 ✓ Deleted branch test/infra-001-codex-feedback-bait
 ```
+
+## Step 12: Close the INFRA-001 implementation ticket
+
+The twelfth step closed INFRA-001 after the implemented `ggg` slices were tested, documented, and converted into local fixtures. The remaining unchecked tasks are intentionally future hardening items rather than blockers for this ticket closure.
+
+The ticket now records the design, implementation, live validation, fixture conversion, and cleanup path for the first reusable Go-Go-Golems management CLI iteration.
+
+### Prompt Context
+
+**User prompt (verbatim):** "close."
+
+**Assistant interpretation:** Close the INFRA-001 docmgr ticket and record the final state.
+
+**Inferred user intent:** The user considers the current implementation and validation slice complete and wants ticket bookkeeping finalized.
+
+**Commit (code):** pending — final closure docs ready to commit.
+
+### What I did
+- Reviewed task state before closure.
+- Left future-scope tasks unchecked where they represent later hardening work rather than current-ticket blockers.
+- Ran `docmgr ticket close --ticket INFRA-001` with a closure changelog entry.
+- Planned final validation with `docmgr doctor --ticket INFRA-001 --stale-after 30`.
+
+### Why
+- The implemented scope now includes PR readiness, Codex trigger/comment handling, YAML PR lists, batch readiness, release tag command foundations, live PR validation, exit-code parity, and durable classifier fixtures.
+- Closing the ticket preserves a clean handoff point for future work such as raw GraphQL fixtures, release temp-repo tests, validation profiles, and release-train orchestration.
+
+### What worked
+- Ticket artifacts are complete enough to explain what was built and how it was validated.
+- Live test PRs were already cleaned up before closure.
+
+### What didn't work
+- N/A.
+
+### What I learned
+- Closing the initial implementation ticket is useful even with future tasks remaining, because the future tasks define a next ticket backlog rather than unfinished current implementation.
+
+### What was tricky to build
+- The task list contains both implemented scope and roadmap items. I preserved unchecked roadmap items rather than pretending they were completed.
+
+### What warrants a second pair of eyes
+- Whether to spin the remaining unchecked release/validation/train hardening tasks into a follow-up ticket.
+
+### What should be done in the future
+- Create follow-up tickets for:
+  - raw GraphQL decoding fixtures;
+  - batch aggregation/partial-readiness tests;
+  - temporary-git-repo release tests;
+  - validation profile runner;
+  - release-train YAML/status/next orchestration.
+
+### Code review instructions
+- Review `cmd/ggg` and `internal/cli/*` for command behavior.
+- Review `pkg/prready` and `pkg/prready/testdata` for readiness semantics.
+- Review `ttmp/.../reference/01-investigation-diary.md` for the implementation history.
+- Validate with `go test ./...` and `docmgr doctor --ticket INFRA-001 --stale-after 30`.
+
+### Technical details
+- Closure keeps unchecked future roadmap tasks visible in `tasks.md`.
