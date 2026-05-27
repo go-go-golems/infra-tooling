@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "repository": "go-go-golems/discord-bot",
+  "workflow": "release.yaml",
+  "tag": "v0.1.6",
+  "run": {
+    "databaseId": 26544043902,
+    "status": "completed",
+    "conclusion": "success",
+    "headBranch": "v0.1.6",
+    "headSha": "ac8cd611e8dc49066829e9eeb8cdb01a08f35050",
+    "event": "push",
+    "displayTitle": "Add docsctl documentation publishing",
+    "createdAt": "2026-05-27T23:07:28Z",
+    "url": "https://github.com/go-go-golems/discord-bot/actions/runs/26544043902"
+  },
+  "docs": {
+    "ok": true,
+    "url": "https://docs.yolo.scapegoat.dev/discord-bot/v0.1.6",
+    "package": "discord-bot",
+    "version": "v0.1.6",
+    "status_code": 200,
+    "title": "Discord Bot v0.1.6 Documentation — Glazed Help Browser",
+    "section_count": 3,
+    "has_package": true,
+    "has_version": true,
+    "has_preloaded_state": true
+  },
+  "elapsed_seconds": 1
+}

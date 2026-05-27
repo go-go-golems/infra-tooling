@@ -861,3 +861,66 @@ This closes the documentation loop from the Loupedeck proof: after Terraform is 
 
 ### Code review instructions
 - Review both playbook diffs and ensure commands are copy/pasteable.
+
+## Step 14: Tag additional packages and fix no-stream release watch
+
+I tagged three more docsctl-enabled packages and used the new `ggg release watch --verify-docs` flow to verify that they published documentation. During this, I found and fixed a `ggg release watch --no-stream` bug: it located the run but returned immediately while the run was still in progress instead of polling to completion.
+
+After the fix, the command successfully waited for completed release runs and verified public docs pages for `discord-bot`, `go-minitrace`, and `workspace-manager`.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 12)
+
+**Assistant interpretation:** Use the improved release tooling to tag more package releases and verify docs publishing end-to-end.
+
+**Inferred user intent:** Prove the docsctl rollout works across multiple repositories, not just Loupedeck.
+
+**Commit (code):** pending — "Poll release completion in no-stream mode"
+
+### What I did
+- Tagged `discord-bot` from `v0.1.5` to `v0.1.6`.
+- Tagged `go-minitrace` from `v0.0.16` to `v0.0.17`.
+- Tagged `workspace-manager` from `v0.0.4` to `v0.0.5`.
+- Verified Go module proxy publication for all three through `ggg release tag-patch`.
+- Watched and verified docs for all three releases with `ggg release watch --no-stream --verify-docs`.
+- Fixed `ggg release watch --no-stream` so it polls until the run reaches `completed`.
+- Saved artifacts:
+  - `sources/19-release-watch-discord-bot-v0.1.6.json`
+  - `sources/20-release-watch-go-minitrace-v0.0.17.json`
+  - `sources/21-release-watch-workspace-manager-v0.0.5.json`
+  - `sources/22-additional-release-tags-summary.txt`
+
+### Why
+- The first Loupedeck release proved the path once; multiple packages prove that the Terraform roles and reusable workflow pattern generalize.
+- `--no-stream` is important for scripts and docmgr ticket artifacts, so it must wait to a terminal state rather than snapshotting an in-progress run.
+
+### What worked
+- `discord-bot v0.1.6` published docs with 3 sections.
+- `go-minitrace v0.0.17` published docs with 20 sections.
+- `workspace-manager v0.0.5` published docs with 6 sections.
+- All three release runs completed successfully.
+
+### What didn't work
+- Initial `ggg release watch --no-stream --verify-docs` calls returned immediately with `ok=false` because the release run was still `in_progress`.
+- Root cause: `watchRelease` only streamed to completion in interactive mode; no-stream mode fetched the run once and evaluated it immediately.
+- Fix: added `waitForReleaseRunCompletion` and used it when `--no-stream` is set.
+
+### What I learned
+- A non-streaming watch mode is not the same as a non-watching mode. It should suppress live terminal output but still wait for the final state.
+- The new verifier is useful enough to catch tool semantics quickly: it made the in-progress behavior obvious in JSON artifacts.
+
+### What was tricky to build
+- The release tags were straightforward, but running multiple release watches in parallel exposed that `ggg release watch` needed consistent behavior across streaming and non-streaming modes.
+
+### What warrants a second pair of eyes
+- Consider whether `ggg release watch` should expose a separate `--once` flag for current snapshot behavior rather than overloading `--no-stream`.
+
+### What should be done in the future
+- Add tests for `waitForReleaseRunCompletion` with a fake `gh` command.
+- Add a batch release-watch command for a list of repo/tag/package triples.
+
+### Code review instructions
+- Review `internal/cli/release/watch.go`, especially `waitForReleaseRunCompletion`.
+- Validate with any completed release tag using:
+  - `ggg release watch --repo go-go-golems/<repo> --tag <tag> --no-stream --verify-docs --package <package> --output json`

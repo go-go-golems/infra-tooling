@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "repository": "go-go-golems/workspace-manager",
+  "workflow": "release.yaml",
+  "tag": "v0.0.5",
+  "run": {
+    "databaseId": 26544071591,
+    "status": "completed",
+    "conclusion": "success",
+    "headBranch": "v0.0.5",
+    "headSha": "c6df2751481264c4d100c0a606ed3ac07e8f8511",
+    "event": "push",
+    "displayTitle": "Add docsctl documentation publishing",
+    "createdAt": "2026-05-27T23:08:13Z",
+    "url": "https://github.com/go-go-golems/workspace-manager/actions/runs/26544071591"
+  },
+  "docs": {
+    "ok": true,
+    "url": "https://docs.yolo.scapegoat.dev/workspace-manager/v0.0.5",
+    "package": "workspace-manager",
+    "version": "v0.0.5",
+    "status_code": 200,
+    "title": "Workspace Manager v0.0.5 Documentation — Glazed Help Browser",
+    "section_count": 6,
+    "has_package": true,
+    "has_version": true,
+    "has_preloaded_state": true
+  },
+  "elapsed_seconds": 1
+}

@@ -143,3 +143,13 @@ Updated playbooks to use ggg release watch and verify-docs for docsctl release v
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/docs/go-go-golems/package-publishing-release-train.md — General release train ggg release guidance
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/docs/go-go-golems/playbooks/docsctl-docs-publishing-rollout-playbook.md — Docsctl release verification flow
 
+
+## 2026-05-27
+
+Tagged and verified discord-bot, go-minitrace, and workspace-manager docs releases; fixed no-stream release watch polling.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/release/watch.go — No-stream release watch now polls to completion
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/22-additional-release-tags-summary.txt — Additional release verification summary
+

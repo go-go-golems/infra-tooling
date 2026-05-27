@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "repository": "go-go-golems/go-minitrace",
+  "workflow": "release.yaml",
+  "tag": "v0.0.17",
+  "run": {
+    "databaseId": 26544056338,
+    "status": "completed",
+    "conclusion": "success",
+    "headBranch": "v0.0.17",
+    "headSha": "da954af376ae7053e43a2c24f5befc770c6ea0eb",
+    "event": "push",
+    "displayTitle": "Add docsctl documentation publishing",
+    "createdAt": "2026-05-27T23:07:49Z",
+    "url": "https://github.com/go-go-golems/go-minitrace/actions/runs/26544056338"
+  },
+  "docs": {
+    "ok": true,
+    "url": "https://docs.yolo.scapegoat.dev/go-minitrace/v0.0.17",
+    "package": "go-minitrace",
+    "version": "v0.0.17",
+    "status_code": 200,
+    "title": "Go Minitrace v0.0.17 Documentation — Glazed Help Browser",
+    "section_count": 20,
+    "has_package": true,
+    "has_version": true,
+    "has_preloaded_state": true
+  },
+  "elapsed_seconds": 1
+}

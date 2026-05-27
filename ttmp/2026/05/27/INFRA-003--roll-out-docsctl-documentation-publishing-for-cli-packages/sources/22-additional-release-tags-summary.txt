@@ -1,0 +1,21 @@
+Additional docsctl verification releases:
+
+- discord-bot v0.1.6
+  - commit: ac8cd611e8dc49066829e9eeb8cdb01a08f35050
+  - run: https://github.com/go-go-golems/discord-bot/actions/runs/26544043902
+  - docs: https://docs.yolo.scapegoat.dev/discord-bot/v0.1.6
+  - sections: 3
+
+- go-minitrace v0.0.17
+  - commit: da954af376ae7053e43a2c24f5befc770c6ea0eb
+  - run: https://github.com/go-go-golems/go-minitrace/actions/runs/26544056338
+  - docs: https://docs.yolo.scapegoat.dev/go-minitrace/v0.0.17
+  - sections: 20
+
+- workspace-manager v0.0.5
+  - commit: c6df2751481264c4d100c0a606ed3ac07e8f8511
+  - run: https://github.com/go-go-golems/workspace-manager/actions/runs/26544071591
+  - docs: https://docs.yolo.scapegoat.dev/workspace-manager/v0.0.5
+  - sections: 6
+
+All three release runs completed successfully and `ggg release watch --no-stream --verify-docs` returned ok=true.

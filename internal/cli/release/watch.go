@@ -96,8 +96,10 @@ func watchRelease(ctx context.Context, s *watchSettings) watchResult {
 	res.Run = run
 	if !s.NoStream {
 		_ = streamGhRunWatch(ctx, s.Repo, run.DatabaseID, s.Interval)
+		run, err = getReleaseRun(ctx, s.Repo, run.DatabaseID)
+	} else {
+		run, err = waitForReleaseRunCompletion(ctx, s.Repo, run.DatabaseID, s.Interval)
 	}
-	run, err = getReleaseRun(ctx, s.Repo, run.DatabaseID)
 	if err != nil {
 		res.Error = err.Error()
 		res.ElapsedSecs = int(time.Since(started).Seconds())
@@ -160,6 +162,23 @@ func getReleaseRun(ctx context.Context, repo string, id int) (releaseRun, error)
 		return releaseRun{}, err
 	}
 	return run, nil
+}
+
+func waitForReleaseRunCompletion(ctx context.Context, repo string, id int, interval time.Duration) (releaseRun, error) {
+	for {
+		run, err := getReleaseRun(ctx, repo, id)
+		if err != nil {
+			return releaseRun{}, err
+		}
+		if run.Status == "completed" {
+			return run, nil
+		}
+		select {
+		case <-ctx.Done():
+			return releaseRun{}, ctx.Err()
+		case <-time.After(interval):
+		}
+	}
 }
 
 func streamGhRunWatch(ctx context.Context, repo string, id int, interval time.Duration) error {
