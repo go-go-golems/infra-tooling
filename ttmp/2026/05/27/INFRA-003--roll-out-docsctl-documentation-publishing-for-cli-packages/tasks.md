@@ -49,6 +49,8 @@ WhenToUse: Before editing package release workflows or Terraform/Vault docsctl p
 
 ## Phase 4: Future implementation rollout
 
+- [x] Resolve package identity for `workspace-manager`: publish as `workspace-manager`.
+- [x] Resolve canonical docs export for `go-go-goja`: use `./cmd/goja-repl`.
 - [ ] Apply Terraform/Vault publisher roles for approved candidate packages.
 - [ ] Add release workflow `publish-docs` jobs for approved candidate packages.
 - [ ] Open PRs, trigger Codex with `ggg`, and wait for readiness.

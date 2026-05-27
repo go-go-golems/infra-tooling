@@ -250,3 +250,58 @@ The only validation issue was an expected vocabulary warning: `docsctl` was not 
   - `/ai/2026/05/27/INFRA-003`
 - Bundle name:
   - `INFRA-003 docsctl publishing rollout guide`
+
+## Step 4: Record package identity decisions for workspace-manager and go-go-goja
+
+The user resolved the two package-scope questions that were still open after the initial analysis. `workspace-manager` will publish under the repository/package name `workspace-manager`, and `go-go-goja` will use `goja-repl` as the canonical help export command.
+
+I updated the design guide so the rollout can proceed without ambiguity in Terraform role names, docs URLs, and release workflow `export_command` values.
+
+### Prompt Context
+
+**User prompt (verbatim):** "package name workspace-manager. use goja-repl for the export."
+
+**Assistant interpretation:** Treat `workspace-manager` as the official docs package name and use `./cmd/goja-repl` for `go-go-goja` docs publishing.
+
+**Inferred user intent:** Resolve the remaining rollout decisions so implementation can move directly to Terraform/Vault and release workflow edits.
+
+**Commit (code):** N/A — documentation decision update only.
+
+### What I did
+- Updated the executive summary candidate table.
+- Updated inventory notes for `workspace-manager` and all valid `go-go-goja` exporters.
+- Replaced the Tier 2 “needs decision” section with approved rollout decisions.
+- Updated the `go-go-goja` workflow template to use:
+  - `GOWORK=off go run ./cmd/goja-repl help export --format sqlite --output-path .docsctl/help.sqlite`
+- Marked the two package-scope decision tasks complete.
+
+### Why
+- Terraform role names, publish JWT package claims, registry package names, and public docs URLs must be stable before implementation.
+- `go-go-goja` has multiple valid help-exporting commands, so the workflow must pin the intended canonical export command.
+
+### What worked
+- The guide now has concrete instructions for both previously ambiguous packages.
+
+### What didn't work
+- N/A.
+
+### What I learned
+- The preferred package identity follows the repository name for `workspace-manager`, while the preferred `go-go-goja` content surface is the REPL docs.
+
+### What was tricky to build
+- The key detail is keeping package name and binary/export command separate. `workspace-manager` publishes from binary `wsm`, and `go-go-goja` publishes from binary `goja-repl`.
+
+### What warrants a second pair of eyes
+- During implementation, verify that the `go-go-goja` release workflow can run `go run ./cmd/goja-repl` in CI with `GOWORK=off`.
+
+### What should be done in the future
+- Implement Terraform/Vault publisher entries and release workflow jobs for the approved candidate set.
+
+### Code review instructions
+- Review the guide sections “Candidate classification”, “Phase 4: package-specific workflow templates”, and “Resolved decisions”.
+- Confirm the `go-go-goja` workflow template uses `./cmd/goja-repl`, not `./cmd/xgoja`.
+
+### Technical details
+- Public docs URLs implied by the decisions:
+  - `https://docs.yolo.scapegoat.dev/workspace-manager/<version>`
+  - `https://docs.yolo.scapegoat.dev/go-go-goja/<version>`

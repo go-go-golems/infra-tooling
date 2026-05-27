@@ -57,8 +57,8 @@ The inventory in this ticket found six clear new rollout candidates in the activ
 | `discord-bot` | `go run ./cmd/discord-bot help export --format sqlite --output-path .docsctl/help.sqlite` | yes | yes | Add Vault role + release workflow job. |
 | `go-minitrace` | `go run ./cmd/go-minitrace help export --format sqlite --output-path .docsctl/help.sqlite` | yes | yes | Add Vault role + release workflow job. |
 | `loupedeck` | `go run ./cmd/loupedeck help export --format sqlite --output-path .docsctl/help.sqlite` | yes | yes | Add Vault role + release workflow job. |
-| `workspace-manager` | `go run ./cmd/wsm help export --format sqlite --output-path .docsctl/help.sqlite` | yes | yes | Add Vault role + release workflow job using package name `workspace-manager` unless product policy chooses `wsm`. |
-| `go-go-goja` | multiple CLIs export valid DBs: `xgoja`, `goja-repl`, `goja-jsdoc`, `jsverbs-example` | yes | yes | Needs product decision: publish one package, several packages, or wait until release binary config is clarified. |
+| `workspace-manager` | `go run ./cmd/wsm help export --format sqlite --output-path .docsctl/help.sqlite` | yes | yes | Add Vault role + release workflow job using package name `workspace-manager`. |
+| `go-go-goja` | `go run ./cmd/goja-repl help export --format sqlite --output-path .docsctl/help.sqlite` | yes | yes | Add Vault role + release workflow job using `goja-repl` as the canonical export command for package `go-go-goja`. |
 
 Two packages are special cases:
 
@@ -217,15 +217,15 @@ The following table is the practical rollout inventory.
 | `css-visual-diff` | `./cmd/css-visual-diff` | ok | ok | 167936 bytes | Ready. `./cmd/build-web` is not a docs CLI. |
 | `discord-bot` | `./cmd/discord-bot` | ok | ok | 118784 bytes | Ready. |
 | `glazed` | `./cmd/glaze` | ok | ok | 729088 bytes | Already publishes; use as reference implementation. |
-| `go-go-goja` | `./cmd/goja-jsdoc` | ok | ok | 61440 bytes | Tool-specific docs; decide package naming before rollout. |
-| `go-go-goja` | `./cmd/goja-repl` | ok | ok | 278528 bytes | Tool-specific docs; likely not the repo's release binary. |
-| `go-go-goja` | `./cmd/jsverbs-example` | ok | ok | 278528 bytes | Example binary; probably should not publish as canonical package docs. |
-| `go-go-goja` | `./cmd/xgoja` | ok | ok | 114688 bytes | Best candidate if `go-go-goja` publishes docs at all. |
+| `go-go-goja` | `./cmd/goja-jsdoc` | ok | ok | 61440 bytes | Valid export, but not selected for package-level publishing. |
+| `go-go-goja` | `./cmd/goja-repl` | ok | ok | 278528 bytes | Selected canonical docs export for package `go-go-goja`. |
+| `go-go-goja` | `./cmd/jsverbs-example` | ok | ok | 278528 bytes | Example binary; do not publish as canonical package docs. |
+| `go-go-goja` | `./cmd/xgoja` | ok | ok | 114688 bytes | Valid export, but not selected for this rollout. |
 | `go-minitrace` | `./cmd/go-minitrace` | ok | ok | 266240 bytes | Ready. |
 | `loupedeck` | `./cmd/loupedeck` | ok | ok | 102400 bytes | Ready. |
 | `pinocchio` | `./cmd/pinocchio` | ok | ok | 655360 bytes | Already published in docs API; audit workflow before editing. |
 | `pinocchio` | `./cmd/web-chat` | ok | failed | 49152 bytes | Not a candidate: `docsctl validate` reports `help database contains no sections`. |
-| `workspace-manager` | `./cmd/wsm` | ok | ok | 102400 bytes | Ready, but package name decision needed: `workspace-manager` vs `wsm`. |
+| `workspace-manager` | `./cmd/wsm` | ok | ok | 102400 bytes | Ready. Publish under package name `workspace-manager`. |
 
 Current public docs packages from `https://docs.yolo.scapegoat.dev/api/packages` are:
 
@@ -270,23 +270,23 @@ For each Tier 1 package, the implementation is mostly mechanical:
 - open PR;
 - use `ggg pr ready` / `ggg pr watch` to wait for checks and Codex.
 
-### Tier 2: ready but needs naming/policy decision
+### Tier 2: now approved after package-scope decisions
 
-`workspace-manager` exports valid docs through `./cmd/wsm`. The repository and likely docs package name is `workspace-manager`, but the binary name is `wsm`. The docs URL could be either:
+`workspace-manager` exports valid docs through `./cmd/wsm`. The approved public docs package name is `workspace-manager`, not `wsm`. The resulting docs URL shape is:
 
 ```text
 https://docs.yolo.scapegoat.dev/workspace-manager/<version>
-https://docs.yolo.scapegoat.dev/wsm/<version>
 ```
 
-Prefer `workspace-manager` for consistency with repository/module identity unless the user-facing CLI brand is explicitly `wsm`. The Terraform role name follows the package name, so this decision affects Vault role names, docs URLs, and future user expectations.
+The Terraform role and workflow inputs should therefore use `docsctl-workspace-manager-publisher` and `package_name: workspace-manager`.
 
-`go-go-goja` has several valid help-exporting binaries. The release config in the current workspace references `cmd/XXX`, which is not a useful docs target. Before publishing, decide whether:
+`go-go-goja` has several valid help-exporting binaries. The approved canonical docs export for this rollout is `goja-repl`, published under package name `go-go-goja`. The resulting docs URL shape is:
 
-1. the package should publish docs for `xgoja` under package name `go-go-goja`;
-2. each substantial CLI should publish as a separate package (`xgoja`, `goja-repl`, `goja-jsdoc`);
-3. examples such as `jsverbs-example` should be excluded from public docs publishing;
-4. release binary configuration should be cleaned up first.
+```text
+https://docs.yolo.scapegoat.dev/go-go-goja/<version>
+```
+
+Do not publish `jsverbs-example` as public package docs; it is an example binary. Do not use `xgoja` or `goja-jsdoc` for this package-level rollout unless the product decision changes later.
 
 ### Tier 3: already live / audit only
 
@@ -508,7 +508,7 @@ Use `GOWORK=off` in the export command unless a specific repository requires wor
 
 #### `go-go-goja`
 
-Do not apply this until the product decision is made. If approved as one package using `xgoja` as the canonical docs CLI:
+Use `goja-repl` as the canonical docs export for package `go-go-goja`:
 
 ```yaml
   publish-docs:
@@ -520,7 +520,7 @@ Do not apply this until the product decision is made. If approved as one package
     with:
       package_name: go-go-goja
       package_version: ${{ github.ref_name }}
-      export_command: GOWORK=off go run ./cmd/xgoja help export --format sqlite --output-path .docsctl/help.sqlite
+      export_command: GOWORK=off go run ./cmd/goja-repl help export --format sqlite --output-path .docsctl/help.sqlite
       sqlite_path: .docsctl/help.sqlite
       vault_role: docsctl-go-go-goja-publisher
       vault_token_role: docsctl-go-go-goja-publisher
@@ -716,7 +716,7 @@ After a tag release:
 | Re-publishing changed bytes for same version | Registry returns `version_already_exists`. | Treat docs as immutable release artifacts; publish only from release tags. |
 | Toolchain mismatch | `go run` or `go install docsctl` fails in CI. | Use `go-version-file: go.mod` from reusable workflow and package module mode. |
 | Accidental generated file commit | `.docsctl/help.sqlite` appears in PR. | Remove `.docsctl`; consider adding `.docsctl/` to `.gitignore` if needed. |
-| Ambiguous multi-CLI repo | Wrong docs published for `go-go-goja`. | Require product decision before rollout. |
+| Multi-CLI repo drift | Future `go-go-goja` changes accidentally publish a different CLI's docs. | Keep the workflow export command pinned to `./cmd/goja-repl` unless a new product decision changes the canonical docs surface. |
 
 ## Recommended rollout order
 
@@ -730,8 +730,8 @@ After a tag release:
 4. Add package release workflow jobs for the same Tier 1 packages.
 5. Open PRs and validate with `ggg`.
 6. Audit `pinocchio` current `main` to determine whether the release workflow job is already present.
-7. Decide `workspace-manager` package name and roll it out.
-8. Decide `go-go-goja` canonical docs surface and clean up release binary configuration before publishing.
+7. Roll out `workspace-manager` with package name `workspace-manager`.
+8. Roll out `go-go-goja` using `./cmd/goja-repl` as the canonical docs export.
 
 ## Concrete file references
 
@@ -751,8 +751,11 @@ After a tag release:
 
 ## Open questions
 
-1. Should `workspace-manager` publish under package name `workspace-manager` or `wsm`?
-2. Should `go-go-goja` publish one docs package from `cmd/xgoja`, or multiple packages for separate CLIs?
-3. Should example/demo CLIs ever publish to public docs, or should docs publishing be limited to release binaries?
-4. Should `docsctl-docs-publishing-rollout-playbook.md` be patched immediately to use `docsctl validate --package ... --version ...`?
-5. Should `ggg rollout` grow a `docsctl` profile that automates the inventory, workflow patch, PR list, and readiness flow?
+1. Should example/demo CLIs ever publish to public docs, or should docs publishing be limited to release binaries?
+2. Should `docsctl-docs-publishing-rollout-playbook.md` be patched immediately to use `docsctl validate --package ... --version ...`?
+3. Should `ggg rollout` grow a `docsctl` profile that automates the inventory, workflow patch, PR list, and readiness flow?
+
+## Resolved decisions
+
+- `workspace-manager` publishes under package name `workspace-manager`.
+- `go-go-goja` uses `./cmd/goja-repl` as its canonical docs export command for package `go-go-goja`.
