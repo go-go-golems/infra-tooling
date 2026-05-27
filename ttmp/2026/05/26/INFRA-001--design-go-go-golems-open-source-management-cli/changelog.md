@@ -98,3 +98,14 @@ Added detailed Codex/release hardening tasks and implemented shared Codex snapsh
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/release/release.go — Hardened release tag implementation with dirty checks
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/tasks.md — Added detailed Phase 9 and Phase 10 hardening tasks
 
+
+## 2026-05-27
+
+Implemented Codex recent-trigger cooldown and GraphQL truncation reporting; current-head truncated Codex review comments are classified conservatively and codex-trigger rows now include recent trigger fields.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/pr/codex_trigger.go — Recent trigger cooldown flag and row fields
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/ghclient/readiness.go — GraphQL pageInfo/truncation decoding
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/codex_helpers.go — Recent trigger helper
+

@@ -3,6 +3,7 @@ package pr
 import (
 	"context"
 	"fmt"
+	"time"
 
 	glazedcli "github.com/go-go-golems/glazed/pkg/cli"
 	"github.com/go-go-golems/glazed/pkg/cmds"
@@ -22,11 +23,12 @@ import (
 type codexTriggerCommand struct{ *cmds.CommandDescription }
 
 type codexTriggerSettings struct {
-	PR     string `glazed:"pr"`
-	File   string `glazed:"file"`
-	Force  bool   `glazed:"force"`
-	DryRun bool   `glazed:"dry-run"`
-	Yes    bool   `glazed:"yes"`
+	PR                  string `glazed:"pr"`
+	File                string `glazed:"file"`
+	Force               bool   `glazed:"force"`
+	DryRun              bool   `glazed:"dry-run"`
+	Yes                 bool   `glazed:"yes"`
+	RecentTriggerWindow string `glazed:"recent-trigger-window"`
 }
 
 func newCodexTriggerCommand() (*cobra.Command, error) {
@@ -59,6 +61,7 @@ prs:
 			fields.New("force", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Trigger even if a Codex EYES reaction indicates a run is already in progress")),
 			fields.New("dry-run", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Show what would happen without posting comments")),
 			fields.New("yes", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Confirm mutating operation without prompting; currently informational for non-interactive use")),
+			fields.New("recent-trigger-window", fields.TypeString, fields.WithDefault("10m"), fields.WithHelp("Skip duplicate @codex review triggers newer than this duration unless --force is set")),
 		),
 		cmds.WithSections(glazedSection, commandSettingsSection),
 	)}
@@ -69,6 +72,10 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 	s := &codexTriggerSettings{}
 	if err := vals.DecodeSectionInto(schema.DefaultSlug, s); err != nil {
 		return err
+	}
+	window, err := time.ParseDuration(s.RecentTriggerWindow)
+	if err != nil {
+		return fmt.Errorf("invalid recent-trigger-window: %w", err)
 	}
 	refs, err := refsFromSettings(s)
 	if err != nil {
@@ -85,12 +92,15 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 		action := "triggered"
 		url := ""
 		currentFeedback := prready.HasCurrentAuthoredFeedback(snap)
+		_, recentTrigger, triggerAge := prready.RecentTrigger(snap, time.Now(), window)
 		if s.DryRun {
 			action = "would_trigger"
 		} else if status.Running && !s.Force {
 			action = "skipped_running"
 		} else if currentFeedback && !s.Force {
 			action = "skipped_current_feedback"
+		} else if recentTrigger && !s.Force {
+			action = "skipped_recent_trigger"
 		} else {
 			url, err = client.TriggerCodex(ctx, ref)
 			if err != nil {
@@ -106,6 +116,9 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 			types.MRP("dry_run", s.DryRun),
 			types.MRP("codex_running", status.Running),
 			types.MRP("current_feedback", currentFeedback),
+			types.MRP("recent_trigger", recentTrigger),
+			types.MRP("trigger_age_seconds", int(triggerAge.Seconds())),
+			types.MRP("recent_trigger_window", window.String()),
 			types.MRP("eyes", status.Eyes),
 			types.MRP("thumbs_up", status.ThumbsUp),
 			types.MRP("signal_url", status.SignalURL),

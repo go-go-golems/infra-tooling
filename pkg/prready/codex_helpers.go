@@ -3,6 +3,7 @@ package prready
 import (
 	"sort"
 	"strings"
+	"time"
 )
 
 func SortedSignals(s Snapshot) []CodexSignal {
@@ -40,5 +41,21 @@ func HasCurrentAuthoredFeedback(s Snapshot) bool {
 	if !ok || !SignalReviewedCurrentHead(signal, s.HeadRefOID) {
 		return false
 	}
-	return len(signal.Comments) > 0 || !BodyIsBenign(signal.Body)
+	return signal.CommentsTruncated || len(signal.Comments) > 0 || !BodyIsBenign(signal.Body)
+}
+
+func RecentTrigger(s Snapshot, now time.Time, window time.Duration) (CodexSignal, bool, time.Duration) {
+	if window <= 0 {
+		return CodexSignal{}, false, 0
+	}
+	latest, ok := LatestSignal(s)
+	if !ok || latest.Kind != "codex-trigger" {
+		return CodexSignal{}, false, 0
+	}
+	parsed, err := time.Parse(time.RFC3339, latest.Time)
+	if err != nil {
+		return latest, false, 0
+	}
+	age := now.Sub(parsed)
+	return latest, age >= 0 && age < window, age
 }

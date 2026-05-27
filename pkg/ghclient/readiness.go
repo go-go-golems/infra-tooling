@@ -11,7 +11,7 @@ import (
 	"github.com/go-go-golems/infra-tooling/pkg/prref"
 )
 
-const readinessQuery = `query($owner: String!, $repo: String!, $number: Int!) { repository(owner: $owner, name: $repo) { pullRequest(number: $number) { url number title mergeStateStatus reviewDecision headRefOid statusCheckRollup { contexts(first: 100) { nodes { __typename ... on CheckRun { name status conclusion detailsUrl } ... on StatusContext { context state targetUrl } } } } reviews(last: 100) { nodes { author { login } state body submittedAt url reactionGroups { content users(first: 20) { totalCount } } comments(first: 100) { nodes { path line body url } } } } comments(last: 100) { nodes { author { login } body createdAt url reactionGroups { content users(first: 20) { totalCount } } } } } } }`
+const readinessQuery = `query($owner: String!, $repo: String!, $number: Int!) { repository(owner: $owner, name: $repo) { pullRequest(number: $number) { url number title mergeStateStatus reviewDecision headRefOid statusCheckRollup { contexts(first: 100) { nodes { __typename ... on CheckRun { name status conclusion detailsUrl } ... on StatusContext { context state targetUrl } } } } reviews(last: 100) { pageInfo { hasPreviousPage } nodes { author { login } state body submittedAt url reactionGroups { content users(first: 20) { totalCount } } comments(first: 100) { pageInfo { hasNextPage } nodes { path line body url } } } } comments(last: 100) { pageInfo { hasPreviousPage } nodes { author { login } body createdAt url reactionGroups { content users(first: 20) { totalCount } } } } } } }`
 
 func (c Client) Readiness(ctx context.Context, ref prref.Ref) (prready.Report, error) {
 	snap, err := c.Snapshot(ctx, ref)
@@ -34,7 +34,7 @@ func (c Client) Snapshot(ctx context.Context, ref prref.Ref) (prready.Snapshot, 
 		return prready.Snapshot{}, err
 	}
 	pr := decoded.Data.Repository.PullRequest
-	snap := prready.Snapshot{PR: ref, URL: pr.URL, MergeStateStatus: pr.MergeStateStatus, ReviewDecision: pr.ReviewDecision, HeadRefOID: pr.HeadRefOID}
+	snap := prready.Snapshot{PR: ref, URL: pr.URL, MergeStateStatus: pr.MergeStateStatus, ReviewDecision: pr.ReviewDecision, HeadRefOID: pr.HeadRefOID, ReviewsTruncated: pr.Reviews.PageInfo.HasPreviousPage, CommentsTruncated: pr.Comments.PageInfo.HasPreviousPage}
 	for _, n := range pr.StatusCheckRollup.Contexts.Nodes {
 		check := prready.Check{Kind: n.TypeName, Status: n.Status, Conclusion: n.Conclusion, State: n.State}
 		if n.TypeName == "CheckRun" {
@@ -51,7 +51,7 @@ func (c Client) Snapshot(ctx context.Context, ref prref.Ref) (prready.Snapshot, 
 		if !isCodex(login) {
 			continue
 		}
-		sig := prready.CodexSignal{Kind: "review", Author: login, URL: n.URL, Time: n.SubmittedAt, Body: n.Body, CodexAuthored: true, Eyes: reactionCount(n.ReactionGroups, "EYES"), ThumbsUp: reactionCount(n.ReactionGroups, "THUMBS_UP")}
+		sig := prready.CodexSignal{Kind: "review", Author: login, URL: n.URL, Time: n.SubmittedAt, Body: n.Body, CodexAuthored: true, Eyes: reactionCount(n.ReactionGroups, "EYES"), ThumbsUp: reactionCount(n.ReactionGroups, "THUMBS_UP"), CommentsTruncated: n.Comments.PageInfo.HasNextPage}
 		for _, c := range n.Comments.Nodes {
 			if strings.TrimSpace(c.Body) != "" {
 				sig.Comments = append(sig.Comments, prready.ReviewComment{Path: c.Path, Line: c.Line, Body: c.Body, URL: c.URL})
@@ -97,10 +97,12 @@ type readinessPR struct {
 		} `json:"contexts"`
 	} `json:"statusCheckRollup"`
 	Reviews struct {
-		Nodes []readinessReviewNode `json:"nodes"`
+		PageInfo pageInfo              `json:"pageInfo"`
+		Nodes    []readinessReviewNode `json:"nodes"`
 	} `json:"reviews"`
 	Comments struct {
-		Nodes []readinessCommentNode `json:"nodes"`
+		PageInfo pageInfo               `json:"pageInfo"`
+		Nodes    []readinessCommentNode `json:"nodes"`
 	} `json:"comments"`
 }
 type checkNode struct {
@@ -120,9 +122,15 @@ type readinessReviewNode struct {
 	URL            string          `json:"url"`
 	ReactionGroups []reactionGroup `json:"reactionGroups"`
 	Comments       struct {
-		Nodes []readinessReviewComment `json:"nodes"`
+		PageInfo pageInfo                 `json:"pageInfo"`
+		Nodes    []readinessReviewComment `json:"nodes"`
 	} `json:"comments"`
 }
+type pageInfo struct {
+	HasNextPage     bool `json:"hasNextPage"`
+	HasPreviousPage bool `json:"hasPreviousPage"`
+}
+
 type readinessReviewComment struct {
 	Path string `json:"path"`
 	Line int    `json:"line"`

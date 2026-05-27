@@ -47,13 +47,15 @@ type Finding struct {
 }
 
 type Snapshot struct {
-	PR               prref.Ref
-	URL              string
-	MergeStateStatus string
-	ReviewDecision   string
-	HeadRefOID       string
-	Checks           []Check
-	Signals          []CodexSignal
+	PR                prref.Ref
+	URL               string
+	MergeStateStatus  string
+	ReviewDecision    string
+	HeadRefOID        string
+	Checks            []Check
+	Signals           []CodexSignal
+	ReviewsTruncated  bool
+	CommentsTruncated bool
 }
 
 type Check struct {
@@ -66,15 +68,16 @@ type Check struct {
 }
 
 type CodexSignal struct {
-	Kind          string
-	Author        string
-	URL           string
-	Time          string
-	Body          string
-	CodexAuthored bool
-	Eyes          int
-	ThumbsUp      int
-	Comments      []ReviewComment
+	Kind              string
+	Author            string
+	URL               string
+	Time              string
+	Body              string
+	CodexAuthored     bool
+	Eyes              int
+	ThumbsUp          int
+	Comments          []ReviewComment
+	CommentsTruncated bool
 }
 
 type ReviewComment struct {
@@ -140,11 +143,16 @@ func codexFindings(s Snapshot) []Finding {
 			latestAuthored = &signals[i]
 		}
 	}
+	if s.ReviewsTruncated || s.CommentsTruncated {
+		out = append(out, Finding{OK: true, Kind: "codex", Message: "Codex history may be truncated by GraphQL pagination limits"})
+	}
 	if latestAuthored != nil {
 		out = append(out, Finding{OK: true, Kind: "codex", Message: "latest Codex-authored signal (" + latestAuthored.Kind + ") by " + latestAuthored.Author + ": " + latestAuthored.URL})
 		reviewed := ReviewedCommit(latestAuthored.Body)
 		if reviewed != "" && !strings.HasPrefix(strings.ToLower(s.HeadRefOID), reviewed) {
 			out = append(out, Finding{OK: true, Kind: "codex", Message: "latest Codex-authored findings are stale for an older head commit"})
+		} else if latestAuthored.CommentsTruncated {
+			out = append(out, Finding{OK: false, Kind: "codex", Message: "latest Codex-authored review comments are truncated; inspect manually or rerun with pagination support"})
 		} else if len(latestAuthored.Comments) > 0 {
 			out = append(out, Finding{OK: false, Kind: "codex", Message: "latest Codex-authored review has code review comment(s): " + FormatComments(latestAuthored.Comments)})
 		} else if !BodyIsBenign(latestAuthored.Body) {
@@ -180,7 +188,7 @@ func classifyFindings(findings []Finding) (State, bool, []string) {
 	}
 	kinds := failedCheckKinds(failed)
 	for _, msg := range failed {
-		if strings.Contains(msg, "code review comment") || strings.Contains(msg, "substantive comments") {
+		if strings.Contains(msg, "code review comment") || strings.Contains(msg, "substantive comments") || strings.Contains(msg, "comments are truncated") {
 			return CodexFeedback, true, kinds
 		}
 	}

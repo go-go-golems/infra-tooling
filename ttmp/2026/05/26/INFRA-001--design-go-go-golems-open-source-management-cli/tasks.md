@@ -102,11 +102,11 @@ WhenToUse: Use while executing INFRA-001.
 
 - [x] Refactor Codex signal parsing so readiness and trigger safety share one model.
 - [x] Make `ggg pr codex-trigger` use the shared readiness/Codex snapshot instead of the simplified `CodexStatus` query.
-- [ ] Add precise trigger actions and skip reasons: `triggered`, `would_trigger`, `skipped_running`, `skipped_current_feedback`, and `skipped_recent_trigger`.
+- [x] Add precise trigger actions and skip reasons: `triggered`, `would_trigger`, `skipped_running`, `skipped_current_feedback`, and `skipped_recent_trigger`.
 - [x] Add `ggg pr codex-comments` to emit Codex-authored review bodies and inline review comments as structured rows.
 - [x] Include reviewed commit, current/stale status, path, line, body preview/full body, and URL in Codex comment rows.
-- [ ] Add tests for stale-vs-current Codex inline comments and trigger skip decisions.
-- [ ] Document pagination limitations for review comments and add a follow-up task for GraphQL pagination.
+- [x] Add tests for stale-vs-current Codex inline comments and trigger skip decisions.
+- [x] Document pagination limitations for review comments and add a follow-up task for GraphQL pagination.
 
 ## Phase 10: Release command hardening
 

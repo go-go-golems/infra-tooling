@@ -66,15 +66,16 @@ func (c *codexCommentsCommand) RunIntoGlazeProcessor(ctx context.Context, vals *
 		}
 		reviewed := prready.ReviewedCommit(sig.Body)
 		current := prready.SignalReviewedCurrentHead(sig, snap.HeadRefOID)
+		truncated := sig.CommentsTruncated || snap.ReviewsTruncated || snap.CommentsTruncated
 		if len(sig.Comments) == 0 {
-			row := types.NewRow(types.MRP("pr", ref.URL()), types.MRP("signal_url", sig.URL), types.MRP("kind", sig.Kind), types.MRP("author", sig.Author), types.MRP("reviewed_commit", reviewed), types.MRP("current_head", current), types.MRP("path", ""), types.MRP("line", 0), types.MRP("body", bodyForOutput(sig.Body, s.FullBody)), types.MRP("url", sig.URL))
+			row := types.NewRow(types.MRP("pr", ref.URL()), types.MRP("signal_url", sig.URL), types.MRP("kind", sig.Kind), types.MRP("author", sig.Author), types.MRP("reviewed_commit", reviewed), types.MRP("current_head", current), types.MRP("truncated", truncated), types.MRP("path", ""), types.MRP("line", 0), types.MRP("body", bodyForOutput(sig.Body, s.FullBody)), types.MRP("url", sig.URL))
 			if err := gp.AddRow(ctx, row); err != nil {
 				return err
 			}
 			continue
 		}
 		for _, comment := range sig.Comments {
-			row := types.NewRow(types.MRP("pr", ref.URL()), types.MRP("signal_url", sig.URL), types.MRP("kind", sig.Kind), types.MRP("author", sig.Author), types.MRP("reviewed_commit", reviewed), types.MRP("current_head", current), types.MRP("path", comment.Path), types.MRP("line", comment.Line), types.MRP("body", bodyForOutput(comment.Body, s.FullBody)), types.MRP("url", comment.URL))
+			row := types.NewRow(types.MRP("pr", ref.URL()), types.MRP("signal_url", sig.URL), types.MRP("kind", sig.Kind), types.MRP("author", sig.Author), types.MRP("reviewed_commit", reviewed), types.MRP("current_head", current), types.MRP("truncated", truncated), types.MRP("path", comment.Path), types.MRP("line", comment.Line), types.MRP("body", bodyForOutput(comment.Body, s.FullBody)), types.MRP("url", comment.URL))
 			if err := gp.AddRow(ctx, row); err != nil {
 				return err
 			}

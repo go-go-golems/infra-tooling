@@ -787,8 +787,8 @@ validationProfiles:
 ### Script-level gaps
 
 - No typed tests around GraphQL response parsing.
-- No structured `codexComments` field in JSON output; comments are embedded in message strings.
-- No pagination for more than 100 review comments.
+- `ggg pr codex-comments` now emits structured Codex comment rows, but readiness JSON can still expose richer nested comment data in a future pass.
+- Current implementation reports GraphQL truncation for reviews/comments and treats current-head truncated Codex review comments conservatively, but it still does not fetch additional pages beyond the first 100 review comments.
 - Batch scripts are shell-based and hard to unit-test.
 - Release/tag scripts rely on Makefiles that can contain stale placeholders.
 - Focused validation profiles are hard-coded in ticket-local shell.

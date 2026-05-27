@@ -648,3 +648,79 @@ The release dry-run now includes a row with fields like:
   "plan": ["git fetch origin main --tags", "git checkout --detach origin/main", "git tag v0.0.1"]
 }
 ```
+
+## Step 8: Add recent-trigger cooldown and pagination/truncation reporting
+
+The eighth step completed the Codex hardening policy we defined after the first hardening pass. The trigger command now has a configurable recent-trigger cooldown, and the GraphQL snapshot records whether review/comment connections were truncated.
+
+This does not yet implement full GraphQL pagination. Instead, it makes truncation visible and conservative: if the latest current-head Codex review has truncated comments, readiness treats that as actionable Codex feedback rather than silently ignoring possible comments.
+
+### Prompt Context
+
+**User prompt (verbatim):** "do it"
+
+**Assistant interpretation:** Implement the recent-trigger cooldown and pagination/truncation reporting policy that was just defined.
+
+**Inferred user intent:** The user wants the remaining Codex hardening behavior implemented, not just documented.
+
+**Commit (code):** pending — recent-trigger/truncation implementation validated and ready to commit.
+
+### What I did
+- Added `CodexSignal.CommentsTruncated`, `Snapshot.ReviewsTruncated`, and `Snapshot.CommentsTruncated`.
+- Updated the GitHub GraphQL query to fetch `pageInfo.hasPreviousPage` for review/comment windows and `pageInfo.hasNextPage` for review inline comments.
+- Added conservative readiness behavior: current-head truncated Codex review comments produce `codex_feedback`.
+- Added `prready.RecentTrigger` helper.
+- Added `--recent-trigger-window`, default `10m`, to `ggg pr codex-trigger`.
+- Added `skipped_recent_trigger` behavior unless `--force` is used.
+- Added trigger row fields:
+  - `recent_trigger`
+  - `trigger_age_seconds`
+  - `recent_trigger_window`
+- Added truncation field to `ggg pr codex-comments` rows.
+- Added tests for recent trigger detection and truncated current-head review classification.
+
+### Why
+- Recent trigger cooldown avoids duplicate `@codex review` spam before Codex has had time to react.
+- Truncation reporting avoids silently missing Codex review comments when GitHub GraphQL returns only the first page.
+
+### What worked
+- `go test ./...` passed.
+- `ggg pr codex-trigger ... --dry-run --output json` emitted the new recent-trigger fields.
+
+### What didn't work
+- Full pagination is still not implemented; this pass reports and reacts to truncation instead of fetching additional pages.
+
+### What I learned
+- For readiness, conservative truncation handling is safer than silent partial data. For historical reporting, `codex-comments` can expose `truncated=true` so the operator knows to inspect GitHub manually or wait for a future pagination implementation.
+
+### What was tricky to build
+- The GraphQL query needs pageInfo at three levels: PR reviews, PR issue comments, and per-review inline comments. Only the per-review inline comment truncation can directly affect current-head Codex feedback completeness.
+
+### What warrants a second pair of eyes
+- Whether `comments(last:100).pageInfo.hasPreviousPage` should influence readiness or only diagnostics. It is currently diagnostic unless the latest authored review comment page is truncated.
+- Whether `--recent-trigger-window` should default to 10 minutes or a shorter value.
+
+### What should be done in the future
+- Implement actual pagination for `ggg pr codex-comments --all`.
+- Add live or fixture tests for `skipped_recent_trigger` command rows.
+
+### Code review instructions
+- Review `pkg/ghclient/readiness.go` for pageInfo fields.
+- Review `pkg/prready/prready.go` and `pkg/prready/codex_helpers.go` for conservative truncation and recent-trigger logic.
+- Review `internal/cli/pr/codex_trigger.go` for skip ordering.
+- Validate with:
+
+```bash
+go test ./...
+go run ./cmd/ggg pr codex-trigger https://github.com/go-go-golems/discord-bot/pull/9 --dry-run --output json
+```
+
+### Technical details
+
+Skip priority remains:
+
+1. `--dry-run` -> `would_trigger`
+2. running Codex `EYES` -> `skipped_running`
+3. current-head feedback -> `skipped_current_feedback`
+4. recent trigger -> `skipped_recent_trigger`
+5. otherwise -> `triggered`
