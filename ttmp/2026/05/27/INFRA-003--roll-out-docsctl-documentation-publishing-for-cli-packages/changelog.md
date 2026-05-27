@@ -171,3 +171,13 @@ Merged css-visual-diff PR and recorded v0.1.3 release failure before docs publis
 
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/24-css-visual-diff-v0.1.3-failed-release.txt — css-visual-diff failed release evidence
 
+
+## 2026-05-27
+
+Added failed-log command hints to ggg release watch.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/release/watch.go — Failed release next-action hint
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/25-css-visual-diff-release-watch-with-failed-log-command.json — Validation artifact for failed release output
+

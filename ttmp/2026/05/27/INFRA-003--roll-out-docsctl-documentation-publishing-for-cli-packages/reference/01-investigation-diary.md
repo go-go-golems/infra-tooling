@@ -1031,3 +1031,50 @@ This failure is useful rollout evidence: docsctl was not the failing component. 
 
 ### Code review instructions
 - Inspect the failed run logs before changing css-visual-diff release workflow.
+
+## Step 17: Add failed-log hints to release watch
+
+I made one more `ggg release watch` improvement based on the css-visual-diff failed release: failed release results now include an exact `gh run view ... --log-failed` command.
+
+This does not fully summarize logs yet, but it shortens the next operator step and makes JSON artifacts self-contained enough to tell a colleague how to inspect the failed job.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 12)
+
+**Assistant interpretation:** Improve `ggg` as rollout failures expose missing operator affordances.
+
+**Inferred user intent:** Make failed release verification actionable without re-discovering GitHub CLI commands manually.
+
+**Commit (code):** pending — "Add failed log hints to release watch"
+
+### What I did
+- Added `failed_log_command` to `ggg release watch` results when the watched run completes unsuccessfully.
+- Validated against the failed css-visual-diff `v0.1.3` release.
+- Saved artifact:
+  - `sources/25-css-visual-diff-release-watch-with-failed-log-command.json`
+
+### Why
+- The failed css-visual-diff release showed that `ok=false` and a run URL are useful but not enough; the next action is almost always `gh run view <id> --log-failed`.
+
+### What worked
+- The failed release result now includes:
+  - `gh run view 26544778174 --repo go-go-golems/css-visual-diff --log-failed`
+
+### What didn't work
+- N/A
+
+### What I learned
+- Failure-oriented output should include the next diagnostic command, not just the state.
+
+### What was tricky to build
+- This was small; the main decision was to avoid fetching large logs inside the default structured watch path.
+
+### What warrants a second pair of eyes
+- Decide if a future `--include-failed-logs` flag should embed a truncated log excerpt.
+
+### What should be done in the future
+- Add failed job names and annotations, not just the `gh run view` command.
+
+### Code review instructions
+- Review `internal/cli/release/watch.go` and the failed css-visual-diff artifact.

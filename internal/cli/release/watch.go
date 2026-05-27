@@ -41,14 +41,15 @@ type releaseRun struct {
 }
 
 type watchResult struct {
-	OK          bool              `json:"ok" yaml:"ok"`
-	Repository  string            `json:"repository" yaml:"repository"`
-	Workflow    string            `json:"workflow" yaml:"workflow"`
-	Tag         string            `json:"tag" yaml:"tag"`
-	Run         releaseRun        `json:"run" yaml:"run"`
-	Docs        *verifyDocsResult `json:"docs,omitempty" yaml:"docs,omitempty"`
-	Error       string            `json:"error,omitempty" yaml:"error,omitempty"`
-	ElapsedSecs int               `json:"elapsed_seconds" yaml:"elapsed_seconds"`
+	OK               bool              `json:"ok" yaml:"ok"`
+	Repository       string            `json:"repository" yaml:"repository"`
+	Workflow         string            `json:"workflow" yaml:"workflow"`
+	Tag              string            `json:"tag" yaml:"tag"`
+	Run              releaseRun        `json:"run" yaml:"run"`
+	Docs             *verifyDocsResult `json:"docs,omitempty" yaml:"docs,omitempty"`
+	Error            string            `json:"error,omitempty" yaml:"error,omitempty"`
+	FailedLogCommand string            `json:"failed_log_command,omitempty" yaml:"failed_log_command,omitempty"`
+	ElapsedSecs      int               `json:"elapsed_seconds" yaml:"elapsed_seconds"`
 }
 
 func newWatchCommand() *cobra.Command {
@@ -107,6 +108,9 @@ func watchRelease(ctx context.Context, s *watchSettings) watchResult {
 	}
 	res.Run = run
 	res.OK = run.Status == "completed" && run.Conclusion == "success"
+	if run.Status == "completed" && run.Conclusion != "success" {
+		res.FailedLogCommand = fmt.Sprintf("gh run view %d --repo %s --log-failed", run.DatabaseID, s.Repo)
+	}
 	if res.OK && s.VerifyDocs {
 		pkg := s.Package
 		if pkg == "" {
@@ -217,6 +221,9 @@ func writeWatchResult(res watchResult, output string) error {
 		fmt.Printf("%t\t%s\t%s\t%s\t%s\n", res.OK, res.Repository, res.Tag, res.Run.Conclusion, res.Run.URL)
 		if res.Docs != nil {
 			fmt.Printf("docs\t%s\t%s\t%d\t%s\n", res.Docs.Package, res.Docs.Version, res.Docs.SectionCount, res.Docs.URL)
+		}
+		if res.FailedLogCommand != "" {
+			fmt.Fprintf(os.Stderr, "failed logs: %s\n", res.FailedLogCommand)
 		}
 		if res.Error != "" {
 			fmt.Fprintf(os.Stderr, "error: %s\n", res.Error)
