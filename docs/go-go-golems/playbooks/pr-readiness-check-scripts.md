@@ -56,12 +56,12 @@ The commands emit concise table output by default and row-oriented structured ou
 ```text
 ggg pr ready <pr>                  # classify one PR
 ggg pr ready <pr> --findings       # include finding rows for debugging
-ggg pr codex-trigger <pr>          # post @codex review when safe
-ggg pr codex-trigger --file prs.yaml
+ggg pr codex-trigger <pr> --wait-for-auto 30s  # wait for automatic Codex before manual trigger
+ggg pr codex-trigger --file prs.yaml --wait-for-auto 30s
 ggg pr codex-comments <pr>         # list Codex review bodies and inline comments
 ggg pr watch <pr>                  # poll one PR until ready or actionable
 ggg batch ready prs.yaml           # classify many PRs
-ggg batch ready prs.yaml --watch   # poll until there is operator work
+ggg batch ready prs.yaml --watch --until actionable  # poll until there is operator work
 ```
 
 The CLI should already be installed on the operator PATH. If you are testing from a checkout before installation, use `go run ./cmd/ggg ...` from the infra-tooling repository.
@@ -100,12 +100,12 @@ Show detailed findings when a PR is not ready:
 ggg pr ready https://github.com/go-go-golems/<repo>/pull/<number> --findings
 ```
 
-After opening a PR, wait briefly before manually triggering Codex. GitHub/Codex often starts an automatic review within 20-30 seconds, and an immediate manual trigger can create duplicate review runs.
+After opening a PR, let `ggg` wait briefly before manually triggering Codex. GitHub/Codex often starts an automatic review within 20-30 seconds, and an immediate manual trigger can create duplicate review runs.
 
-Trigger Codex review only if no review appeared after that short delay, no review is running, no satisfied signal already exists, and current-head feedback is not already present:
+Trigger Codex review only if no review appears after that short delay, no review is running, no satisfied signal already exists, and current-head feedback is not already present:
 
 ```bash
-ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<number>
+ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<number> --wait-for-auto 30s
 ```
 
 Safety behavior:
@@ -130,7 +130,7 @@ This command emits Codex-authored review bodies and inline comments with reviewe
 Trigger Codex for many PRs:
 
 ```bash
-ggg pr codex-trigger --file /path/to/prs.yaml
+ggg pr codex-trigger --file /path/to/prs.yaml --wait-for-auto 30s
 ```
 
 Check many PRs once:
@@ -148,10 +148,10 @@ ggg pr watch https://github.com/go-go-golems/<repo>/pull/<number> --interval-sec
 Watch a batch until there is something for the operator to do:
 
 ```bash
-ggg batch ready /path/to/prs.yaml --watch --interval-seconds 30 --timeout-seconds 1800
+ggg batch ready /path/to/prs.yaml --watch --until actionable --interval-seconds 30 --timeout-seconds 1800
 ```
 
-Watch mode stops when:
+Watch mode defaults to `--until actionable`, which stops when:
 
 - every PR is ready;
 - any PR reaches terminal Codex feedback;
@@ -161,6 +161,12 @@ Watch mode stops when:
 - or some PR becomes ready while others are still waiting.
 
 The last case exits with code `5` so release-train operators can merge/release ready repositories in dependency order instead of sleeping through actionable progress.
+
+Alternative stop modes:
+
+- `--until all-ready`: keep polling through partial readiness; stop only when all PRs are ready or a terminal blocker appears.
+- `--until terminal`: stop on all-ready or terminal blockers, not on partial readiness.
+- `--until first-ready`: stop as soon as at least one PR is ready or a terminal blocker appears.
 
 ## Exit codes
 

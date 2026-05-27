@@ -29,6 +29,7 @@ type readySettings struct {
 	IntervalSeconds     int    `glazed:"interval-seconds"`
 	TimeoutSeconds      int    `glazed:"timeout-seconds"`
 	TriggerMissingCodex bool   `glazed:"trigger-missing-codex"`
+	Until               string `glazed:"until"`
 }
 
 func newReadyCommand() (*cobra.Command, error) {
@@ -52,14 +53,15 @@ prs:
   - repo: go-go-golems/goja-git
     number: 2
 
-Watch mode repeats while all PRs are still waiting. It stops on all-ready,
-terminal failures, Codex feedback, or partial readiness.`),
+Watch mode repeats until the configured stop condition. The default --until=actionable
+stops on all-ready, terminal failures, Codex feedback, merge conflicts, or partial readiness.`),
 		cmds.WithArguments(fields.New("file", fields.TypeString, fields.WithHelp("YAML PR list"), fields.WithIsArgument(true))),
 		cmds.WithFlags(
 			fields.New("watch", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Poll until the batch has an actionable state")),
 			fields.New("interval-seconds", fields.TypeInteger, fields.WithDefault(30), fields.WithHelp("Watch polling interval in seconds")),
 			fields.New("timeout-seconds", fields.TypeInteger, fields.WithDefault(1800), fields.WithHelp("Watch timeout in seconds")),
 			fields.New("trigger-missing-codex", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Post @codex review for PRs with no Codex signal")),
+			fields.New("until", fields.TypeChoice, fields.WithDefault("actionable"), fields.WithChoices("actionable", "all-ready", "terminal", "first-ready"), fields.WithHelp("Watch stop condition")),
 		),
 		cmds.WithSections(glazedSection, commandSettingsSection),
 	)}
@@ -81,6 +83,10 @@ func (c *readyCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 	if len(refs) == 0 {
 		return fmt.Errorf("PR list is empty")
 	}
+	until := s.Until
+	if until == "" {
+		until = "actionable"
+	}
 	interval := time.Duration(s.IntervalSeconds) * time.Second
 	if interval <= 0 {
 		interval = 30 * time.Second
@@ -98,7 +104,7 @@ func (c *readyCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 			return err
 		}
 		code := summary.exitCode()
-		if !s.Watch || code == 0 || code == 2 || code == 3 || code == 4 || code == 5 || code == 6 {
+		if !s.Watch || shouldStopWatch(summary, until) {
 			if code != 0 {
 				exitcode.Request(code)
 			}
@@ -164,7 +170,13 @@ func runOnce(ctx context.Context, client ghclient.Client, refs []prref.Ref, trig
 			types.MRP("ok", report.OK),
 			types.MRP("state", string(report.State)),
 			types.MRP("terminal", report.Terminal),
+			types.MRP("terminal_reason", prready.TerminalReason(report)),
+			types.MRP("next_action", prready.NextAction(report)),
 			types.MRP("failed_check_kinds", report.FailedCheckKinds),
+			types.MRP("pending_checks", prready.PendingChecks(report)),
+			types.MRP("failed_checks", prready.FailedChecksSummary(report)),
+			types.MRP("merge_state_status", report.MergeStateStatus),
+			types.MRP("head_ref_oid", report.HeadRefOID),
 			types.MRP("trigger_url", triggerURL),
 		)
 		if err := gp.AddRow(ctx, row); err != nil {
@@ -209,6 +221,21 @@ func (s batchSummary) state() string {
 		return "partial_ready"
 	}
 	return "waiting"
+}
+
+func shouldStopWatch(s batchSummary, until string) bool {
+	state := s.state()
+	terminalBlocker := state == "error" || state == "codex_feedback" || state == "failed_checks" || state == "merge_conflict"
+	switch until {
+	case "all-ready":
+		return state == "ready" || terminalBlocker
+	case "terminal":
+		return state == "ready" || terminalBlocker
+	case "first-ready":
+		return s.Ready > 0 || terminalBlocker
+	default:
+		return state == "ready" || terminalBlocker || state == "partial_ready"
+	}
 }
 
 func (s batchSummary) exitCode() int {

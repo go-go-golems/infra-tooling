@@ -29,6 +29,7 @@ type codexTriggerSettings struct {
 	DryRun              bool   `glazed:"dry-run"`
 	Yes                 bool   `glazed:"yes"`
 	RecentTriggerWindow string `glazed:"recent-trigger-window"`
+	WaitForAuto         string `glazed:"wait-for-auto"`
 }
 
 func newCodexTriggerCommand() (*cobra.Command, error) {
@@ -47,8 +48,9 @@ func newCodexTriggerCommand() (*cobra.Command, error) {
 
 By default the command first checks the latest Codex signal and skips PRs that
 already have an EYES reaction, have current-head Codex feedback, have a recent
-manual trigger, or already have a satisfied Codex signal. Use --force to post
-another trigger anyway. Use --file with a YAML PR list:
+manual trigger, or already have a satisfied Codex signal. Use --wait-for-auto
+to give PR-created automatic Codex reviews time to appear before posting a
+manual trigger. Use --force to post another trigger anyway. Use --file with a YAML PR list:
 
 prs:
   - https://github.com/go-go-golems/discord-bot/pull/9
@@ -62,6 +64,7 @@ prs:
 			fields.New("dry-run", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Show what would happen without posting comments")),
 			fields.New("yes", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Confirm mutating operation without prompting; currently informational for non-interactive use")),
 			fields.New("recent-trigger-window", fields.TypeString, fields.WithDefault("10m"), fields.WithHelp("Skip duplicate @codex review triggers newer than this duration unless --force is set")),
+			fields.New("wait-for-auto", fields.TypeString, fields.WithDefault("0s"), fields.WithHelp("Wait up to this duration for an automatic Codex signal before posting a manual trigger")),
 		),
 		cmds.WithSections(glazedSection, commandSettingsSection),
 	)}
@@ -77,13 +80,17 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 	if err != nil {
 		return fmt.Errorf("invalid recent-trigger-window: %w", err)
 	}
+	waitForAuto, err := time.ParseDuration(s.WaitForAuto)
+	if err != nil {
+		return fmt.Errorf("invalid wait-for-auto: %w", err)
+	}
 	refs, err := refsFromSettings(s)
 	if err != nil {
 		return err
 	}
 	client := ghclient.Client{}
 	for _, ref := range refs {
-		snap, err := client.Snapshot(ctx, ref)
+		snap, waited, err := snapshotAfterAutoWait(ctx, client, ref, waitForAuto, window, s.Force)
 		if err != nil {
 			return err
 		}
@@ -94,9 +101,7 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 		currentFeedback := prready.HasCurrentAuthoredFeedback(snap)
 		satisfied := prready.HasSatisfiedCodexSignal(snap)
 		_, recentTrigger, triggerAge := prready.RecentTrigger(snap, time.Now(), window)
-		if s.DryRun {
-			action = "would_trigger"
-		} else if status.Running && !s.Force {
+		if status.Running && !s.Force {
 			action = "skipped_running"
 		} else if currentFeedback && !s.Force {
 			action = "skipped_current_feedback"
@@ -104,6 +109,8 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 			action = "skipped_recent_trigger"
 		} else if satisfied && !s.Force {
 			action = "skipped_satisfied"
+		} else if s.DryRun {
+			action = "would_trigger"
 		} else {
 			url, err = client.TriggerCodex(ctx, ref)
 			if err != nil {
@@ -123,6 +130,7 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 			types.MRP("recent_trigger", recentTrigger),
 			types.MRP("trigger_age_seconds", int(triggerAge.Seconds())),
 			types.MRP("recent_trigger_window", window.String()),
+			types.MRP("waited_for_auto_seconds", int(waited.Seconds())),
 			types.MRP("eyes", status.Eyes),
 			types.MRP("thumbs_up", status.ThumbsUp),
 			types.MRP("signal_url", status.SignalURL),
@@ -133,6 +141,50 @@ func (c *codexTriggerCommand) RunIntoGlazeProcessor(ctx context.Context, vals *v
 		}
 	}
 	return nil
+}
+
+func snapshotAfterAutoWait(ctx context.Context, client ghclient.Client, ref prref.Ref, waitForAuto, recentWindow time.Duration, force bool) (prready.Snapshot, time.Duration, error) {
+	start := time.Now()
+	snap, err := client.Snapshot(ctx, ref)
+	if err != nil {
+		return prready.Snapshot{}, 0, err
+	}
+	if force || waitForAuto <= 0 || codexTriggerDecisionReady(snap, recentWindow) {
+		return snap, 0, nil
+	}
+	deadline := start.Add(waitForAuto)
+	for time.Now().Before(deadline) {
+		remaining := time.Until(deadline)
+		sleep := 5 * time.Second
+		if remaining < sleep {
+			sleep = remaining
+		}
+		select {
+		case <-ctx.Done():
+			return prready.Snapshot{}, time.Since(start), ctx.Err()
+		case <-time.After(sleep):
+		}
+		snap, err = client.Snapshot(ctx, ref)
+		if err != nil {
+			return prready.Snapshot{}, time.Since(start), err
+		}
+		if codexTriggerDecisionReady(snap, recentWindow) {
+			return snap, time.Since(start), nil
+		}
+	}
+	return snap, time.Since(start), nil
+}
+
+func codexTriggerDecisionReady(snap prready.Snapshot, recentWindow time.Duration) bool {
+	latest, ok := prready.LatestSignal(snap)
+	if !ok {
+		return false
+	}
+	if latest.Eyes > 0 || prready.HasCurrentAuthoredFeedback(snap) || prready.HasSatisfiedCodexSignal(snap) {
+		return true
+	}
+	_, recentTrigger, _ := prready.RecentTrigger(snap, time.Now(), recentWindow)
+	return recentTrigger
 }
 
 func refsFromSettings(s *codexTriggerSettings) ([]prref.Ref, error) {

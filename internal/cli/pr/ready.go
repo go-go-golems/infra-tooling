@@ -76,7 +76,9 @@ func (c *readyCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 	row := types.NewRow(
 		types.MRP("pr", ref.URL()), types.MRP("repository", ref.Repository()), types.MRP("number", ref.Number),
 		types.MRP("ok", report.OK), types.MRP("state", string(report.State)), types.MRP("terminal", report.Terminal),
-		types.MRP("failed_check_kinds", report.FailedCheckKinds), types.MRP("merge_state_status", report.MergeStateStatus), types.MRP("review_decision", report.ReviewDecision), types.MRP("head_ref_oid", report.HeadRefOID),
+		types.MRP("terminal_reason", prready.TerminalReason(report)), types.MRP("next_action", prready.NextAction(report)),
+		types.MRP("failed_check_kinds", report.FailedCheckKinds), types.MRP("pending_checks", prready.PendingChecks(report)), types.MRP("failed_checks", prready.FailedChecksSummary(report)),
+		types.MRP("merge_state_status", report.MergeStateStatus), types.MRP("review_decision", report.ReviewDecision), types.MRP("head_ref_oid", report.HeadRefOID),
 	)
 	if err := gp.AddRow(ctx, row); err != nil {
 		return err

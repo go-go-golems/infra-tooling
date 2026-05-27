@@ -3,7 +3,6 @@ package pr
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	glazedcli "github.com/go-go-golems/glazed/pkg/cli"
@@ -95,8 +94,8 @@ func (c *watchCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 			types.MRP("ok", report.OK),
 			types.MRP("state", string(report.State)),
 			types.MRP("terminal", report.Terminal),
-			types.MRP("terminal_reason", terminalReason(report)),
-			types.MRP("next_action", nextAction(report)),
+			types.MRP("terminal_reason", prready.TerminalReason(report)),
+			types.MRP("next_action", prready.NextAction(report)),
 			types.MRP("failed_check_kinds", report.FailedCheckKinds),
 			types.MRP("merge_state_status", report.MergeStateStatus),
 			types.MRP("review_decision", report.ReviewDecision),
@@ -113,7 +112,7 @@ func (c *watchCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 		}
 		if time.Since(start) >= timeout {
 			exitcode.Request(1)
-			return fmt.Errorf("timed out after %s waiting for PR readiness; last state=%s next_action=%s", elapsed, report.State, nextAction(report))
+			return fmt.Errorf("timed out after %s waiting for PR readiness; last state=%s next_action=%s", elapsed, report.State, prready.NextAction(report))
 		}
 		attempt++
 		select {
@@ -121,48 +120,5 @@ func (c *watchCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 			return ctx.Err()
 		case <-time.After(interval):
 		}
-	}
-}
-
-func terminalReason(report prready.Report) string {
-	if report.OK {
-		return "ready"
-	}
-	if !report.Terminal {
-		return ""
-	}
-	switch report.State {
-	case prready.CodexFeedback:
-		return "codex_feedback"
-	case prready.FailedChecks:
-		return "failed_checks"
-	case prready.MergeConflict:
-		return "merge_conflict"
-	default:
-		return string(report.State)
-	}
-}
-
-func nextAction(report prready.Report) string {
-	switch report.State {
-	case prready.Ready:
-		return "merge_when_manual_review_allows"
-	case prready.WaitingChecks:
-		if len(report.FailedCheckKinds) > 0 {
-			return "wait_for_" + strings.Join(report.FailedCheckKinds, ",")
-		}
-		return "wait_for_checks"
-	case prready.WaitingCodex:
-		return "wait_for_codex"
-	case prready.NoCodex:
-		return "trigger_codex_review"
-	case prready.CodexFeedback:
-		return "inspect_and_address_codex_feedback"
-	case prready.FailedChecks:
-		return "inspect_and_fix_failed_checks"
-	case prready.MergeConflict:
-		return "rebase_or_merge_main_to_resolve_conflicts"
-	default:
-		return "inspect_pr_readiness"
 	}
 }

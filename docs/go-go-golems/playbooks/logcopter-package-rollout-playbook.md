@@ -373,8 +373,8 @@ After pushing a repository's logcopter branch, create or update the PR and use t
 
 ```bash
 gh pr create --fill --base main --head task/logcopter
-# wait 20-30 seconds for automatic Codex review to appear; then trigger only if needed:
-ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<number>
+# wait up to 30 seconds for automatic Codex review to appear; then trigger only if needed:
+ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<number> --wait-for-auto 30s
 ```
 
 Check readiness without manually inspecting every repository:
@@ -399,7 +399,7 @@ If it reports an eyes reaction, Codex is still reviewing. If it reports `merge_c
 ggg pr codex-comments https://github.com/go-go-golems/<repo>/pull/<number>
 ```
 
-Fix the review comments, push, wait briefly for automatic Codex review, and only then trigger another Codex review with `ggg pr codex-trigger` if no automatic/satisfied signal appears.
+Fix the review comments, push, wait briefly for automatic Codex review, and only then trigger another Codex review with `ggg pr codex-trigger --wait-for-auto 30s` if no automatic/satisfied signal appears.
 
 For a large dependency-order rollout, keep a simple queue:
 
@@ -439,7 +439,7 @@ This makes generated-file diffs easier to review and lets downstream repositorie
 | `GOWORK=off` fails but workspace tests pass | The repo relies on a local checkout that has symbols not present in the required published version. | Publish the dependency version first, run `make bump-go-go-golems`, then rerun `GOWORK=off` smoke tests. |
 | `make bump-go-go-golems` updates an unexpected module | The module is already a direct `github.com/go-go-golems/...` requirement in `go.mod`, so the target treats it as part of the repo family. | Inspect the diff. If the update is unrelated to logcopter, split it into a dependency-only PR. |
 | Codex review has an eyes reaction | Codex is still reviewing the PR. | Wait and rerun `ggg pr ready`; do not merge while eyes is present. |
-| Codex review has substantive feedback | Codex left review comments or suggestions on the current head. | Inspect with `ggg pr codex-comments`, fix the comments, push, and rerun `ggg pr codex-trigger`. |
+| Codex review has substantive feedback | Codex left review comments or suggestions on the current head. | Inspect with `ggg pr codex-comments`, fix the comments, push, and rerun `ggg pr codex-trigger --wait-for-auto 30s`. |
 | Same-package tests fail after generation | Test files import standard library `log` in the same package. | Alias the import as `stdlog`. |
 
 ## Review checklist

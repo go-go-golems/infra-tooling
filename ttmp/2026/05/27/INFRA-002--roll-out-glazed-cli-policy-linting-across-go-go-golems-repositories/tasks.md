@@ -57,7 +57,13 @@ WhenToUse: During the Glazed linting release train.
 - [ ] Push patch releases after approval / when safe.
 - [ ] Verify Go proxy visibility.
 
-## Phase 6: Closeout
+## Phase 6: Harden `ggg` readiness/watch ergonomics
+
+- [x] Add richer `next_action` / `terminal_reason` fields to `ggg pr ready` and `ggg batch ready`.
+- [x] Add `--wait-for-auto 30s` behavior to `ggg pr codex-trigger` so automatic Codex runs can appear before a manual trigger.
+- [x] Add configurable batch watch semantics with `--until actionable|all-ready|terminal|first-ready`.
+
+## Phase 7: Closeout
 
 - [ ] Update diary after every substantial step.
 - [ ] Update changelog and relate changed files.

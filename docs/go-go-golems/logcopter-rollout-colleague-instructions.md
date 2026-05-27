@@ -141,10 +141,10 @@ git commit -m "Adopt logcopter package loggers"
 git push <remote> <branch>
 ```
 
-Open a PR. Wait 20-30 seconds for the automatic Codex review to appear, then trigger Codex only if no run/satisfied signal appears:
+Open a PR. Let `ggg` wait 20-30 seconds for the automatic Codex review to appear, then trigger Codex only if no run/satisfied signal appears:
 
 ```bash
-ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<n>
+ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<n> --wait-for-auto 30s
 ```
 
 For many PRs, put the URLs in a YAML file and trigger/check them as a batch:
@@ -157,7 +157,7 @@ prs:
 ```
 
 ```bash
-ggg pr codex-trigger --file /tmp/prs.yaml
+ggg pr codex-trigger --file /tmp/prs.yaml --wait-for-auto 30s
 ggg batch ready /tmp/prs.yaml
 ```
 
@@ -171,7 +171,7 @@ For batch work, keep using:
 
 ```bash
 printf "prs:\n  - https://github.com/go-go-golems/<repo>/pull/<n>\n" > /tmp/prs.yaml
-ggg batch ready /tmp/prs.yaml --watch --interval-seconds 30 --timeout-seconds 1800
+ggg batch ready /tmp/prs.yaml --watch --until actionable --interval-seconds 30 --timeout-seconds 1800
 ```
 
 Merge only after readiness succeeds. If readiness reports `merge_conflict`, rebase or merge the base branch first.

@@ -7,7 +7,7 @@ This playbook captures the reusable operational workflow used during the logcopt
 Installed CLI:
 
 - `ggg pr ready` — one-shot PR readiness check with optional `--findings` and Glazed structured output.
-- `ggg pr codex-trigger` — posts `@codex review` when it is safe to do so; supports `--file prs.yaml`, `--dry-run`, and `--force`.
+- `ggg pr codex-trigger` — posts `@codex review` when it is safe to do so; supports `--file prs.yaml`, `--wait-for-auto`, `--dry-run`, and `--force`.
 - `ggg pr codex-comments` — lists Codex-authored review bodies and inline review comments.
 - `ggg batch ready` — checks or watches a YAML PR list without blocking on one PR.
 - `ggg release tag-patch`, `ggg release tag-minor`, and `ggg release tag-major` — compute, create, push, and proxy-verify Go module release tags.
@@ -56,9 +56,9 @@ prs:
 Then trigger and watch them with `ggg`:
 
 ```bash
-ggg pr codex-trigger --file /tmp/prs.yaml
+ggg pr codex-trigger --file /tmp/prs.yaml --wait-for-auto 30s
 ggg batch ready /tmp/prs.yaml
-ggg batch ready /tmp/prs.yaml --watch --interval-seconds 30 --timeout-seconds 1800
+ggg batch ready /tmp/prs.yaml --watch --until actionable --interval-seconds 30 --timeout-seconds 1800
 ```
 
 Batch watch mode stops as soon as there is operator work: a terminal failure, a Codex feedback state, all PRs ready, or even one ready PR while others are still waiting. Treat exit code `5` as “partial progress is actionable”; inspect the table and proceed with the next dependency-order merge/release step.
@@ -141,10 +141,10 @@ git push <remote> <branch>
 
 ### 5. Trigger or wait for Codex review
 
-After opening a PR, wait 20-30 seconds before manually triggering Codex because Codex often starts an automatic review shortly after PR creation. If no automatic review appears, or if a later push needs a fresh review, trigger it without `--force` first:
+After opening a PR, let `ggg` wait 20-30 seconds before manually triggering Codex because Codex often starts an automatic review shortly after PR creation. If no automatic review appears, or if a later push needs a fresh review, trigger it without `--force` first:
 
 ```bash
-ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<n>
+ggg pr codex-trigger https://github.com/go-go-golems/<repo>/pull/<n> --wait-for-auto 30s
 ```
 
 Do not repeatedly force-trigger Codex when `ggg pr ready` already reports a satisfied signal; use `--force` only when intentionally replacing a stale or stuck run.
@@ -162,11 +162,11 @@ For single-PR watch behavior, use:
 ggg pr watch https://github.com/go-go-golems/<repo>/pull/<n> --interval-seconds 30 --timeout-seconds 1800
 ```
 
-For batch watch behavior, put the PRs in a YAML list and use batch watch:
+For batch watch behavior, put the PRs in a YAML list and use batch watch. Use `--until actionable` for release trains where partial readiness should wake the operator; use `--until all-ready` when you want to keep polling through partial readiness.
 
 ```bash
 printf "prs:\n  - https://github.com/go-go-golems/<repo>/pull/<n>\n" > /tmp/prs.yaml
-ggg batch ready /tmp/prs.yaml --watch --interval-seconds 30 --timeout-seconds 1800
+ggg batch ready /tmp/prs.yaml --watch --until actionable --interval-seconds 30 --timeout-seconds 1800
 ```
 
 A PR is considered ready when:
