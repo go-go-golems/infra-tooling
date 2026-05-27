@@ -118,3 +118,16 @@ WhenToUse: Use while executing INFRA-001.
 - [x] Add Go proxy verification retry/backoff with structured status rows.
 - [x] Expand dry-run output to include module path, current tag, next tag, target commit, dirty status, and planned commands.
 - [ ] Add temporary-git-repo tests for patch/minor/major and existing-tag behavior.
+
+## Phase 11: Live PR readiness validation
+
+- [x] Add a ticket script that creates live readiness test PRs from `origin/main`.
+- [x] Open a harmless ready-control PR.
+- [x] Open an intentionally failing-checks PR.
+- [x] Open an intentionally unsafe Codex-feedback PR.
+- [x] Store the live PR list as YAML in the ticket scripts folder.
+- [x] Trigger Codex on all live test PRs with `ggg pr codex-trigger`.
+- [x] Add a ticket script for synthetic commit statuses when repository Actions do not report checks.
+- [x] Verify `ggg pr ready` classifies ready, failed-check, and Codex-feedback PRs correctly.
+- [x] Verify built-binary exit codes for ready, failed-check, Codex-feedback, and batch Codex-feedback states.
+- [ ] Close or otherwise clean up the live test PRs after the validation window.

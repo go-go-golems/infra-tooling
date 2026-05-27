@@ -1,0 +1,7 @@
+prs:
+  - url: https://github.com/go-go-golems/infra-tooling/pull/5
+    kind: ready-control
+  - url: https://github.com/go-go-golems/infra-tooling/pull/6
+    kind: failed-checks
+  - url: https://github.com/go-go-golems/infra-tooling/pull/7
+    kind: codex-feedback-bait

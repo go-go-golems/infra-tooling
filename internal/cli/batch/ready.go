@@ -100,7 +100,7 @@ func (c *readyCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 		code := summary.exitCode()
 		if !s.Watch || code == 0 || code == 2 || code == 3 || code == 4 || code == 5 {
 			if code != 0 {
-				return exitcode.New(code, "batch not ready: state=%s ready=%d not_ready=%d", summary.State, summary.Ready, summary.NotReady)
+				exitcode.Request(code)
 			}
 			return nil
 		}

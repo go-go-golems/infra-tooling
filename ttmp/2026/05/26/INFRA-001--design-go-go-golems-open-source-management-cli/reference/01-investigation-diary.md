@@ -724,3 +724,119 @@ Skip priority remains:
 3. current-head feedback -> `skipped_current_feedback`
 4. recent trigger -> `skipped_recent_trigger`
 5. otherwise -> `triggered`
+
+## Step 9: Open live readiness test PRs and validate classifications
+
+The ninth step moved from local smoke tests to real GitHub pull requests. I created three live PRs in `go-go-golems/infra-tooling`: a harmless control PR, an intentionally failing-test PR, and an intentionally unsafe Codex-feedback PR. The goal was to exercise `ggg` against real PR objects, Codex trigger comments/reactions, Codex review comments, commit statuses, and exact process exit codes.
+
+I stored the scripts used to create and shape the test state in the ticket `scripts/` folder so the test can be repeated or improved later.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok, let's do some real tests by opening some PRs, some egregiously wrong."
+
+**Assistant interpretation:** Create real GitHub PRs that represent ready, failed-check, and Codex-feedback scenarios, then use them to validate `ggg` behavior.
+
+**Inferred user intent:** The user wants the tool tested against live GitHub/Codex behavior rather than only local unit tests and dry-run output.
+
+**Commit (code):** pending — live-test scripts, bug fixes, and diary updates ready to commit.
+
+### What I did
+- Added and ran `scripts/01-create-readiness-test-prs.sh`.
+- Created PR 5: `INFRA-001 readiness control PR`.
+- Created PR 6: `INFRA-001 intentionally failing checks PR`.
+- Created PR 7: `INFRA-001 intentionally unsafe Codex feedback PR`.
+- Stored the PR list in `scripts/02-readiness-test-prs.yaml`.
+- Triggered Codex on all three PRs with `ggg pr codex-trigger --file ...`.
+- Re-ran `ggg pr codex-trigger` to verify duplicate trigger protection:
+  - PR 5 and PR 6 skipped as `skipped_running` due `EYES` reactions.
+  - PR 7 skipped as `skipped_recent_trigger` before Codex review appeared.
+- Added and ran `scripts/03-set-readiness-test-statuses.sh` because the repository workflows did not report checks for the test branches.
+- Set synthetic commit statuses:
+  - PR 5: success.
+  - PR 6: failure.
+  - PR 7: success.
+- Verified `ggg pr codex-comments` surfaced the PR 7 Codex inline comment about unsafe `shell=True` / `rm -rf` behavior.
+- Verified final classifications:
+  - PR 5: `ready`.
+  - PR 6: `failed_checks`.
+  - PR 7: `codex_feedback`.
+- Built `/tmp/ggg` and verified exact exit codes:
+  - PR 5 ready: `0`.
+  - PR 6 failed checks: `4`.
+  - PR 7 Codex feedback: `3`.
+  - batch over all three with Codex feedback present: `3`.
+
+### Why
+- Live PRs validate the GitHub GraphQL and `gh` API assumptions in a way local fixtures cannot.
+- The unsafe PR gives Codex a real, concrete review target and validates the inline comment extraction path.
+
+### What worked
+- Codex identified the unsafe PR 7 as expected:
+  - file: `scripts/go-go-golems/99-infra001-dangerous-example.py`
+  - line: 12
+  - issue: executing untrusted paths through the shell.
+- The readiness classifier correctly treated PR 7 as `codex_feedback` even though its synthetic status was successful.
+- Synthetic commit statuses allowed us to test `StatusContext` success/failure handling.
+- Exact built-binary exit codes worked after fixing the exit-code mechanism.
+
+### What didn't work
+- GitHub Actions did not report checks for the test branches:
+
+```text
+no checks reported on the 'test/infra-001-ready-control' branch
+```
+
+I worked around that by adding a script that posts synthetic commit statuses through the GitHub Statuses API.
+
+- The first failed-check-kind implementation falsely classified `test` because it scanned every failed message and matched the word `latest` in Codex messages. I fixed `failedCheckKinds` so it only derives check kinds from check-related failure messages.
+
+- The first typed-error exit-code implementation still exited `1` under Glazed/Cobra. I replaced it with `exitcode.Request(code)`, which records the desired process code while letting the command return nil after rows are emitted; `main` exits with the requested code after `root.Execute()` returns.
+
+### What I learned
+- Some repos may not reliably run checks for test branches, so a test harness needs either synthetic statuses or a known repository with predictable Actions behavior.
+- Exact exit-code parity must be tested with a built binary, not `go run`, because `go run` wraps program exits as its own failure.
+- Real Codex comments are valuable fixtures: PR 7 now proves the current inline-comment extraction path works on a live review.
+
+### What was tricky to build
+- The test PR creation script writes `02-readiness-test-prs.yaml` into the ticket while switching branches. That file appears as an uncommitted change across branch switches, which is harmless but visible as “Warning: 1 uncommitted change”.
+- The readiness tool had to support both GitHub Actions check runs and legacy StatusContext statuses because the synthetic-status workaround uses StatusContext.
+
+### What warrants a second pair of eyes
+- Whether to close the live test PRs now or keep them open briefly as regression fixtures.
+- Whether synthetic statuses should become a formal `ggg test set-status` helper or remain only a ticket script.
+- Whether `no status checks found` should classify as `waiting_checks` rather than `not_ready`.
+
+### What should be done in the future
+- Add fixture files based on the live PR GraphQL payloads.
+- Add a cleanup script to close the test PRs and delete test branches when no longer needed.
+- Consider adding a dedicated CI workflow for the Go CLI so future infra-tooling PRs run `go test ./...`.
+
+### Code review instructions
+- Review ticket scripts:
+  - `scripts/01-create-readiness-test-prs.sh`
+  - `scripts/02-readiness-test-prs.yaml`
+  - `scripts/03-set-readiness-test-statuses.sh`
+- Review code fixes:
+  - `pkg/prready/prready.go` for check-kind classification.
+  - `internal/exitcode/exitcode.go`, `cmd/ggg/main.go`, `internal/cli/pr/ready.go`, and `internal/cli/batch/ready.go` for requested exit-code handling.
+
+### Technical details
+
+Live test PRs:
+
+```text
+https://github.com/go-go-golems/infra-tooling/pull/5  ready-control
+https://github.com/go-go-golems/infra-tooling/pull/6  failed-checks
+https://github.com/go-go-golems/infra-tooling/pull/7  codex-feedback-bait
+```
+
+Exact built-binary exit-code validation:
+
+```bash
+go build -o /tmp/ggg ./cmd/ggg
+/tmp/ggg pr ready https://github.com/go-go-golems/infra-tooling/pull/5 --output json  # 0
+/tmp/ggg pr ready https://github.com/go-go-golems/infra-tooling/pull/6 --output json  # 4
+/tmp/ggg pr ready https://github.com/go-go-golems/infra-tooling/pull/7 --output json  # 3
+/tmp/ggg batch ready ttmp/.../scripts/02-readiness-test-prs.yaml --output json       # 3
+```

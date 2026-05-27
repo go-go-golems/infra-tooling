@@ -221,10 +221,12 @@ func failedCheckKinds(failed []string) []string {
 		lower := strings.ToLower(msg)
 		if strings.Contains(lower, "pending checks:") {
 			set["pending_checks"] = true
+			continue
 		}
-		if strings.Contains(lower, "failing/non-success checks:") {
-			set["checks"] = true
+		if !strings.Contains(lower, "failing/non-success checks:") {
+			continue
 		}
+		set["checks"] = true
 		if strings.Contains(lower, "test") {
 			set["test"] = true
 		}

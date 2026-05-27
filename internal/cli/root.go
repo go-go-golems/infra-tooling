@@ -9,9 +9,11 @@ import (
 
 func NewRootCommand() (*cobra.Command, error) {
 	root := &cobra.Command{
-		Use:   "ggg",
-		Short: "Manage go-go-golems open-source repositories",
-		Long:  "Manage go-go-golems pull requests, Codex reviews, release trains, validation profiles, and tags.",
+		Use:           "ggg",
+		Short:         "Manage go-go-golems open-source repositories",
+		Long:          "Manage go-go-golems pull requests, Codex reviews, release trains, validation profiles, and tags.",
+		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 	root.PersistentFlags().Bool("with-structured-output", false, "Compatibility flag: Glazed commands already emit row-oriented structured data; use --output json/yaml/csv to select format")
 

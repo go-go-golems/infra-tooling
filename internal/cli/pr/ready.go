@@ -69,7 +69,7 @@ func (c *readyCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 			}
 		}
 		if !report.OK {
-			return exitcode.New(exitCodeForState(report.State), "PR not ready: state=%s", report.State)
+			exitcode.Request(exitCodeForState(report.State))
 		}
 		return nil
 	}
@@ -82,7 +82,7 @@ func (c *readyCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 		return err
 	}
 	if !report.OK {
-		return exitcode.New(exitCodeForState(report.State), "PR not ready: state=%s", report.State)
+		exitcode.Request(exitCodeForState(report.State))
 	}
 	return nil
 }

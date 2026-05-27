@@ -109,3 +109,15 @@ Implemented Codex recent-trigger cooldown and GraphQL truncation reporting; curr
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/ghclient/readiness.go — GraphQL pageInfo/truncation decoding
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/codex_helpers.go — Recent trigger helper
 
+
+## 2026-05-27
+
+Opened live readiness test PRs 5, 6, and 7; triggered Codex, added synthetic statuses, verified ready/failed_checks/codex_feedback classifications, and fixed failed-check-kind and exit-code handling discovered during live testing.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/exitcode/exitcode.go — Changed exit handling to requested process exit codes after row emission
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/prready.go — Fixed failedCheckKinds to only inspect check-related failures
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/scripts/01-create-readiness-test-prs.sh — Creates live readiness test PRs
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/scripts/03-set-readiness-test-statuses.sh — Adds synthetic StatusContext results for live PR tests
+
