@@ -1,0 +1,18 @@
+{
+  "headRefOid": "ec4082186031e277f19a622f27f896497797781a",
+  "checks": [
+    {"name": "infra-001/synthetic-readiness", "kind": "StatusContext", "state": "SUCCESS"}
+  ],
+  "signals": [
+    {
+      "kind": "review",
+      "author": "chatgpt-codex-connector",
+      "url": "https://github.com/go-go-golems/infra-tooling/pull/5#pullrequestreview-ready",
+      "time": "2026-05-27T02:00:00Z",
+      "body": "Didn't find any major issues. :+1:",
+      "codexAuthored": true,
+      "eyes": 0,
+      "thumbsUp": 0
+    }
+  ]
+}

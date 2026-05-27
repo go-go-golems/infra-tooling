@@ -1,0 +1,19 @@
+{
+  "headRefOid": "abc123abc123abc123abc123abc123abc123abc1",
+  "checks": [
+    {"name": "infra-001/synthetic-readiness", "kind": "StatusContext", "state": "SUCCESS"}
+  ],
+  "signals": [
+    {
+      "kind": "review",
+      "author": "chatgpt-codex-connector",
+      "url": "https://github.com/go-go-golems/infra-tooling/pull/7#pullrequestreview-truncated",
+      "time": "2026-05-27T02:00:00Z",
+      "body": "Reviewed commit:** `abc123abc1`",
+      "codexAuthored": true,
+      "eyes": 0,
+      "thumbsUp": 1,
+      "commentsTruncated": true
+    }
+  ]
+}

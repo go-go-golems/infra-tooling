@@ -840,3 +840,70 @@ go build -o /tmp/ggg ./cmd/ggg
 /tmp/ggg pr ready https://github.com/go-go-golems/infra-tooling/pull/7 --output json  # 3
 /tmp/ggg batch ready ttmp/.../scripts/02-readiness-test-prs.yaml --output json       # 3
 ```
+
+## Step 10: Add durable readiness fixtures
+
+The tenth step converted the live PR scenarios into small durable classifier fixtures. These fixtures test the readiness state machine without requiring live GitHub or Codex calls, and they preserve the important cases from the live validation run.
+
+I intentionally used minimal `prready.Snapshot` JSON fixtures rather than full raw GraphQL payloads. That keeps the fixtures readable and stable while still protecting the subtle classification behavior.
+
+### Prompt Context
+
+**User prompt (verbatim):** "go ahead"
+
+**Assistant interpretation:** Add the fixture tests recommended in the previous discussion.
+
+**Inferred user intent:** The user wants the behavior learned from live PR testing preserved as regression tests before the live PRs are cleaned up.
+
+**Commit (code):** pending — fixture tests validated and ready to commit.
+
+### What I did
+- Added `pkg/prready/testdata/ready.json`.
+- Added `pkg/prready/testdata/failed_checks.json`.
+- Added `pkg/prready/testdata/codex_feedback_current_head.json`.
+- Added `pkg/prready/testdata/waiting_codex_running.json`.
+- Added `pkg/prready/testdata/stale_codex_feedback_waiting.json`.
+- Added `pkg/prready/testdata/truncated_current_head_feedback.json`.
+- Added `pkg/prready/fixture_test.go` with table-driven classification tests.
+- Marked the golden fixture task complete.
+
+### Why
+- Live PRs are useful for discovery, but regression protection should not depend on GitHub state, Codex availability, or open test PRs.
+
+### What worked
+- `go test ./...` passed.
+- The fixtures cover ready, failed checks, current-head Codex feedback, running Codex, stale feedback, and truncated current-head feedback.
+
+### What didn't work
+- N/A.
+
+### What I learned
+- Minimal decoded snapshots are enough to test the state machine and much easier to review than raw GraphQL payloads.
+
+### What was tricky to build
+- The stale/current-head fixtures need commit-like hexadecimal reviewed commit strings because the parser intentionally matches commit SHA format.
+
+### What warrants a second pair of eyes
+- Whether to add a second fixture layer for raw GraphQL decoding later. The current fixtures test classification, not GraphQL decode parity.
+
+### What should be done in the future
+- Add `ghclient` decoding fixtures if the GraphQL query changes substantially.
+- Add a cleanup script for PRs 5, 6, and 7.
+
+### Code review instructions
+- Review `pkg/prready/testdata/*.json` to ensure each fixture expresses one clear state.
+- Review `pkg/prready/fixture_test.go` for the expected state and terminal values.
+- Validate with `go test ./pkg/prready -count=1` or `go test ./...`.
+
+### Technical details
+
+Fixture mapping:
+
+```text
+ready.json                              -> ready / terminal true
+failed_checks.json                      -> failed_checks / terminal true
+codex_feedback_current_head.json        -> codex_feedback / terminal true
+waiting_codex_running.json              -> waiting_codex / terminal false
+stale_codex_feedback_waiting.json       -> waiting_codex / terminal false
+truncated_current_head_feedback.json    -> codex_feedback / terminal true
+```

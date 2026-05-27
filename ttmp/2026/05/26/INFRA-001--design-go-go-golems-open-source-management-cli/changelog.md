@@ -121,3 +121,14 @@ Opened live readiness test PRs 5, 6, and 7; triggered Codex, added synthetic sta
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/scripts/01-create-readiness-test-prs.sh — Creates live readiness test PRs
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/26/INFRA-001--design-go-go-golems-open-source-management-cli/scripts/03-set-readiness-test-statuses.sh — Adds synthetic StatusContext results for live PR tests
 
+
+## 2026-05-27
+
+Added minimal prready.Snapshot JSON fixtures and table-driven classifier tests for ready, failed checks, current-head Codex feedback, running Codex, stale feedback, and truncated feedback states.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/fixture_test.go — Table-driven readiness fixture tests
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/testdata/codex_feedback_current_head.json — Codex feedback fixture derived from live unsafe PR scenario
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/testdata/ready.json — Ready fixture derived from live readiness-control scenario
+

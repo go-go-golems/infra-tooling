@@ -1,0 +1,26 @@
+{
+  "headRefOid": "f334ee7ec3b3a62e7820cdc46ec7af81efb801f1",
+  "checks": [
+    {"name": "infra-001/synthetic-readiness", "kind": "StatusContext", "state": "SUCCESS"}
+  ],
+  "signals": [
+    {
+      "kind": "review",
+      "author": "chatgpt-codex-connector",
+      "url": "https://github.com/go-go-golems/infra-tooling/pull/7#pullrequestreview-4372997078",
+      "time": "2026-05-27T02:00:00Z",
+      "body": "Reviewed commit:** `f334ee7ec3`",
+      "codexAuthored": true,
+      "eyes": 0,
+      "thumbsUp": 1,
+      "comments": [
+        {
+          "path": "scripts/go-go-golems/99-infra001-dangerous-example.py",
+          "line": 12,
+          "body": "Avoid executing untrusted paths through the shell",
+          "url": "https://github.com/go-go-golems/infra-tooling/pull/7#discussion_r3311311535"
+        }
+      ]
+    }
+  ]
+}
