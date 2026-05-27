@@ -412,3 +412,61 @@ The playbook now tells operators to make package identity decisions up front, us
 
 ### Code review instructions
 - Review the “Before you start”, Step 1, Step 2, checklist, minimal workflow template, and troubleshooting sections of the docsctl playbook.
+
+## Step 7: Add compact and Markdown batch readiness reports
+
+I added the first `ggg` ergonomics improvement: `ggg batch ready` can now produce either grouped summary rows or a copy/paste-ready Markdown report. This directly supports operator status questions during rollouts, especially when there are many PRs and the default JSON output is too verbose.
+
+The implementation refactors batch readiness into collection and emission phases. The command now collects PR reports once, then emits detailed rows, summary rows, or Markdown from the same in-memory data.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 5)
+
+**Assistant interpretation:** Execute improvement 2 by adding compact and Markdown readiness reporting to `ggg batch ready`.
+
+**Inferred user intent:** Make rollout status reporting faster and easier to paste into tickets, chat, and diary updates.
+
+**Commit (code):** pending — "Add batch readiness reports"
+
+### What I did
+- Added flags to `ggg batch ready`:
+  - `--summary-only`
+  - `--markdown-report`
+- Refactored `internal/cli/batch/ready.go` to collect reports before emitting rows.
+- Added grouped categories for ready, Codex feedback, failed checks, merge conflicts, waiting checks, waiting Codex, missing Codex, and other states.
+- Saved validation artifacts:
+  - `sources/07-batch-ready-summary-only.json`
+  - `sources/08-batch-ready-markdown-report.md`
+
+### Why
+- The default batch output is precise but noisy.
+- Markdown output can be pasted directly into docmgr diaries or handoff comments.
+
+### What worked
+- `go test ./...` passed.
+- `ggg batch ready ... --summary-only --output json` produced grouped rows.
+- `ggg batch ready ... --markdown-report` produced raw Markdown.
+
+### What didn't work
+- The live INFRA-003 batch currently exits non-zero because `css-visual-diff` has a failed check and `loupedeck` is waiting on Codex. I captured the reports with `|| true` because that non-zero state is expected for a live rollout.
+
+### What I learned
+- Separating report collection from output emission makes future report formats much easier.
+
+### What was tricky to build
+- `--markdown-report` needed to be raw stdout rather than another Glazed row to be useful with shell redirection. The implementation prints Markdown directly and emits no Glazed rows for that mode.
+
+### What warrants a second pair of eyes
+- Confirm that direct stdout printing inside a Glazed command is acceptable for this command mode.
+- Consider whether `--markdown-report` should imply a zero exit code for reporting-only use; currently it preserves readiness exit semantics.
+
+### What should be done in the future
+- Add a dedicated `ggg batch report` command if more report formats appear.
+
+### Code review instructions
+- Review `internal/cli/batch/ready.go` around `collectBatchReports`, `emitBatchRows`, and `markdownBatchReport`.
+- Validate with:
+  - `go test ./...`
+  - `ggg batch ready <prs.yaml> --summary-only --output json`
+  - `ggg batch ready <prs.yaml> --markdown-report`

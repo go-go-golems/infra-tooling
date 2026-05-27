@@ -1,0 +1,100 @@
+[
+{
+  "attempt": 1,
+  "category": "ready",
+  "failed_checks": "",
+  "merge_state_status": "CLEAN",
+  "next_action": "merge_when_manual_review_allows",
+  "number": 11,
+  "pending_checks": "",
+  "pr": "https://github.com/go-go-golems/discord-bot/pull/11",
+  "repository": "go-go-golems/discord-bot",
+  "state": "ready"
+}
+, {
+  "attempt": 1,
+  "category": "ready",
+  "failed_checks": "",
+  "merge_state_status": "CLEAN",
+  "next_action": "merge_when_manual_review_allows",
+  "number": 43,
+  "pending_checks": "",
+  "pr": "https://github.com/go-go-golems/go-go-goja/pull/43",
+  "repository": "go-go-golems/go-go-goja",
+  "state": "ready"
+}
+, {
+  "attempt": 1,
+  "category": "ready",
+  "failed_checks": "",
+  "merge_state_status": "CLEAN",
+  "next_action": "merge_when_manual_review_allows",
+  "number": 13,
+  "pending_checks": "",
+  "pr": "https://github.com/go-go-golems/go-minitrace/pull/13",
+  "repository": "go-go-golems/go-minitrace",
+  "state": "ready"
+}
+, {
+  "attempt": 1,
+  "category": "ready",
+  "failed_checks": "",
+  "merge_state_status": "CLEAN",
+  "next_action": "merge_when_manual_review_allows",
+  "number": 22,
+  "pending_checks": "",
+  "pr": "https://github.com/go-go-golems/workspace-manager/pull/22",
+  "repository": "go-go-golems/workspace-manager",
+  "state": "ready"
+}
+, {
+  "attempt": 1,
+  "category": "ready",
+  "failed_checks": "",
+  "merge_state_status": "CLEAN",
+  "next_action": "merge_when_manual_review_allows",
+  "number": 162,
+  "pending_checks": "",
+  "pr": "https://github.com/go-go-golems/pinocchio/pull/162",
+  "repository": "go-go-golems/pinocchio",
+  "state": "ready"
+}
+, {
+  "attempt": 1,
+  "category": "failed_checks",
+  "failed_checks": "test: conclusion=FAILURE",
+  "merge_state_status": "UNSTABLE",
+  "next_action": "inspect_and_fix_failed_checks",
+  "number": 10,
+  "pending_checks": "",
+  "pr": "https://github.com/go-go-golems/css-visual-diff/pull/10",
+  "repository": "go-go-golems/css-visual-diff",
+  "state": "failed_checks"
+}
+, {
+  "attempt": 1,
+  "category": "waiting_codex",
+  "failed_checks": "",
+  "merge_state_status": "CLEAN",
+  "next_action": "wait_for_codex",
+  "number": 5,
+  "pending_checks": "",
+  "pr": "https://github.com/go-go-golems/loupedeck/pull/5",
+  "repository": "go-go-golems/loupedeck",
+  "state": "waiting_codex"
+}
+, {
+  "attempt": 1,
+  "codex_feedback": 0,
+  "errors": 0,
+  "failed_checks": 1,
+  "merge_conflicts": 0,
+  "not_ready": 2,
+  "number": 0,
+  "ok": false,
+  "pr": "",
+  "ready": 5,
+  "repository": "summary",
+  "state": "failed_checks"
+}
+]

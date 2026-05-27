@@ -3,6 +3,9 @@ package batch
 import (
 	"context"
 	"fmt"
+	"os"
+	"sort"
+	"strings"
 	"time"
 
 	glazedcli "github.com/go-go-golems/glazed/pkg/cli"
@@ -30,6 +33,8 @@ type readySettings struct {
 	TimeoutSeconds      int    `glazed:"timeout-seconds"`
 	TriggerMissingCodex bool   `glazed:"trigger-missing-codex"`
 	Until               string `glazed:"until"`
+	SummaryOnly         bool   `glazed:"summary-only"`
+	MarkdownReport      bool   `glazed:"markdown-report"`
 }
 
 func newReadyCommand() (*cobra.Command, error) {
@@ -62,6 +67,8 @@ stops on all-ready, terminal failures, Codex feedback, merge conflicts, or parti
 			fields.New("timeout-seconds", fields.TypeInteger, fields.WithDefault(1800), fields.WithHelp("Watch timeout in seconds")),
 			fields.New("trigger-missing-codex", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Post @codex review for PRs with no Codex signal")),
 			fields.New("until", fields.TypeChoice, fields.WithDefault("actionable"), fields.WithChoices("actionable", "all-ready", "terminal", "first-ready"), fields.WithHelp("Watch stop condition")),
+			fields.New("summary-only", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Emit grouped summary rows instead of detailed per-PR rows")),
+			fields.New("markdown-report", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Print a copy/paste-ready Markdown readiness report")),
 		),
 		cmds.WithSections(glazedSection, commandSettingsSection),
 	)}
@@ -99,8 +106,13 @@ func (c *readyCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.V
 	attempt := 1
 	client := ghclient.Client{}
 	for {
-		summary, err := runOnce(ctx, client, refs, s.TriggerMissingCodex, attempt, gp)
+		reports, summary, err := collectBatchReports(ctx, client, refs, s.TriggerMissingCodex)
 		if err != nil {
+			return err
+		}
+		if s.MarkdownReport {
+			_, _ = fmt.Fprint(os.Stdout, markdownBatchReport(reports, summary))
+		} else if err := emitBatchRows(ctx, gp, reports, summary, attempt, s.SummaryOnly); err != nil {
 			return err
 		}
 		code := summary.exitCode()
@@ -132,14 +144,20 @@ type batchSummary struct {
 	State          string
 }
 
-func runOnce(ctx context.Context, client ghclient.Client, refs []prref.Ref, triggerMissing bool, attempt int, gp middlewares.Processor) (batchSummary, error) {
+type batchPRReport struct {
+	Ref        prref.Ref
+	Report     prready.Report
+	TriggerURL string
+}
+
+func collectBatchReports(ctx context.Context, client ghclient.Client, refs []prref.Ref, triggerMissing bool) ([]batchPRReport, batchSummary, error) {
 	summary := batchSummary{}
+	reports := make([]batchPRReport, 0, len(refs))
 	for _, ref := range refs {
 		report, err := client.Readiness(ctx, ref)
 		triggerURL := ""
 		if err != nil {
 			summary.Errors++
-			summary.NotReady++
 			report = prready.Report{PR: ref, URL: ref.URL(), State: "error", Terminal: true}
 		} else if report.State == prready.NoCodex && triggerMissing {
 			triggerURL, err = client.TriggerCodex(ctx, ref)
@@ -162,29 +180,85 @@ func runOnce(ctx context.Context, client ghclient.Client, refs []prref.Ref, trig
 		case prready.MergeConflict:
 			summary.MergeConflicts++
 		}
-		row := types.NewRow(
-			types.MRP("attempt", attempt),
-			types.MRP("pr", ref.URL()),
-			types.MRP("repository", ref.Repository()),
-			types.MRP("number", ref.Number),
-			types.MRP("ok", report.OK),
-			types.MRP("state", string(report.State)),
-			types.MRP("terminal", report.Terminal),
-			types.MRP("terminal_reason", prready.TerminalReason(report)),
-			types.MRP("next_action", prready.NextAction(report)),
-			types.MRP("failed_check_kinds", report.FailedCheckKinds),
-			types.MRP("pending_checks", prready.PendingChecks(report)),
-			types.MRP("failed_checks", prready.FailedChecksSummary(report)),
-			types.MRP("merge_state_status", report.MergeStateStatus),
-			types.MRP("head_ref_oid", report.HeadRefOID),
-			types.MRP("trigger_url", triggerURL),
-		)
-		if err := gp.AddRow(ctx, row); err != nil {
-			return summary, err
-		}
+		reports = append(reports, batchPRReport{Ref: ref, Report: report, TriggerURL: triggerURL})
 	}
 	summary.State = summary.state()
-	row := types.NewRow(
+	return reports, summary, nil
+}
+
+func emitBatchRows(ctx context.Context, gp middlewares.Processor, reports []batchPRReport, summary batchSummary, attempt int, summaryOnly bool) error {
+	if summaryOnly {
+		if err := emitSummaryRows(ctx, gp, reports, summary, attempt); err != nil {
+			return err
+		}
+	} else {
+		for _, r := range reports {
+			if err := gp.AddRow(ctx, detailedBatchRow(r, attempt)); err != nil {
+				return err
+			}
+		}
+	}
+	return gp.AddRow(ctx, summaryRow(summary, attempt))
+}
+
+func detailedBatchRow(r batchPRReport, attempt int) types.Row {
+	report := r.Report
+	ref := r.Ref
+	return types.NewRow(
+		types.MRP("attempt", attempt),
+		types.MRP("pr", ref.URL()),
+		types.MRP("repository", ref.Repository()),
+		types.MRP("number", ref.Number),
+		types.MRP("ok", report.OK),
+		types.MRP("state", string(report.State)),
+		types.MRP("terminal", report.Terminal),
+		types.MRP("terminal_reason", prready.TerminalReason(report)),
+		types.MRP("next_action", prready.NextAction(report)),
+		types.MRP("failed_check_kinds", report.FailedCheckKinds),
+		types.MRP("pending_checks", prready.PendingChecks(report)),
+		types.MRP("failed_checks", prready.FailedChecksSummary(report)),
+		types.MRP("merge_state_status", report.MergeStateStatus),
+		types.MRP("head_ref_oid", report.HeadRefOID),
+		types.MRP("trigger_url", r.TriggerURL),
+	)
+}
+
+func emitSummaryRows(ctx context.Context, gp middlewares.Processor, reports []batchPRReport, summary batchSummary, attempt int) error {
+	groups := map[string][]batchPRReport{}
+	for _, r := range reports {
+		groups[batchCategory(r.Report)] = append(groups[batchCategory(r.Report)], r)
+	}
+	keys := []string{"ready", "codex_feedback", "failed_checks", "merge_conflict", "waiting_checks", "waiting_codex", "no_codex", "other"}
+	for _, key := range keys {
+		for _, r := range groups[key] {
+			if err := gp.AddRow(ctx, summaryOnlyRow(r, key, attempt)); err != nil {
+				return err
+			}
+		}
+	}
+	_ = summary
+	return nil
+}
+
+func summaryOnlyRow(r batchPRReport, category string, attempt int) types.Row {
+	report := r.Report
+	ref := r.Ref
+	return types.NewRow(
+		types.MRP("attempt", attempt),
+		types.MRP("category", category),
+		types.MRP("repository", ref.Repository()),
+		types.MRP("number", ref.Number),
+		types.MRP("pr", ref.URL()),
+		types.MRP("state", string(report.State)),
+		types.MRP("next_action", prready.NextAction(report)),
+		types.MRP("pending_checks", strings.Join(prready.PendingChecks(report), "; ")),
+		types.MRP("failed_checks", strings.Join(prready.FailedChecksSummary(report), "; ")),
+		types.MRP("merge_state_status", report.MergeStateStatus),
+	)
+}
+
+func summaryRow(summary batchSummary, attempt int) types.Row {
+	return types.NewRow(
 		types.MRP("attempt", attempt),
 		types.MRP("pr", ""),
 		types.MRP("repository", "summary"),
@@ -198,7 +272,71 @@ func runOnce(ctx context.Context, client ghclient.Client, refs []prref.Ref, trig
 		types.MRP("merge_conflicts", summary.MergeConflicts),
 		types.MRP("errors", summary.Errors),
 	)
-	return summary, gp.AddRow(ctx, row)
+}
+
+func batchCategory(report prready.Report) string {
+	switch report.State {
+	case prready.Ready:
+		return "ready"
+	case prready.CodexFeedback:
+		return "codex_feedback"
+	case prready.FailedChecks:
+		return "failed_checks"
+	case prready.MergeConflict:
+		return "merge_conflict"
+	case prready.WaitingChecks:
+		return "waiting_checks"
+	case prready.WaitingCodex:
+		return "waiting_codex"
+	case prready.NoCodex:
+		return "no_codex"
+	default:
+		return "other"
+	}
+}
+
+func markdownBatchReport(reports []batchPRReport, summary batchSummary) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "## Batch readiness\n\n")
+	fmt.Fprintf(&b, "- Ready: %d\n", summary.Ready)
+	fmt.Fprintf(&b, "- Not ready: %d\n", summary.NotReady)
+	fmt.Fprintf(&b, "- Codex feedback: %d\n", summary.CodexFeedback)
+	fmt.Fprintf(&b, "- Failed checks: %d\n", summary.FailedChecks)
+	fmt.Fprintf(&b, "- Merge conflicts: %d\n", summary.MergeConflicts)
+	fmt.Fprintf(&b, "- Errors: %d\n", summary.Errors)
+	fmt.Fprintf(&b, "- State: `%s`\n\n", summary.State)
+	groups := map[string][]batchPRReport{}
+	for _, r := range reports {
+		groups[batchCategory(r.Report)] = append(groups[batchCategory(r.Report)], r)
+	}
+	sections := []struct{ key, title string }{{"ready", "Ready"}, {"codex_feedback", "Codex feedback"}, {"failed_checks", "Failed checks"}, {"merge_conflict", "Merge conflicts"}, {"waiting_checks", "Waiting checks"}, {"waiting_codex", "Waiting on Codex"}, {"no_codex", "Missing Codex"}, {"other", "Other"}}
+	for _, section := range sections {
+		items := groups[section.key]
+		if len(items) == 0 {
+			continue
+		}
+		sort.Slice(items, func(i, j int) bool { return items[i].Ref.Repository() < items[j].Ref.Repository() })
+		fmt.Fprintf(&b, "### %s\n\n", section.title)
+		for _, r := range items {
+			detail := markdownDetail(r.Report)
+			if detail != "" {
+				detail = " — " + detail
+			}
+			fmt.Fprintf(&b, "- [%s#%d](%s): `%s`, next: `%s`%s\n", r.Ref.Repository(), r.Ref.Number, r.Ref.URL(), r.Report.State, prready.NextAction(r.Report), detail)
+		}
+		b.WriteString("\n")
+	}
+	return b.String()
+}
+
+func markdownDetail(report prready.Report) string {
+	if pending := prready.PendingChecks(report); len(pending) > 0 {
+		return "pending " + strings.Join(pending, "; ")
+	}
+	if failed := prready.FailedChecksSummary(report); len(failed) > 0 {
+		return "failed " + strings.Join(failed, "; ")
+	}
+	return prready.TerminalReason(report)
 }
 
 func (s batchSummary) state() string {
