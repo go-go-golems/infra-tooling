@@ -11,5 +11,6 @@ func NewCommand() (*cobra.Command, error) {
 		}
 		root.AddCommand(cmd)
 	}
+	root.AddCommand(newWatchCommand(), newVerifyDocsCommand())
 	return root, nil
 }

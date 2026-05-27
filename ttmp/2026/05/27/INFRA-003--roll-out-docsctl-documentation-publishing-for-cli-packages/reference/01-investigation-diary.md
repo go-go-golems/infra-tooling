@@ -756,3 +756,60 @@ This was the first end-to-end proof that the rollout works after the Terraform-f
   - `https://github.com/go-go-golems/loupedeck/actions/runs/26543228613`
 - Public docs URL:
   - `https://docs.yolo.scapegoat.dev/loupedeck/v0.1.1`
+
+## Step 12: Add release watch and docs verification commands
+
+I added first-class release verification commands to `ggg` after the Loupedeck release proved that the operator needed a single path from tag workflow to public docs URL. The new commands are intentionally small: one watches a tag-triggered GitHub Actions release run, and one verifies that the docs browser has a visible package/version page.
+
+This converts the manual curl/gh sequence from Step 11 into repeatable CLI operations that can be used for the remaining package tags.
+
+### Prompt Context
+
+**User prompt (verbatim):** "alright, do the ggg improvements, update the playbooks, and tag more packages for verification."
+
+**Assistant interpretation:** Implement the release/docs verification improvements discovered during Loupedeck, document them in playbooks, and use them while tagging additional packages.
+
+**Inferred user intent:** Reduce manual rollout risk before tagging the rest of the docsctl-enabled package releases.
+
+**Commit (code):** pending — "Add release docs verification commands"
+
+### What I did
+- Added `ggg release verify-docs` in `internal/cli/release/verify_docs.go`.
+- Added `ggg release watch` in `internal/cli/release/watch.go`.
+- Registered both commands in `internal/cli/release/root.go`.
+- Validated with:
+  - `go test ./...`
+  - `go build -o ~/.local/bin/ggg ./cmd/ggg`
+  - `ggg release verify-docs --package loupedeck --version v0.1.1 --output json`
+  - `ggg release watch --repo go-go-golems/loupedeck --tag v0.1.1 --no-stream --verify-docs --package loupedeck --output json`
+- Saved validation artifacts:
+  - `sources/17-ggg-release-verify-docs-loupedeck.json`
+  - `sources/18-ggg-release-watch-loupedeck.json`
+
+### Why
+- Manual release verification involved several commands and a guessed docs URL/API shape.
+- Operators need a clear pass/fail result for “did this tag publish docs successfully?”
+
+### What worked
+- `verify-docs` found the live Loupedeck `v0.1.1` page and reported 4 sections.
+- `watch --no-stream --verify-docs` found the completed Loupedeck release run and verified the docs page.
+
+### What didn't work
+- The first docs verifier counted the first `sectionCount` in the page preload, which belonged to the default `glazed` package. I fixed it to match the requested package object before reading `sectionCount`.
+
+### What I learned
+- The docs browser embeds enough preloaded state for simple verification without depending on a private or unstable API path.
+
+### What was tricky to build
+- `gh run watch` streams human-readable output, while rollout documentation needs a final structured result. `ggg release watch` supports both: streaming through `gh` by default, then querying the final run JSON and optionally verifying docs.
+
+### What warrants a second pair of eyes
+- The docs verifier uses HTML/preloaded-state string matching rather than a typed docs API. It is pragmatic and works today, but a stable docs API endpoint would be cleaner.
+
+### What should be done in the future
+- Add a higher-level `ggg release tag-and-watch --verify-docs` flow once these subcommands have stabilized.
+- Add tests for package-specific `sectionCount` extraction.
+
+### Code review instructions
+- Review `internal/cli/release/watch.go`, `internal/cli/release/verify_docs.go`, and `internal/cli/release/root.go`.
+- Validate with the Loupedeck v0.1.1 commands above.

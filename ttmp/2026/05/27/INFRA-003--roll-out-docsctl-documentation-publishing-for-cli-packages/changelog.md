@@ -122,3 +122,14 @@ Verified Terraform is clean after docsctl publisher-role apply.
 
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/16-terraform-post-apply-clean-plan.log — Post-apply Terraform no-change plan
 
+
+## 2026-05-27
+
+Added ggg release watch and verify-docs commands for tag/docs verification.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/release/verify_docs.go — New docs browser verifier
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/release/watch.go — New release run watcher
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/18-ggg-release-watch-loupedeck.json — Validation artifact
+

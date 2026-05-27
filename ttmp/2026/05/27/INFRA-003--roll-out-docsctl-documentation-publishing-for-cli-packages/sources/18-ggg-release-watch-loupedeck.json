@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "repository": "go-go-golems/loupedeck",
+  "workflow": "release.yaml",
+  "tag": "v0.1.1",
+  "run": {
+    "databaseId": 26543228613,
+    "status": "completed",
+    "conclusion": "success",
+    "headBranch": "v0.1.1",
+    "headSha": "bca2bea3ecb6f90fe0de74a2822c26510a8ccbf0",
+    "event": "push",
+    "displayTitle": "Add docsctl documentation publishing",
+    "createdAt": "2026-05-27T22:46:34Z",
+    "url": "https://github.com/go-go-golems/loupedeck/actions/runs/26543228613"
+  },
+  "docs": {
+    "ok": true,
+    "url": "https://docs.yolo.scapegoat.dev/loupedeck/v0.1.1",
+    "package": "loupedeck",
+    "version": "v0.1.1",
+    "status_code": 200,
+    "title": "Loupedeck v0.1.1 Documentation — Glazed Help Browser",
+    "section_count": 4,
+    "has_package": true,
+    "has_version": true,
+    "has_preloaded_state": true
+  },
+  "elapsed_seconds": 1
+}
