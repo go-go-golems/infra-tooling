@@ -420,6 +420,14 @@ pinocchio   geppetto/glazed/clay release  #...    blocked on geppetto
 
 Only move to the next row when the required upstream release is available and `ggg pr ready` reports the current PR ready.
 
+Merge ready PRs with a real merge commit and delete the branch:
+
+```bash
+gh pr merge <number> --merge --delete-branch
+```
+
+Never use squash merges for logcopter/release-train work; generated files and downstream release bumps need an auditable commit history. If the repository UI defaults to “Squash and merge”, stop and switch to a merge commit.
+
 ## Step 12: commit in layers
 
 Use focused commits:

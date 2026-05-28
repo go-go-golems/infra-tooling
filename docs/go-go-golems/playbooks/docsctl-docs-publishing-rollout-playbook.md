@@ -36,7 +36,7 @@ Docsctl rollout usually happens inside the broader release train. Before tagging
 
 ## Main-branch protection rule
 
-Never push docsctl, release workflow, Terraform/Vault, generated help, or release-train cleanup changes directly to `main`. Use a branch and pull request, then merge only after CI/readiness checks pass. Tags are the only release-train operation that should be pushed directly, and only after the source commit is already merged to `main`.
+Never push docsctl, release workflow, Terraform/Vault, generated help, or release-train cleanup changes directly to `main`. Use a branch and pull request, then merge only after CI/readiness checks pass. Merge with a real merge commit (`gh pr merge --merge --delete-branch`), never with a squash merge, so release workflow and Vault/OIDC history remains auditable. Tags are the only release-train operation that should be pushed directly, and only after the source commit is already merged to `main`.
 
 ## The target shape
 
