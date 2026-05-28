@@ -217,10 +217,16 @@ A PR is considered ready when:
 
 ### 6. Merge only after readiness succeeds
 
-After `ggg pr ready` or `ggg batch ready` exits successfully for the target PR, merge using the normal repository policy:
+After `ggg pr ready` or `ggg batch ready` exits successfully for the target PR, merge using the normal repository policy and delete the remote branch:
 
 ```bash
-gh pr merge <n> --squash --delete-branch=false
+gh pr merge <n> --squash --delete-branch
+```
+
+If you intentionally used `--delete-branch=false` during a sensitive rollout, delete the branch immediately after verifying the merge commit:
+
+```bash
+gh api -X DELETE repos/go-go-golems/<repo>/git/refs/heads/<branch>
 ```
 
 

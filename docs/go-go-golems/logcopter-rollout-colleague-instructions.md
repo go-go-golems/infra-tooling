@@ -181,7 +181,7 @@ printf "prs:\n  - https://github.com/go-go-golems/<repo>/pull/<n>\n" > /tmp/prs.
 ggg batch ready /tmp/prs.yaml --watch --until actionable --interval-seconds 30 --timeout-seconds 1800
 ```
 
-Merge only after readiness succeeds. If readiness reports `merge_conflict`, rebase or merge the base branch first.
+Merge only after readiness succeeds, and delete the remote branch (`gh pr merge --squash --delete-branch`) so follow-up rollouts do not accumulate stale branches. If readiness reports `merge_conflict`, rebase or merge the base branch first.
 
 ## 9. Downstream bump after upstream release
 
