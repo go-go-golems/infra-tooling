@@ -52,7 +52,7 @@ and do not make the command fail.`,
 					return err
 				}
 				code := actionstatus.ExitCode(summary)
-				if !watch || (summary.State != "pending" && summary.State != "no_runs") {
+				if !watch || summary.State != "pending" {
 					if code != 0 {
 						exitcode.Request(code)
 					}

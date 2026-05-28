@@ -35,14 +35,15 @@ func TestStateAndExitCode(t *testing.T) {
 		summary Summary
 		state   string
 		code    int
+		ok      bool
 	}{
-		{Summary{Total: 2, Success: 1, IgnoredFailures: 1}, "ok", 0},
-		{Summary{Total: 2, Failed: 1, Pending: 1}, "failed", 1},
-		{Summary{Total: 1, Other: 1}, "failed", 1},
-		{Summary{Total: 2, Pending: 1, Success: 1}, "pending", 2},
-		{Summary{NoRuns: 1}, "no_runs", 2},
-		{Summary{Total: 2, Success: 2, NoRuns: 1}, "pending", 2},
-		{Summary{}, "no_runs", 2},
+		{Summary{Total: 2, Success: 1, IgnoredFailures: 1}, "ok", 0, true},
+		{Summary{Total: 2, Failed: 1, Pending: 1}, "failed", 1, false},
+		{Summary{Total: 1, Other: 1}, "failed", 1, false},
+		{Summary{Total: 2, Pending: 1, Success: 1}, "pending", 2, false},
+		{Summary{NoRuns: 1}, "no_runs", 0, true},
+		{Summary{Total: 2, Success: 2, NoRuns: 1}, "ok", 0, true},
+		{Summary{}, "no_runs", 0, true},
 	}
 	for _, tt := range tests {
 		s := tt.summary
@@ -52,6 +53,9 @@ func TestStateAndExitCode(t *testing.T) {
 		}
 		if got := ExitCode(s); got != tt.code {
 			t.Fatalf("ExitCode(%+v) = %d, want %d", s, got, tt.code)
+		}
+		if got := IsTerminalOK(s); got != tt.ok {
+			t.Fatalf("IsTerminalOK(%+v) = %v, want %v", s, got, tt.ok)
 		}
 	}
 }

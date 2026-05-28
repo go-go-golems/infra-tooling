@@ -108,7 +108,7 @@ func Collect(ctx context.Context, opts Options) (Result, error) {
 		res.Summary.NoRuns = 1
 	}
 	res.Summary.State = State(res.Summary)
-	res.Summary.OK = res.Summary.State == "ok"
+	res.Summary.OK = IsTerminalOK(res.Summary)
 	return res, nil
 }
 
@@ -138,23 +138,34 @@ func State(s Summary) string {
 	if s.Failed > 0 || s.Other > 0 {
 		return "failed"
 	}
-	if s.Pending > 0 || s.NoRuns > 0 {
-		if s.Total == 0 && s.NoRuns > 0 {
-			return "no_runs"
-		}
+	if s.Pending > 0 {
 		return "pending"
 	}
-	if s.Total == 0 {
-		return "no_runs"
+	if s.Total == 0 || s.NoRuns > 0 {
+		// No matching runs is terminal and non-blocking. For a single repo this
+		// stays visible as no_runs; for batch summaries, no_runs-only repos do not
+		// keep an otherwise successful batch in a pending state.
+		if s.Success == 0 && s.IgnoredFailures == 0 {
+			return "no_runs"
+		}
+		return "ok"
 	}
 	return "ok"
+}
+
+func IsTerminalOK(s Summary) bool {
+	state := s.State
+	if state == "" {
+		state = State(s)
+	}
+	return state == "ok" || state == "no_runs"
 }
 
 func ExitCode(s Summary) int {
 	switch s.State {
 	case "failed":
 		return 1
-	case "pending", "no_runs":
+	case "pending":
 		return 2
 	default:
 		return 0
@@ -213,7 +224,7 @@ func BatchCollect(ctx context.Context, manifest Manifest, ignore []string, defau
 		summary.Other += res.Summary.Other
 	}
 	summary.State = State(summary)
-	summary.OK = summary.State == "ok"
+	summary.OK = IsTerminalOK(summary)
 	return runs, summary, nil
 }
 
