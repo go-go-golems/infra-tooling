@@ -67,3 +67,6 @@ WhenToUse: Before editing package release workflows or Terraform/Vault docsctl p
 - [x] Add `ggg rollout docsctl inventory`, `validate`, and `plan`.
 - [x] Validate new commands against the INFRA-003 PR list and active workspace.
 - [x] Update diary/changelog and commit at appropriate intervals.
+- [ ] Implement ggg run status for single-repository GitHub Actions polling with ignored failure support
+- [ ] Implement ggg batch actions for multi-repository GitHub Actions status from a YAML manifest
+- [ ] Document the GitHub Actions status helper design and release-train usage
