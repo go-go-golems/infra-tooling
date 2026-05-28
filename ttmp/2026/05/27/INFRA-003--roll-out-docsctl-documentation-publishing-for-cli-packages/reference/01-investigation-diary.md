@@ -1461,3 +1461,89 @@ The implementation also documents the intended command contract so the shell/JQ 
 - Per-run classifications: `ok`, `ignored_failure`, `failed`, `pending`, `other`.
 - Summary states: `ok`, `failed`, `pending`, `no_runs`.
 - Exit codes: `0` ok, `1` non-ignored failure, `2` pending/no runs.
+
+## Step 24: Finish release-train PR merges and tags after generated-logcopter dependency bumps
+
+This step completed the downstream release-train work after `go-go-goja v0.7.0` and `geppetto v0.12.2`. The work used PRs and merge commits for every rollout repository, verified main-branch Actions with `ggg run status`, then tagged and watched releases with docs verification where applicable.
+
+One important tooling correction happened before merging the infra helper PR: `ggg pr ready` was too strict for repositories with no configured checks and too narrow for Codex comments saying “Didn't find any major issues. 🚀”. I updated the readiness classifier so those PRs are treated as ready when mergeability and Codex are clean.
+
+### Prompt Context
+
+**User prompt (verbatim):** "go ahead"
+
+**Assistant interpretation:** Continue from the open release-train PRs: merge ready PRs, verify post-merge Actions, tag releases, and handle remaining blockers.
+
+**Inferred user intent:** Complete the release train rather than only reporting pending states.
+
+**Commit (code):** 66d2551 — "Merge pull request #11 from go-go-golems/infra-003/actions-status-helpers"
+
+### What I did
+- Fixed and merged `infra-tooling` PR #11 after teaching `ggg pr ready` that no-check PRs can be ready and that “Didn't find any major issues” Codex comments are satisfied.
+- Merged release-train PRs with merge commits and branch deletion:
+  - `css-visual-diff` PR #11 -> `af38c87`
+  - `discord-bot` PR #12 -> `3fef6a6`
+  - `go-minitrace` PR #14 -> `0850153`
+  - `workspace-manager` PR #23 -> `314d1c4`
+  - `goja-git` PR #4 -> `8521664`
+  - `pinocchio` PR #163 -> `8989152`
+  - `loupedeck` PR #6 -> `26a72bd`
+- Fixed `goja-git` GoReleaser placeholders in PR #5, merged it, and released `goja-git v0.1.0`.
+- Preserved the pre-existing unpushed local `loupedeck` main commits on branch `preserve/local-main-before-release` before resetting local `main` to `origin/main` for the release-train PR.
+- Tagged and verified releases:
+  - `css-visual-diff v0.2.0` docs OK
+  - `discord-bot v0.2.0` docs OK
+  - `go-minitrace v0.1.0` docs OK
+  - `workspace-manager v0.1.0` docs OK
+  - `goja-git v0.1.0` release OK
+  - `pinocchio v0.11.0` docs OK
+  - `loupedeck v0.2.0` docs OK
+
+### Why
+- Downstream packages needed released module versions after the generated-logcopter and xgoja dependency train.
+- Release tags needed to be cut only after merge commits, branch deletion, and main-branch Actions verification.
+- `goja-git` could not be released safely with scaffold `XXX` placeholders in `.goreleaser.yaml`.
+
+### What worked
+- `ggg run status --watch` handled transient no-run states and then correctly waited for main-branch Actions.
+- All merged release-train main commits ended with successful non-secret checks; Secret Scanning failures were ignored by policy.
+- `ggg release watch --verify-docs` verified live docs for all docs-publishing packages in this batch.
+
+### What didn't work
+- `goja-git` preflight failed initially with `goreleaser_placeholder`; fixing `.goreleaser.yaml` required a separate PR before tagging.
+- `loupedeck` local `main` had two unpushed commits, so `git pull --ff-only` failed after merging PR #6. I preserved those commits on `preserve/local-main-before-release` and reset local `main` to `origin/main` before continuing.
+
+### What I learned
+- The new action-status helper's `no_runs` watch state is useful immediately after merge because GitHub may take several seconds to create runs.
+- Release train readiness must account for repositories with no required checks, provided mergeability and Codex are satisfied.
+- GoReleaser preflight is valuable beyond docsctl packages; it caught `goja-git`'s stale scaffold release config before a bad tag.
+
+### What was tricky to build
+- The main tricky operational edge was avoiding accidental direct pushes while handling a local branch (`loupedeck main`) that was ahead of `origin/main`. The solution was to preserve the local commits on a named branch and perform release-train work from `origin/main`.
+- `goja-git` needed a release-config fix after the dependency bump PR had already merged, so the release train split into a second focused PR before tagging.
+
+### What warrants a second pair of eyes
+- Whether `loupedeck` preserved local commits should be turned into their own PR or discarded by the original author.
+- Whether `goja-git` should delete or repurpose the scaffold `cmd/XXX` package in a future cleanup.
+- Whether `ggg release preflight` should flag GoReleaser project names that clearly do not match the module/repo, not just `XXX` placeholders.
+
+### What should be done in the future
+- Add an explicit release-train manifest artifact with final merge SHAs, release tags, and release workflow URLs.
+- Consider adding `ggg batch actions --watch` into the formal merge loop so the operator does not need per-repo `ggg run status` commands.
+
+### Code review instructions
+- For `ggg` readiness changes, start in `pkg/prready/prready.go` and `pkg/prready/prready_test.go`.
+- For release-train verification, inspect GitHub PRs/runs listed above and the tags in each downstream repository.
+- Validate with:
+  - `ggg pr ready https://github.com/go-go-golems/infra-tooling/pull/11 --findings --output json` (historical behavior now reports ready before merge)
+  - `ggg release verify-docs --package <package> --version <tag> --output json` for docs packages.
+
+### Technical details
+- Successful release run URLs:
+  - css-visual-diff v0.2.0: `https://github.com/go-go-golems/css-visual-diff/actions/runs/26591313093`
+  - discord-bot v0.2.0: `https://github.com/go-go-golems/discord-bot/actions/runs/26591766057`
+  - go-minitrace v0.1.0: `https://github.com/go-go-golems/go-minitrace/actions/runs/26592134612`
+  - workspace-manager v0.1.0: `https://github.com/go-go-golems/workspace-manager/actions/runs/26592654072`
+  - pinocchio v0.11.0: `https://github.com/go-go-golems/pinocchio/actions/runs/26592995571`
+  - goja-git v0.1.0: `https://github.com/go-go-golems/goja-git/actions/runs/26593726186`
+  - loupedeck v0.2.0: `https://github.com/go-go-golems/loupedeck/actions/runs/26594295391`

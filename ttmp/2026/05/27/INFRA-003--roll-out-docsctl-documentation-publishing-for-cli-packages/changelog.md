@@ -245,3 +245,14 @@ Added ggg GitHub Actions status helpers (, ) with guide, tests, and release-trai
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/actionstatus/actionstatus.go — GitHub Actions run collection and classification
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/design-doc/03-ggg-github-actions-status-helper-implementation-guide.md — Implementation guide and command contract
 
+
+## 2026-05-28
+
+Completed release-train merges and releases through loupedeck v0.2.0, including goja-git GoReleaser fix and ggg readiness classifier adjustments.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/goja-git/.goreleaser.yaml — Release config fixed before goja-git v0.1.0
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/prready.go — Readiness classifier fix for no-check PRs and satisfied Codex comments
+- /home/manuel/code/wesen/go-go-golems/loupedeck — Release-train work preserved local unpushed main commits on preserve/local-main-before-release
+
