@@ -1254,3 +1254,54 @@ This command is the direct follow-up to the failed `css-visual-diff` and `go-go-
 - Run:
   - `go test ./...`
   - `ggg release preflight --repo <repo> --output json`
+
+## Step 21: Run release preflight across all published packages
+
+I ran the new release preflight across the packages that were published during INFRA-003 and saved the combined output as another ticket artifact.
+
+The goal was not to block anything after the fact, but to see how noisy the first preflight heuristic is across the real rollout set. This gives us evidence for which warnings should remain warnings and which checks are accurate enough to become strict in future automation.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 20)
+
+**Assistant interpretation:** Continue hardening after adding preflight by validating it across the real package set.
+
+**Inferred user intent:** Make sure the new `ggg` command is grounded in the actual repos it is meant to protect.
+
+**Commit (code):** pending — evidence-only follow-up
+
+### What I did
+- Ran `ggg release preflight --output json` against:
+  - `css-visual-diff`
+  - `discord-bot`
+  - `go-go-goja`
+  - `go-minitrace`
+  - `loupedeck`
+  - `pinocchio`
+  - `workspace-manager`
+- Saved output in `sources/31-release-preflight-all-published-packages.jsonl`.
+
+### Why
+- A command born from two release failures should be checked against the successful release set before relying on it in the next rollout.
+
+### What worked
+- The command runs across all published packages and catches no blocking errors in the fixed release states.
+
+### What didn't work
+- `go-go-goja` still emits frontend/pnpm warnings because the heuristic sees a frontend package and `go generate ./...`. This warning did not prevent the successful `v0.6.3` release, so it should remain a warning for now.
+
+### What I learned
+- Preflight needs a distinction between “known release blocker” and “operator attention signal.” The current `--strict` flag is the right escape hatch for rollout phases where warnings should be treated as hard gates.
+
+### What was tricky to build
+- N/A
+
+### What warrants a second pair of eyes
+- Review the combined preflight artifact and decide whether the frontend heuristic should inspect exact `go:generate` targets instead of repository-wide frontend directories.
+
+### What should be done in the future
+- Add a YAML batch input to `ggg release preflight` so a rollout can preflight all packages with one structured summary.
+
+### Code review instructions
+- Inspect `sources/31-release-preflight-all-published-packages.jsonl`.

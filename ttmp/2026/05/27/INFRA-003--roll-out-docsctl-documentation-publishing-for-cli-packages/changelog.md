@@ -213,3 +213,12 @@ Added ggg release preflight and amended the rollout automation article with INFR
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/release/preflight.go — Release preflight command
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/release/preflight_test.go — Preflight regression tests
 
+
+## 2026-05-27
+
+Ran release preflight across all published INFRA-003 packages.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/31-release-preflight-all-published-packages.jsonl — Preflight validation across published package set
+
