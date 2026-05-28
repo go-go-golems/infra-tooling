@@ -1,6 +1,6 @@
 # Concise instructions: roll out logcopter across go-go-golems repos
 
-Use this checklist when applying generated logcopter package loggers to additional go-go-golems repositories.
+Use this checklist when applying generated logcopter package loggers to additional go-go-golems repositories, and when retrofitting release-train repositories with the generic `bump-go-go-golems` target before the package-logger conversion happens.
 
 ## 1. Build the dependency sequence first
 
@@ -76,7 +76,7 @@ If generated `var log` conflicts with imports named `log`:
 
 ## 5. Add Makefile targets
 
-Add or copy the generic dependency bump target from infra-tooling:
+Add or copy the generic dependency bump target from infra-tooling. Do this for every release-train repository that has direct `github.com/go-go-golems/...` dependencies, even if this specific PR is not yet converting package diagnostics to generated logcopter loggers:
 
 ```text
 examples/go-go-golems/Makefile.bump-go-go-golems.snippet.mk
@@ -88,7 +88,13 @@ For repos that must avoid workspace leakage, use:
 examples/go-go-golems/Makefile.bump-go-go-golems-gowork-off.snippet.mk
 ```
 
-Add logcopter generation targets:
+Validate the target without mutating dependencies:
+
+```bash
+make -n bump-go-go-golems
+```
+
+Add logcopter generation targets when this repository is adopting generated package loggers:
 
 ```make
 .PHONY: logcopter-generate

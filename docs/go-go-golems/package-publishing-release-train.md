@@ -13,6 +13,7 @@ Installed CLI:
 - `ggg release tag-patch`, `ggg release tag-minor`, and `ggg release tag-major` — compute, create, push, and proxy-verify Go module release tags without detaching the operator worktree.
 - `ggg release watch` — wait for a tag-triggered release workflow and optionally verify docs publishing.
 - `ggg release verify-docs` — verify that `docs.yolo.scapegoat.dev/<package>/<version>` is live and contains the requested package/version.
+- `ggg release preflight` — catch common release-tag failures before pushing tags, including stale GoReleaser paths, tree-sitter/CGO conflicts, frontend generation prerequisites, and docsctl workflow inputs.
 
 Historical scripts remain under `scripts/go-go-golems/`, but new operator workflows should use the installed `ggg` binary.
 
@@ -34,6 +35,8 @@ logcopter -> glazed/clay -> geppetto -> pinocchio -> leaf applications
 ```
 
 The exact order depends on the current `go.mod` graph. Inspect direct dependencies rather than relying on memory.
+
+Every release-train participant should have a generic `make bump-go-go-golems` target, even if it has not yet adopted generated logcopter package loggers. The target is the standard handoff point between upstream releases and downstream validation; it replaces stale `bump-glazed` lists and keeps logcopter, Glazed, xgoja, docsctl-capable CLIs, and leaf applications on the same dependency-bump path. Prefer the `GOWORK=off` variant in active workspaces.
 
 ## Early downstream PRs
 
@@ -113,6 +116,8 @@ In the downstream repository, use the generic target:
 ```bash
 make bump-go-go-golems
 ```
+
+If the repository still only has a legacy `bump-glazed` target, add `bump-go-go-golems` before continuing. Keep `bump-glazed` as a temporary compatibility alias only if callers still use it; do not extend hand-maintained dependency lists.
 
 If there is any chance a local `go.work` can hide missing releases, use a `GOWORK=off` variant or run the equivalent commands manually:
 
@@ -211,6 +216,17 @@ After `ggg pr ready` or `ggg batch ready` exits successfully for the target PR, 
 ```bash
 gh pr merge <n> --squash --delete-branch=false
 ```
+
+
+### 7. Cross-cutting rollout checks
+
+Use these checks before declaring a repository release-train-ready:
+
+- **Logcopter:** `go.mod` should consume published `github.com/go-go-golems/logcopter` when the repo has package loggers; `make logcopter-check` must run before mutating `go generate ./...`; every repo should still have `make bump-go-go-golems` for downstream bumps.
+- **Docsctl:** release workflows should call `go-go-golems/infra-tooling/.github/workflows/publish-docsctl.yml@main`, keep `id-token: write` scoped to the publish job, and be verified with `ggg release watch --verify-docs` plus `ggg release verify-docs`.
+- **xgoja:** JavaScript-provider or runtime repos must validate with `GOWORK=off` after upstream xgoja tags; check GoReleaser CGO settings when tree-sitter packages are present.
+- **Glazed linting:** run `make glazed-lint` after dependency bumps so downstream code is checked against the released Glazed analyzer; use reasoned `//glazedclilint:ignore ...` suppressions or exact allow paths rather than broad directory exclusions.
+- **Release preflight:** run `ggg release preflight --output json` before every tag and save the JSON when working from a ticket.
 
 If the PR touches `.github/workflows/*`, the GitHub CLI token needs `workflow` scope. If merge fails with a workflow-scope error, refresh auth:
 

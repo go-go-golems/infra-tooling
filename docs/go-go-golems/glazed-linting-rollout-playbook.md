@@ -18,6 +18,15 @@ It currently bundles `glazedclilint`, which checks:
 
 The analyzer skips tests, generated files, and standard Glazed framework bridge paths by default. Repos may add narrowly scoped `-glazedclilint.allow-paths=...` entries for legacy bridge code or intentional non-Glazed helper tools.
 
+Current Glazed releases also support reasoned suppressions:
+
+```go
+//glazedclilint:ignore intentional legacy cobra flag bridge while migrating to fields
+//glazedclilint:file-ignore generated CLI compatibility layer; tracked for follow-up
+```
+
+Every suppression must include a reason. Prefer a one-line suppression on the smallest affected statement; use file-ignore only for reviewed legacy compatibility files. Exact `allow-paths` are still acceptable for generated helpers or packages that should not be analyzed, but avoid broad `cmd/` or `pkg/` exclusions.
+
 ## Add Makefile targets
 
 Add these variables near the existing lint variables:
@@ -105,10 +114,15 @@ Prefer narrow allow paths such as `cmd/tools/` or `pkg/cmds/profiles/` over broa
 
 ## Validate before committing
 
+Run Glazed lint after any release-train dependency bump so the vettool comes from the same published Glazed version downstream users will consume:
+
 ```bash
+make bump-go-go-golems   # when participating in a release train
 make glazed-lint
 make lintmax
 ```
+
+If `make bump-go-go-golems` is missing, add the generic target from `examples/go-go-golems/Makefile.bump-go-go-golems-gowork-off.snippet.mk` before continuing.
 
 Then inspect the diff and commit:
 

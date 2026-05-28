@@ -32,6 +32,8 @@ This tutorial is the operational playbook for adding `docsctl` documentation pub
 
 The target pattern is release-only and package-scoped. A repository publishes docs from its existing release workflow, the docs version is exactly the Git tag, GitHub Actions authenticates to Vault through OIDC, Vault mints a short-lived docs-registry publish JWT for that package, and `docsctl publish` uploads the generated SQLite help database to `https://docs-registry.yolo.scapegoat.dev`.
 
+Docsctl rollout usually happens inside the broader release train. Before tagging a docs-enabled package, ensure the repository also has the generic `make bump-go-go-golems` target, run dependency bumps after upstream releases, run `make glazed-lint` when the repo depends on Glazed, and run `ggg release preflight --output json` before pushing the tag.
+
 ## The target shape
 
 A completed repository has these properties:
@@ -124,6 +126,18 @@ Before editing Terraform or workflows, fill out this package identity checklist:
 | Does the package already appear in `/api/packages`? |  |
 
 For multi-CLI repositories, do not let automation silently choose the first command that validates. Decide the public docs package name and canonical export command first.
+
+## Step 0: align release-train prerequisites
+
+Before wiring docs publishing, check the shared release-train baseline:
+
+```bash
+grep -n "bump-go-go-golems" Makefile || true
+grep -n "glazed-lint" Makefile || true
+ggg release preflight --repo . --output json || true
+```
+
+If `bump-go-go-golems` is missing and the repo has direct `github.com/go-go-golems/...` requirements, add the `GOWORK=off` snippet from `examples/go-go-golems/Makefile.bump-go-go-golems-gowork-off.snippet.mk`. This keeps docsctl releases aligned with logcopter, xgoja, and Glazed dependency rollouts.
 
 ## Step 1: prove the package can export help locally
 
@@ -341,7 +355,7 @@ Docs publishing runs on tag push. A workflow file merged to `main` is not enough
 
 After merge, create or reuse the normal release process. Prefer the `ggg` release helpers for Go modules because they compute the next semantic version, push the tag, and verify the module through `proxy.golang.org`.
 
-Run release preflight before creating a durable public tag:
+Run release preflight before creating a durable public tag. Do this after any `make bump-go-go-golems` / `make glazed-lint` cleanup so preflight sees the exact tree you will tag:
 
 ```bash
 ggg release preflight --output json
