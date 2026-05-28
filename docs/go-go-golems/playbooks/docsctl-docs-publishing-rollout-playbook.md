@@ -34,6 +34,10 @@ The target pattern is release-only and package-scoped. A repository publishes do
 
 Docsctl rollout usually happens inside the broader release train. Before tagging a docs-enabled package, ensure the repository also has the generic `make bump-go-go-golems` target, run dependency bumps after upstream releases, run `make glazed-lint` when the repo depends on Glazed, and run `ggg release preflight --output json` before pushing the tag.
 
+## Main-branch protection rule
+
+Never push docsctl, release workflow, Terraform/Vault, generated help, or release-train cleanup changes directly to `main`. Use a branch and pull request, then merge only after CI/readiness checks pass. Tags are the only release-train operation that should be pushed directly, and only after the source commit is already merged to `main`.
+
 ## The target shape
 
 A completed repository has these properties:

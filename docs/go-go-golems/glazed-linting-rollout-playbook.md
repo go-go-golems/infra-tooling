@@ -124,6 +124,8 @@ make lintmax
 
 If `make bump-go-go-golems` is missing, add the generic target from `examples/go-go-golems/Makefile.bump-go-go-golems-gowork-off.snippet.mk` before continuing.
 
+Do not push Glazed lint rollout changes directly to `main`; open a PR and wait for CI/Codex readiness because linter wiring can change developer hooks and release behavior.
+
 Then inspect the diff and commit:
 
 ```bash

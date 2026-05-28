@@ -369,6 +369,10 @@ make logcopter-check
 
 If the bump changes too many unrelated dependencies, split the update into a separate PR before doing the logcopter conversion. This keeps review smaller and makes dependency-order failures easier to diagnose. When retrofitting the target into an existing repository, validate with `make -n bump-go-go-golems` and commit the Makefile-only change separately from any actual dependency bump.
 
+## Main-branch protection rule
+
+Do not push logcopter rollout branches directly to `main`. Generated logger changes can touch many files and must go through pull request review, CI, and Codex readiness. If a repository allows direct pushes technically, treat that as an unsafe bypass rather than permission.
+
 ## Step 11: submit the PR and wait for Actions plus Codex review
 
 After pushing a repository's logcopter branch, create or update the PR and use the installed `ggg` CLI for Codex and readiness work:

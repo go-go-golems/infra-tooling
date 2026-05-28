@@ -38,6 +38,12 @@ The exact order depends on the current `go.mod` graph. Inspect direct dependenci
 
 Every release-train participant should have two logcopter-related baselines: generated package loggers (`logcopter_generate.go`, checked-in `**/logcopter.go`, and `make logcopter-check`) and a generic `make bump-go-go-golems` target. Generated loggers provide area-scoped runtime logging; the bump target is the standard handoff point between upstream releases and downstream validation. Together they replace stale `bump-glazed` lists and keep logcopter, Glazed, xgoja, docsctl-capable CLIs, and leaf applications on the same dependency-bump path. Prefer the `GOWORK=off` variant in active workspaces.
 
+## Main-branch protection rule
+
+Never push release-train changes directly to `main`, even for small Makefile, generated-file, or documentation updates. Always create a branch, open a pull request, wait for CI and Codex/readiness checks, and merge through the repository policy.
+
+This also applies to emergency fixes after an accidental main push: repair with a follow-up PR unless the user explicitly authorizes a direct hotfix. Release tags may be pushed by the release tooling after the commit is already on `main`, but source changes must arrive through PRs.
+
 ## Early downstream PRs
 
 You may open downstream PRs before every upstream release is published in order to get CI and Codex feedback early. This is useful for large release trains with many leaf repositories.
