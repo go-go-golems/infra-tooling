@@ -139,12 +139,13 @@ git diff -- go.mod go.sum '**/logcopter.go' logcopter_generate.go Makefile .gith
 
 ## 8. Commit, push, PR, Codex, merge
 
-Commit focused changes:
+Commit focused changes on a non-main branch. Never push rollout changes directly to `main`, even if the repository allows it technically:
 
 ```bash
+git checkout -b task/logcopter-<repo>
 git add go.mod go.sum logcopter_generate.go Makefile .github/workflows '**/logcopter.go'
 git commit -m "Adopt logcopter package loggers"
-git push <remote> <branch>
+git push <remote> HEAD
 ```
 
 Open a PR. Let `ggg` wait 20-30 seconds for the automatic Codex review to appear, then trigger Codex only if no run/satisfied signal appears:
