@@ -79,9 +79,9 @@ Responsibilities:
 
 Use the existing `exitcode.Request` pattern.
 
-- `0`: all matching runs are successful, skipped, cancelled, or explicitly ignored.
-- `1`: at least one matching run failed and was not ignored.
-- `2`: at least one matching run is still queued/in-progress and there are no non-ignored failures yet.
+- `0`: all matching runs are successful, skipped, neutral, or explicitly ignored.
+- `1`: at least one matching run failed, was cancelled, reported an unknown terminal conclusion, and was not ignored.
+- `2`: at least one matching run is still queued/in-progress, or no matching runs have appeared yet, and there are no non-ignored failures yet.
 
 This mirrors the release-train workflow: failures require action; pending checks require waiting; ignored failures are recorded but do not block.
 
