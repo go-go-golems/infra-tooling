@@ -217,11 +217,13 @@ A PR is considered ready when:
 
 ### 6. Merge only after readiness succeeds
 
-After `ggg pr ready` or `ggg batch ready` exits successfully for the target PR, merge using the normal repository policy and delete the remote branch:
+After `ggg pr ready` or `ggg batch ready` exits successfully for the target PR, merge using a real merge commit and delete the remote branch:
 
 ```bash
-gh pr merge <n> --squash --delete-branch
+gh pr merge <n> --merge --delete-branch
 ```
+
+Never use squash merges for release-train work. Preserving branch commits matters for auditability, tag ancestry, generated-code review, and downstream dependency-bump archaeology. If the repository UI defaults to “Squash and merge”, stop and switch to a merge commit.
 
 If you intentionally used `--delete-branch=false` during a sensitive rollout, delete the branch immediately after verifying the merge commit:
 

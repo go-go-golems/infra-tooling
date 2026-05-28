@@ -181,7 +181,13 @@ printf "prs:\n  - https://github.com/go-go-golems/<repo>/pull/<n>\n" > /tmp/prs.
 ggg batch ready /tmp/prs.yaml --watch --until actionable --interval-seconds 30 --timeout-seconds 1800
 ```
 
-Merge only after readiness succeeds, and delete the remote branch (`gh pr merge --squash --delete-branch`) so follow-up rollouts do not accumulate stale branches. If readiness reports `merge_conflict`, rebase or merge the base branch first.
+Merge only after readiness succeeds, use a merge commit rather than a squash merge, and delete the remote branch:
+
+```bash
+gh pr merge <n> --merge --delete-branch
+```
+
+Never use squash merges for logcopter/release-train work; generated files and downstream release bumps need an auditable commit history. If readiness reports `merge_conflict`, rebase or merge the base branch first.
 
 ## 9. Downstream bump after upstream release
 
