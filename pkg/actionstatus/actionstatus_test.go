@@ -16,6 +16,7 @@ func TestClassify(t *testing.T) {
 		{name: "skipped", status: "completed", conclusion: "skipped", workflow: "Open GitOps PR", want: "ok"},
 		{name: "pending", status: "in_progress", workflow: "test", want: "pending"},
 		{name: "failed", status: "completed", conclusion: "failure", workflow: "lint", want: "failed"},
+		{name: "cancelled", status: "completed", conclusion: "cancelled", workflow: "release", want: "failed"},
 		{name: "ignored failure", status: "completed", conclusion: "failure", workflow: "Secret Scanning", want: "ignored_failure", ignored: true},
 		{name: "startup failure", status: "completed", conclusion: "startup_failure", workflow: "release.yml", want: "failed"},
 	}

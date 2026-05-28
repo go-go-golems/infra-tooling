@@ -122,9 +122,9 @@ func Classify(status, conclusion, workflow string, ignored map[string]bool) (str
 		return "pending", false
 	}
 	switch conclusion {
-	case "success", "skipped", "cancelled", "neutral", "":
+	case "success", "skipped", "neutral", "":
 		return "ok", false
-	case "failure", "timed_out", "action_required", "startup_failure":
+	case "failure", "timed_out", "action_required", "startup_failure", "cancelled":
 		if ignored[workflow] || ignored[strings.ToLower(workflow)] {
 			return "ignored_failure", true
 		}
