@@ -42,6 +42,16 @@ func TestClassifyReady(t *testing.T) {
 	}
 }
 
+func TestClassifyReadyWithNoChecks(t *testing.T) {
+	report := Classify(Snapshot{
+		PR: prref.Ref{Owner: "o", Repo: "r", Number: 1}, HeadRefOID: "abc123", MergeStateStatus: "CLEAN",
+		Signals: []CodexSignal{{Kind: "comment", Author: "chatgpt-codex-connector", Time: "2026-01-01T00:00:00Z", CodexAuthored: true, Body: "Codex Review: Didn't find any major issues. 🚀"}},
+	})
+	if !report.OK || report.State != Ready {
+		t.Fatalf("state=%s ok=%v findings=%#v", report.State, report.OK, report.Findings)
+	}
+}
+
 func TestClassifyMergeConflict(t *testing.T) {
 	report := Classify(Snapshot{
 		PR: prref.Ref{Owner: "o", Repo: "r", Number: 1}, HeadRefOID: "abc123", MergeStateStatus: "DIRTY",

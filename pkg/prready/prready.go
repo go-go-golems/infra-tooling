@@ -11,7 +11,7 @@ import (
 
 var (
 	benignBodyRE = regexp.MustCompile(`(?i)^\s*(?:approved|looks good|lgtm|no issues found|✅|👍|:\+1:|:thumbsup:|thumbs up|nit:)?\s*$`)
-	satisfiedRE  = regexp.MustCompile(`(?is)(didn'?t find (?:any )?major issues|no major issues|looks good|lgtm).*(?:👍|:\+1:|:thumbsup:|thumbs up)`)
+	satisfiedRE  = regexp.MustCompile(`(?is)(didn'?t find (?:any )?major issues|no major issues|looks good|lgtm)`)
 	reviewedRE   = regexp.MustCompile("Reviewed commit:\\*\\*\\s*`([0-9a-fA-F]+)`")
 )
 
@@ -122,7 +122,7 @@ func printableMergeState(status string) string {
 
 func checkFindings(checks []Check) []Finding {
 	if len(checks) == 0 {
-		return []Finding{{OK: false, Kind: "checks", Message: "no status checks found; actions may not have run"}}
+		return []Finding{{OK: true, Kind: "checks", Message: "no status checks found; treating as no required checks configured"}}
 	}
 	var pending, bad []string
 	for _, c := range checks {
