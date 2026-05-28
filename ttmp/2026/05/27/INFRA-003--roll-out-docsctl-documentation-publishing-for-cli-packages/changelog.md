@@ -256,3 +256,13 @@ Completed release-train merges and releases through loupedeck v0.2.0, including 
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/prready/prready.go — Readiness classifier fix for no-check PRs and satisfied Codex comments
 - /home/manuel/code/wesen/go-go-golems/loupedeck — Release-train work preserved local unpushed main commits on preserve/local-main-before-release
 
+
+## 2026-05-28
+
+Added repository-wide follow-up inventory for logcopter, docsctl, Glazed linting, and xgoja rollout candidates.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/analysis/01-repository-follow-up-inventory-for-logcopter-docsctl-glazed-linting-and-xgoja.md — Human-readable inventory and methodology
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/scripts/14-inventory-followup-repos.py — Repeatable scanner
+

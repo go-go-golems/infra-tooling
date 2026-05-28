@@ -1,0 +1,71 @@
+repo	needs_logcopter_addition	needs_docsctl_cicd_push	needs_glazed_linting_added	needs_xgoja_bindings	module
+ai-in-action-app	yes				github.com/go-go-golems/ai-in-action-app
+almanach	yes	yes	yes		github.com/go-go-golems/almanach
+barbar	yes				github.com/go-go-golems/barbar
+biberon	yes	yes	yes		github.com/go-go-golems/biberon
+bobatea	yes				github.com/go-go-golems/bobatea
+bubble-table	yes				github.com/evertras/bubble-table
+bucheron	yes	yes	yes		github.com/go-go-golems/bucheron
+cliopatra	yes	yes	yes		github.com/go-go-golems/cliopatra
+codex-sessions	yes	yes	yes		github.com/go-go-golems/codex-session
+common-sense	yes		yes		github.com/go-go-golems/common-sense
+cozodb-goja	yes		yes	yes	github.com/go-go-golems/cozodb-goja
+devctl	yes	yes	yes		github.com/go-go-golems/devctl
+dmeta	yes		yes		github.com/go-go-golems/dmeta
+docmgr	yes	yes	yes		github.com/go-go-golems/docmgr
+ecrivain	yes	yes	yes		github.com/go-go-golems/ecrivain
+escuse-me	yes	yes	yes		github.com/go-go-golems/escuse-me
+esper	yes		yes		github.com/go-go-golems/esper
+font-util	yes	yes	yes		github.com/go-go-golems/font-util
+form-generator	yes	yes	yes		github.com/go-go-golems/form-generator
+geppetto		yes			github.com/go-go-golems/geppetto
+gitcommit	yes	yes	yes		github.com/go-go-golems/gitcommit
+go-emrichen	yes	yes	yes		github.com/go-go-golems/go-emrichen
+go-go-agent	yes	yes	yes		github.com/go-go-golems/go-go-agent
+go-go-agent-action	yes				github.com/go-go-golems/go-go-agent-action
+go-go-app-arc-agi	yes				github.com/go-go-golems/go-go-app-arc-agi
+go-go-app-inventory	yes		yes		github.com/go-go-golems/go-go-app-inventory
+go-go-app-sqlite	yes				github.com/go-go-golems/go-go-app-sqlite
+go-go-gepa	yes	yes	yes	yes	github.com/go-go-golems/go-go-gepa
+go-go-goja				yes	github.com/go-go-golems/go-go-goja
+go-go-host	yes				github.com/go-go-golems/XXX
+go-go-mcp	yes	yes	yes		github.com/go-go-golems/go-go-mcp
+go-go-os-backend	yes				github.com/go-go-golems/go-go-os-backend
+go-minitrace				yes	github.com/go-go-golems/go-minitrace
+go-sqlite-regexp	yes				github.com/go-go-golems/go-sqlite-regexp
+goja-github-actions	yes	yes	yes	yes	github.com/go-go-golems/goja-github-actions
+harkonnen	yes	yes	yes		github.com/go-go-golems/harkonnen
+infra-tooling	yes		yes		github.com/go-go-golems/infra-tooling
+jesus	yes	yes	yes		github.com/go-go-golems/jesus
+js-analyzer	yes	yes	yes		github.com/go-go-golems/js-analyzer
+logcopter	yes				github.com/go-go-golems/logcopter
+markdown-quizz	yes		yes		github.com/go-go-golems/XXX
+mastoid	yes	yes	yes		github.com/go-go-golems/mastoid
+oak	yes	yes	yes		github.com/go-go-golems/oak
+oak-git-db	yes				github.com/go-go-golems/oak-git-db
+openai-app-server	yes		yes	yes	github.com/go-go-golems/openai-app-server
+openai-mock-server	yes	yes	yes		mock-openai-server
+parka	yes	yes	yes		github.com/go-go-golems/parka
+pinocchio				yes	github.com/go-go-golems/pinocchio
+plunger	yes		yes		github.com/go-go-golems/plunger
+plz-confirm	yes	yes	yes		github.com/go-go-golems/plz-confirm
+prescribe	yes	yes	yes		github.com/go-go-golems/prescribe
+prompto	yes	yes	yes		github.com/go-go-golems/prompto
+raza	yes				github.com/wesen/raza
+refactorio	yes		yes		github.com/go-go-golems/refactorio
+remarquee	yes	yes	yes		github.com/go-go-golems/remarquee
+salad	yes				github.com/go-go-golems/salad
+sanitize	yes		yes		github.com/go-go-golems/sanitize
+scraper	yes	yes	yes	yes	github.com/go-go-golems/scraper
+sessionstream	yes	yes	yes		github.com/go-go-golems/sessionstream
+smailnail	yes	yes	yes	yes	github.com/go-go-golems/smailnail
+sqleton	yes	yes	yes		github.com/go-go-golems/sqleton
+tactician	yes	yes	yes		github.com/go-go-golems/tactician
+terraform-provider-stytch-b2b	yes				github.com/mento/terraform-provider-stytch-b2b
+uhoh	yes	yes	yes		github.com/go-go-golems/uhoh
+vault-envrc-generator	yes	yes	yes		github.com/go-go-golems/vault-envrc-generator
+vm-system	yes	yes	yes	yes	github.com/go-go-golems/vm-system
+voyage	yes				github.com/go-go-golems/voyage
+web-agent-example	yes	yes	yes		github.com/go-go-golems/web-agent-example
+workspace-manager				yes	github.com/go-go-golems/workspace-manager
+zine-layout	yes	yes	yes		github.com/go-go-golems/zine-layout
