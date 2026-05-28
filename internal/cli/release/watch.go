@@ -16,16 +16,17 @@ import (
 )
 
 type watchSettings struct {
-	Repo       string
-	Workflow   string
-	Tag        string
-	Interval   time.Duration
-	Timeout    time.Duration
-	Output     string
-	NoStream   bool
-	VerifyDocs bool
-	Package    string
-	BaseURL    string
+	Repo         string
+	Workflow     string
+	Tag          string
+	Interval     time.Duration
+	Timeout      time.Duration
+	StartTimeout time.Duration
+	Output       string
+	NoStream     bool
+	VerifyDocs   bool
+	Package      string
+	BaseURL      string
 }
 
 type releaseRun struct {
@@ -49,11 +50,12 @@ type watchResult struct {
 	Docs             *verifyDocsResult `json:"docs,omitempty" yaml:"docs,omitempty"`
 	Error            string            `json:"error,omitempty" yaml:"error,omitempty"`
 	FailedLogCommand string            `json:"failed_log_command,omitempty" yaml:"failed_log_command,omitempty"`
+	DispatchCommand  string            `json:"dispatch_command,omitempty" yaml:"dispatch_command,omitempty"`
 	ElapsedSecs      int               `json:"elapsed_seconds" yaml:"elapsed_seconds"`
 }
 
 func newWatchCommand() *cobra.Command {
-	s := &watchSettings{Workflow: "release.yaml", Interval: 30 * time.Second, Timeout: 30 * time.Minute, Output: "table", BaseURL: "https://docs.yolo.scapegoat.dev"}
+	s := &watchSettings{Workflow: "release.yaml", Interval: 30 * time.Second, Timeout: 30 * time.Minute, StartTimeout: 2 * time.Minute, Output: "table", BaseURL: "https://docs.yolo.scapegoat.dev"}
 	cmd := &cobra.Command{
 		Use:   "watch",
 		Short: "Watch a tag-triggered release workflow and optionally verify docs",
@@ -73,6 +75,7 @@ func newWatchCommand() *cobra.Command {
 	cmd.Flags().StringVar(&s.Tag, "tag", "", "Tag/head branch to watch")
 	cmd.Flags().DurationVar(&s.Interval, "interval", s.Interval, "Polling interval")
 	cmd.Flags().DurationVar(&s.Timeout, "timeout", s.Timeout, "Overall timeout")
+	cmd.Flags().DurationVar(&s.StartTimeout, "start-timeout", s.StartTimeout, "How long to wait for a matching workflow run to appear before returning a dispatch hint")
 	cmd.Flags().StringVar(&s.Output, "output", s.Output, "Output format: table, json, yaml")
 	cmd.Flags().BoolVar(&s.NoStream, "no-stream", false, "Poll without running gh run watch")
 	cmd.Flags().BoolVar(&s.VerifyDocs, "verify-docs", false, "Verify docs browser after the release succeeds")
@@ -91,6 +94,7 @@ func watchRelease(ctx context.Context, s *watchSettings) watchResult {
 	run, err := waitForReleaseRun(ctx, s)
 	if err != nil {
 		res.Error = err.Error()
+		res.DispatchCommand = fmt.Sprintf("gh workflow run %s --repo %s --ref %s", s.Workflow, s.Repo, s.Tag)
 		res.ElapsedSecs = int(time.Since(started).Seconds())
 		return res
 	}
@@ -128,6 +132,12 @@ func watchRelease(ctx context.Context, s *watchSettings) watchResult {
 }
 
 func waitForReleaseRun(ctx context.Context, s *watchSettings) (releaseRun, error) {
+	startTimeout := s.StartTimeout
+	if startTimeout <= 0 || startTimeout > s.Timeout {
+		startTimeout = s.Timeout
+	}
+	startCtx, cancel := context.WithTimeout(ctx, startTimeout)
+	defer cancel()
 	for {
 		runs, err := listReleaseRuns(ctx, s.Repo, s.Workflow, s.Tag)
 		if err != nil {
@@ -139,6 +149,8 @@ func waitForReleaseRun(ctx context.Context, s *watchSettings) (releaseRun, error
 		select {
 		case <-ctx.Done():
 			return releaseRun{}, ctx.Err()
+		case <-startCtx.Done():
+			return releaseRun{}, fmt.Errorf("no release workflow run found for %s on %s within %s; the workflow may be manual-only or missing a tag trigger", s.Tag, s.Workflow, startTimeout)
 		case <-time.After(s.Interval):
 		}
 	}
@@ -224,6 +236,9 @@ func writeWatchResult(res watchResult, output string) error {
 		}
 		if res.FailedLogCommand != "" {
 			fmt.Fprintf(os.Stderr, "failed logs: %s\n", res.FailedLogCommand)
+		}
+		if res.DispatchCommand != "" {
+			fmt.Fprintf(os.Stderr, "dispatch manually: %s\n", res.DispatchCommand)
 		}
 		if res.Error != "" {
 			fmt.Fprintf(os.Stderr, "error: %s\n", res.Error)
