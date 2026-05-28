@@ -44,7 +44,7 @@ The inventory is heuristic and intended as a planning list, not as an implementa
 
 Source artifacts:
 
-- `scripts/14-inventory-followup-repos.py` — scanner script.
+- `scripts/14-inventory-followup-repos.py` — scanner script. Run as `python3 scripts/14-inventory-followup-repos.py /path/to/go-go-golems`.
 - `sources/41-repository-follow-up-inventory.json` — full machine-readable scan.
 - `sources/42-repository-follow-up-inventory.tsv` — compact table of repos with at least one follow-up flag.
 

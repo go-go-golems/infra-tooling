@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import json, re, subprocess
-base=Path('/home/manuel/code/wesen/go-go-golems')
+import argparse, json, re
+
+parser = argparse.ArgumentParser(description='Inventory Go-Go-Golems repositories for rollout follow-up tracks.')
+parser.add_argument('repo_root', nargs='?', default='.', help='Directory containing first-level repository checkouts; default: current directory')
+args = parser.parse_args()
+base=Path(args.repo_root).expanduser().resolve()
+if not base.exists():
+    raise SystemExit(f'repo root does not exist: {base}')
 skip={'.git','.github','ttmp'}
 rows=[]
 for d in sorted([p for p in base.iterdir() if p.is_dir() and p.name not in skip], key=lambda p:p.name):
