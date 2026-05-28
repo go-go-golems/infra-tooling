@@ -198,6 +198,34 @@ For single-PR watch behavior, use:
 ggg pr watch https://github.com/go-go-golems/<repo>/pull/<n> --interval-seconds 30 --timeout-seconds 1800
 ```
 
+For post-merge GitHub Actions status, use `ggg run status` for one repository or `ggg batch actions` for a rollout manifest. Ignore only known-noisy workflow failures such as Secret Scanning; every other failure blocks release tags and downstream bumps.
+
+```bash
+ggg run status \
+  --repo go-go-golems/<repo> \
+  --branch main \
+  --sha <merge-sha> \
+  --ignore-workflow "Secret Scanning" \
+  --output table
+
+cat > /tmp/actions.yaml <<'EOF'
+repos:
+  - repo: go-go-golems/<repo-a>
+    branch: main
+    sha: <merge-sha-a>
+  - repo: go-go-golems/<repo-b>
+    branch: main
+    sha: <merge-sha-b>
+EOF
+
+ggg batch actions /tmp/actions.yaml \
+  --ignore-workflow "Secret Scanning" \
+  --watch \
+  --output json
+```
+
+`ggg run status` and `ggg batch actions` exit `0` when all matching runs are successful or ignored, `1` when a non-ignored workflow failed, and `2` while matching runs are still pending.
+
 For batch watch behavior, put the PRs in a YAML list and use batch watch. Use `--until actionable` for release trains where partial readiness should wake the operator; use `--until all-ready` when you want to keep polling through partial readiness.
 
 ```bash

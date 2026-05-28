@@ -418,6 +418,26 @@ geppetto    glazed/clay/logcopter release #...    blocked on clay
 pinocchio   geppetto/glazed/clay release  #...    blocked on geppetto
 ```
 
+After each merge, verify main-branch Actions before tagging or bumping downstream modules:
+
+```bash
+ggg run status \
+  --repo go-go-golems/<repo> \
+  --branch main \
+  --sha <merge-sha> \
+  --ignore-workflow "Secret Scanning"
+```
+
+For a batch rollout, keep the merge SHAs in a YAML manifest and run:
+
+```bash
+ggg batch actions /tmp/logcopter-actions.yaml \
+  --ignore-workflow "Secret Scanning" \
+  --watch
+```
+
+Secret Scanning failures are currently tolerated for known historical repository noise; non-ignored failures block release tags and downstream bumps.
+
 Only move to the next row when the required upstream release is available and `ggg pr ready` reports the current PR ready.
 
 Merge ready PRs with a real merge commit and delete the branch:

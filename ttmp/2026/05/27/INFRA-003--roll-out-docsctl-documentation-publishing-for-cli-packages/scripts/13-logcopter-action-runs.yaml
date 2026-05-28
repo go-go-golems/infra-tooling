@@ -1,0 +1,25 @@
+repos:
+  - repo: go-go-golems/css-visual-diff
+    branch: main
+    sha: 8559422
+  - repo: go-go-golems/discord-bot
+    branch: main
+    sha: 56cf258
+  - repo: go-go-golems/go-minitrace
+    branch: main
+    sha: 64a7d96
+  - repo: go-go-golems/workspace-manager
+    branch: main
+    sha: c5671c1
+  - repo: go-go-golems/geppetto
+    branch: main
+    sha: b76c6b8
+  - repo: go-go-golems/goja-git
+    branch: main
+    sha: cbf40b8
+  - repo: go-go-golems/loupedeck
+    branch: main
+    sha: 4d704f2
+  - repo: go-go-golems/go-go-goja
+    branch: main
+    sha: 2a5b79c

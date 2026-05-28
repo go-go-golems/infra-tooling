@@ -1,0 +1,93 @@
+{
+  "runs": [
+    {
+      "repo": "go-go-golems/go-go-goja",
+      "branch": "main",
+      "sha": "2a5b79c",
+      "workflow": "CodeQL Analysis",
+      "display_title": "Make GitOps PR creation non-blocking",
+      "status": "completed",
+      "conclusion": "success",
+      "classification": "ok",
+      "ignored": false,
+      "url": "https://github.com/go-go-golems/go-go-goja/actions/runs/26578400032",
+      "created_at": "2026-05-28T13:42:09Z"
+    },
+    {
+      "repo": "go-go-golems/go-go-goja",
+      "branch": "main",
+      "sha": "2a5b79c",
+      "workflow": "Dependency Scanning",
+      "display_title": "Make GitOps PR creation non-blocking",
+      "status": "completed",
+      "conclusion": "success",
+      "classification": "ok",
+      "ignored": false,
+      "url": "https://github.com/go-go-golems/go-go-goja/actions/runs/26578400253",
+      "created_at": "2026-05-28T13:42:09Z"
+    },
+    {
+      "repo": "go-go-golems/go-go-goja",
+      "branch": "main",
+      "sha": "2a5b79c",
+      "workflow": "Secret Scanning",
+      "display_title": "Make GitOps PR creation non-blocking",
+      "status": "completed",
+      "conclusion": "failure",
+      "classification": "ignored_failure",
+      "ignored": true,
+      "url": "https://github.com/go-go-golems/go-go-goja/actions/runs/26578400025",
+      "created_at": "2026-05-28T13:42:08Z"
+    },
+    {
+      "repo": "go-go-golems/go-go-goja",
+      "branch": "main",
+      "sha": "2a5b79c",
+      "workflow": "golangci-lint",
+      "display_title": "Make GitOps PR creation non-blocking",
+      "status": "completed",
+      "conclusion": "success",
+      "classification": "ok",
+      "ignored": false,
+      "url": "https://github.com/go-go-golems/go-go-goja/actions/runs/26578399863",
+      "created_at": "2026-05-28T13:42:08Z"
+    },
+    {
+      "repo": "go-go-golems/go-go-goja",
+      "branch": "main",
+      "sha": "2a5b79c",
+      "workflow": "publish-image",
+      "display_title": "Make GitOps PR creation non-blocking",
+      "status": "completed",
+      "conclusion": "success",
+      "classification": "ok",
+      "ignored": false,
+      "url": "https://github.com/go-go-golems/go-go-goja/actions/runs/26578400046",
+      "created_at": "2026-05-28T13:42:08Z"
+    },
+    {
+      "repo": "go-go-golems/go-go-goja",
+      "branch": "main",
+      "sha": "2a5b79c",
+      "workflow": "golang-pipeline",
+      "display_title": "Make GitOps PR creation non-blocking",
+      "status": "completed",
+      "conclusion": "success",
+      "classification": "ok",
+      "ignored": false,
+      "url": "https://github.com/go-go-golems/go-go-goja/actions/runs/26578399656",
+      "created_at": "2026-05-28T13:42:08Z"
+    }
+  ],
+  "summary": {
+    "repo": "go-go-golems/go-go-goja",
+    "ok": true,
+    "state": "ok",
+    "total": 6,
+    "success": 5,
+    "ignored_failures": 1,
+    "failed": 0,
+    "pending": 0,
+    "other": 0
+  }
+}
