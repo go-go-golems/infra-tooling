@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "repository": "go-go-golems/go-go-goja",
+  "workflow": "release.yaml",
+  "tag": "v0.6.3",
+  "run": {
+    "databaseId": 26546089281,
+    "status": "completed",
+    "conclusion": "success",
+    "headBranch": "v0.6.3",
+    "headSha": "abf0a95e71f6a38c802ead57ce4ca0bf0ff737fe",
+    "event": "push",
+    "displayTitle": "Enable CGO for GoReleaser builds",
+    "createdAt": "2026-05-28T00:02:50Z",
+    "url": "https://github.com/go-go-golems/go-go-goja/actions/runs/26546089281"
+  },
+  "docs": {
+    "ok": true,
+    "url": "https://docs.yolo.scapegoat.dev/go-go-goja/v0.6.3",
+    "package": "go-go-goja",
+    "version": "v0.6.3",
+    "status_code": 200,
+    "title": "Go Go Goja v0.6.3 Documentation — Glazed Help Browser",
+    "section_count": 22,
+    "has_package": true,
+    "has_version": true,
+    "has_preloaded_state": true
+  },
+  "elapsed_seconds": 1
+}

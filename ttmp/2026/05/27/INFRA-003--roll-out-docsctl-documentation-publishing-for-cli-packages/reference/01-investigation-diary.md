@@ -1122,3 +1122,77 @@ This ties the css-visual-diff failure back into the operator documentation so th
 
 ### Code review instructions
 - Review the two playbook snippets around `ggg release watch`.
+
+## Step 19: Finish css-visual-diff and go-go-goja publication
+
+I continued until the remaining packages had live docs. `css-visual-diff` needed two release workflow fixes before docs could publish; `go-go-goja` needed two GoReleaser configuration fixes before its release workflow could complete.
+
+The final successful docs-published versions are `css-visual-diff v0.1.5` and `go-go-goja v0.6.3`. Earlier tags created during debugging (`css-visual-diff v0.1.3/v0.1.4` and `go-go-goja v0.6.1/v0.6.2`) should be treated as failed release attempts, not docs-published versions.
+
+### Prompt Context
+
+**User prompt (verbatim):** "go ahead. continue. i want them all published."
+
+**Assistant interpretation:** Continue fixing release blockers and tagging follow-up versions until every docsctl rollout package has published docs.
+
+**Inferred user intent:** Finish the rollout, not merely record failures; all target packages should have live docs URLs.
+
+**Commit (code):** N/A in infra-tooling for package fixes; external package commits recorded below.
+
+### What I did
+- Fixed `css-visual-diff` release workflow:
+  - `2f01366 Install pnpm for darwin release generation`
+  - `4d4f668 Install review UI dependencies for darwin release`
+- Tagged and verified `css-visual-diff v0.1.5`.
+- Fixed `go-go-goja` GoReleaser config:
+  - `e61327b Fix GoReleaser binary configuration`
+  - `abf0a95 Enable CGO for GoReleaser builds`
+- Tagged and verified `go-go-goja v0.6.3`.
+- Saved final verification artifacts:
+  - `sources/26-release-watch-css-visual-diff-v0.1.5.json`
+  - `sources/27-release-watch-go-go-goja-v0.6.3.json`
+  - `sources/28-final-docsctl-published-packages-summary.txt`
+
+### Why
+- The user explicitly asked for all packages to be published.
+- Failed tags do not satisfy docsctl publication because the `publish-docs` jobs never ran.
+
+### What worked
+- `css-visual-diff v0.1.5` release succeeded and published 8 sections.
+- `go-go-goja v0.6.3` release succeeded and published 22 sections.
+- `ggg release watch --no-stream --verify-docs` cleanly verified both final releases.
+
+### What didn't work
+- `css-visual-diff v0.1.4` still failed after installing pnpm because `node_modules` had not been installed:
+  - `sh: tsc: command not found`
+  - `Local package.json exists, but node_modules missing, did you mean to install?`
+- `go-go-goja v0.6.1` failed because `.goreleaser.yaml` still used template placeholders:
+  - `couldn't find main file: stat cmd/XXX: no such file or directory`
+- `go-go-goja v0.6.2` failed because the GoReleaser build disabled CGO while tree-sitter JavaScript bindings require CGO:
+  - `github.com/tree-sitter/tree-sitter-javascript/bindings/go: build constraints exclude all Go files`
+
+### What I learned
+- Docs publishing often exposes latent release workflow problems because it requires a real tag, not just PR CI.
+- `ggg release watch` made repeated release/debug/tag loops much faster, especially with the `failed_log_command` field.
+
+### What was tricky to build
+- For `css-visual-diff`, installing pnpm alone was insufficient; the fallback path needed dependencies installed in `web/review-site` before `go generate ./...` ran inside GoReleaser.
+- For `go-go-goja`, the release config had stale scaffold placeholders and incorrect CGO settings. The canonical docs export command was `./cmd/goja-repl`, so the release binary was also set to `goja-repl`.
+
+### What warrants a second pair of eyes
+- `css-visual-diff` now has two failed tags before the successful tag. Release notes should make clear that `v0.1.5` is the docs-published version.
+- `go-go-goja` now has two failed tags before the successful tag. Release notes should make clear that `v0.6.3` is the docs-published version.
+- The `go-go-goja` default branch in `/home/manuel/code/wesen/go-go-golems/go-go-goja` is locally unusual (`main` tracks `wesen/main` and is ahead), so I used a clean temporary clone for release fixes against `go-go-golems/go-go-goja`.
+
+### What should be done in the future
+- Add preflight release config checks to `ggg release tag-*` or a new `ggg release preflight` command:
+  - detect `.goreleaser.yaml` placeholders such as `XXX`;
+  - detect CGO-disabled builds when dependencies require CGO;
+  - detect frontend generation hooks that require pnpm install.
+- Add batch release verification from a YAML list of repo/tag/package triples.
+
+### Code review instructions
+- Review package commits:
+  - css-visual-diff `2f01366`, `4d4f668`
+  - go-go-goja `e61327b`, `abf0a95`
+- Review final verification artifacts in `sources/26-*`, `sources/27-*`, and `sources/28-*`.

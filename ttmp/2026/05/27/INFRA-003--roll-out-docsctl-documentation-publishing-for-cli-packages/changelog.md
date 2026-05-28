@@ -191,3 +191,14 @@ Documented release watch failed_log_command in playbooks.
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/docs/go-go-golems/package-publishing-release-train.md — Failed release diagnostics note
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/docs/go-go-golems/playbooks/docsctl-docs-publishing-rollout-playbook.md — Failed release diagnostics note
 
+
+## 2026-05-27
+
+Completed docs publication for css-visual-diff and go-go-goja after release workflow fixes.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/css-visual-diff/.github/workflows/release.yaml — Release workflow fixes for docs-published v0.1.5
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/28-final-docsctl-published-packages-summary.txt — Final published package summary
+- /tmp/go-go-goja-release-fix/.goreleaser.yaml — GoReleaser fixes for docs-published v0.6.3
+

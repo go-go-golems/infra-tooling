@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "repository": "go-go-golems/css-visual-diff",
+  "workflow": "release.yaml",
+  "tag": "v0.1.5",
+  "run": {
+    "databaseId": 26545380100,
+    "status": "completed",
+    "conclusion": "success",
+    "headBranch": "v0.1.5",
+    "headSha": "4d4f6683fa0d399589ecd639e5e00efbe3daf859",
+    "event": "push",
+    "displayTitle": "Install review UI dependencies for darwin release",
+    "createdAt": "2026-05-27T23:43:32Z",
+    "url": "https://github.com/go-go-golems/css-visual-diff/actions/runs/26545380100"
+  },
+  "docs": {
+    "ok": true,
+    "url": "https://docs.yolo.scapegoat.dev/css-visual-diff/v0.1.5",
+    "package": "css-visual-diff",
+    "version": "v0.1.5",
+    "status_code": 200,
+    "title": "Css Visual Diff v0.1.5 Documentation — Glazed Help Browser",
+    "section_count": 8,
+    "has_package": true,
+    "has_version": true,
+    "has_preloaded_state": true
+  },
+  "elapsed_seconds": 1
+}
