@@ -40,7 +40,7 @@ func printTable(w io.Writer, runs []actionstatus.Run, summary actionstatus.Summa
 		}
 	}
 	_, _ = fmt.Fprintln(tw, "")
-	_, _ = fmt.Fprintln(tw, "SUMMARY\tSTATE\tTOTAL\tSUCCESS\tIGNORED_FAILURES\tFAILED\tPENDING\tOTHER")
-	_, _ = fmt.Fprintf(tw, "%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\n", summary.Repo, summary.State, summary.Total, summary.Success, summary.IgnoredFailures, summary.Failed, summary.Pending, summary.Other)
+	_, _ = fmt.Fprintln(tw, "SUMMARY\tSTATE\tTOTAL\tSUCCESS\tIGNORED_FAILURES\tFAILED\tPENDING\tNO_RUNS\tOTHER")
+	_, _ = fmt.Fprintf(tw, "%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", summary.Repo, summary.State, summary.Total, summary.Success, summary.IgnoredFailures, summary.Failed, summary.Pending, summary.NoRuns, summary.Other)
 	return tw.Flush()
 }

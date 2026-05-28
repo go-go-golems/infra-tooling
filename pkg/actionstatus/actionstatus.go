@@ -44,6 +44,7 @@ type Summary struct {
 	IgnoredFailures int    `json:"ignored_failures" yaml:"ignored_failures"`
 	Failed          int    `json:"failed" yaml:"failed"`
 	Pending         int    `json:"pending" yaml:"pending"`
+	NoRuns          int    `json:"no_runs" yaml:"no_runs"`
 	Other           int    `json:"other" yaml:"other"`
 }
 
@@ -59,9 +60,20 @@ func Collect(ctx context.Context, opts Options) (Result, error) {
 	if opts.Limit <= 0 {
 		opts.Limit = 20
 	}
+	shaFilter := opts.SHA
+	if shaFilter != "" {
+		resolved, err := resolveCommit(ctx, opts.Repo, shaFilter)
+		if err != nil {
+			return Result{}, err
+		}
+		shaFilter = resolved
+	}
 	args := []string{"run", "list", "-R", opts.Repo, "--limit", fmt.Sprintf("%d", opts.Limit), "--json", "databaseId,displayTitle,headSha,status,conclusion,workflowName,createdAt,url"}
 	if opts.Branch != "" {
 		args = append(args, "--branch", opts.Branch)
+	}
+	if shaFilter != "" {
+		args = append(args, "--commit", shaFilter)
 	}
 	out, err := run(ctx, "gh", args...)
 	if err != nil {
@@ -75,9 +87,6 @@ func Collect(ctx context.Context, opts Options) (Result, error) {
 	res := Result{Summary: Summary{Repo: opts.Repo}}
 	for _, gr := range ghRuns {
 		sha := gr.HeadSHA
-		if opts.SHA != "" && !strings.HasPrefix(sha, opts.SHA) {
-			continue
-		}
 		classification, ignored := Classify(gr.Status, gr.Conclusion, gr.WorkflowName, ignore)
 		r := Run{Repo: opts.Repo, Branch: opts.Branch, SHA: shortSHA(sha), Workflow: gr.WorkflowName, DisplayTitle: gr.DisplayTitle, Status: gr.Status, Conclusion: gr.Conclusion, Classification: classification, Ignored: ignored, URL: gr.URL, CreatedAt: gr.CreatedAt}
 		res.Runs = append(res.Runs, r)
@@ -94,6 +103,9 @@ func Collect(ctx context.Context, opts Options) (Result, error) {
 		default:
 			res.Summary.Other++
 		}
+	}
+	if res.Summary.Total == 0 {
+		res.Summary.NoRuns = 1
 	}
 	res.Summary.State = State(res.Summary)
 	res.Summary.OK = res.Summary.State == "ok"
@@ -126,7 +138,10 @@ func State(s Summary) string {
 	if s.Failed > 0 {
 		return "failed"
 	}
-	if s.Pending > 0 {
+	if s.Pending > 0 || s.NoRuns > 0 {
+		if s.Total == 0 && s.NoRuns > 0 {
+			return "no_runs"
+		}
 		return "pending"
 	}
 	if s.Total == 0 {
@@ -184,17 +199,37 @@ func BatchCollect(ctx context.Context, manifest Manifest, ignore []string, defau
 		if err != nil {
 			return nil, summary, err
 		}
-		runs = append(runs, res.Runs...)
+		if res.Summary.NoRuns > 0 {
+			runs = append(runs, Run{Repo: repo.Repo, Branch: repo.Branch, SHA: repo.SHA, Workflow: "(no matching runs)", Classification: "no_runs"})
+		} else {
+			runs = append(runs, res.Runs...)
+		}
 		summary.Total += res.Summary.Total
 		summary.Success += res.Summary.Success
 		summary.IgnoredFailures += res.Summary.IgnoredFailures
 		summary.Failed += res.Summary.Failed
 		summary.Pending += res.Summary.Pending
+		summary.NoRuns += res.Summary.NoRuns
 		summary.Other += res.Summary.Other
 	}
 	summary.State = State(summary)
 	summary.OK = summary.State == "ok"
 	return runs, summary, nil
+}
+
+func resolveCommit(ctx context.Context, repo, sha string) (string, error) {
+	if len(sha) == 40 {
+		return sha, nil
+	}
+	out, err := run(ctx, "gh", "api", "repos/"+repo+"/commits/"+sha, "--jq", ".sha")
+	if err != nil {
+		return "", err
+	}
+	resolved := strings.TrimSpace(string(out))
+	if resolved == "" {
+		return "", fmt.Errorf("could not resolve commit %q in %s", sha, repo)
+	}
+	return resolved, nil
 }
 
 func run(ctx context.Context, name string, args ...string) ([]byte, error) {
