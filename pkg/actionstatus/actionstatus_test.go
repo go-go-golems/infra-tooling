@@ -38,6 +38,7 @@ func TestStateAndExitCode(t *testing.T) {
 	}{
 		{Summary{Total: 2, Success: 1, IgnoredFailures: 1}, "ok", 0},
 		{Summary{Total: 2, Failed: 1, Pending: 1}, "failed", 1},
+		{Summary{Total: 1, Other: 1}, "failed", 1},
 		{Summary{Total: 2, Pending: 1, Success: 1}, "pending", 2},
 		{Summary{NoRuns: 1}, "no_runs", 2},
 		{Summary{Total: 2, Success: 2, NoRuns: 1}, "pending", 2},

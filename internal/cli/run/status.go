@@ -44,7 +44,7 @@ Secret Scanning while still catching real CI/lint/release failures.`,
 					return err
 				}
 				code := actionstatus.ExitCode(res.Summary)
-				if !watch || res.Summary.State != "pending" {
+				if !watch || (res.Summary.State != "pending" && res.Summary.State != "no_runs") {
 					if code != 0 {
 						exitcode.Request(code)
 					}

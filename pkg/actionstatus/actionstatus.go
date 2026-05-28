@@ -135,7 +135,7 @@ func Classify(status, conclusion, workflow string, ignored map[string]bool) (str
 }
 
 func State(s Summary) string {
-	if s.Failed > 0 {
+	if s.Failed > 0 || s.Other > 0 {
 		return "failed"
 	}
 	if s.Pending > 0 || s.NoRuns > 0 {
