@@ -32,7 +32,7 @@ A converted repository has five visible properties:
 2. `go.mod` registers `github.com/go-go-golems/logcopter/cmd/logcopter-gen` as a Go tool.
 3. A repository-local `go:generate` file makes `go generate ./...` regenerate package logger files.
 4. Packages use a generated package variable named `log`, backed by logcopter, instead of importing the global zerolog `log` package.
-5. The Makefile has a generic `bump-go-go-golems` target that scans `go.mod` and bumps every `github.com/go-go-golems/...` dependency instead of hand-maintaining a stale `bump-glazed` list. Add this target to release-train repositories even before they adopt generated logcopter package loggers, because it is the standard dependency handoff for logcopter, Glazed, xgoja, docsctl-enabled CLIs, and downstream applications.
+5. The Makefile has a generic `bump-go-go-golems` target that scans `go.mod` and bumps every `github.com/go-go-golems/...` dependency instead of hand-maintaining a stale `bump-glazed` list. Generated package loggers are the actual logcopter adoption step; the bump target is only the dependency handoff that keeps logcopter, Glazed, xgoja, docsctl-enabled CLIs, and downstream applications current after releases.
 
 A generated package logger looks like this:
 
@@ -317,7 +317,7 @@ The exact smoke command should be safe, deterministic, and should not require ne
 
 ## Step 10: replace hand-maintained dependency bump targets
 
-This step applies to every package in the release train, including packages that do not yet have generated `logcopter.go` files. A repository that depends on any `github.com/go-go-golems/...` module should have `make bump-go-go-golems` so operators can bump published upstreams uniformly.
+This step is separate from logcopter adoption. First add generated package loggers and `make logcopter-check`; then ensure the repository also has `make bump-go-go-golems` so operators can bump published upstreams uniformly.
 
 Do not maintain repository-specific `bump-glazed` target bodies such as:
 

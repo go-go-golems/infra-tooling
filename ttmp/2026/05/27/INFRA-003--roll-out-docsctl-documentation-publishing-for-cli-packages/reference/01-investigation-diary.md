@@ -1305,3 +1305,83 @@ The goal was not to block anything after the fact, but to see how noisy the firs
 
 ### Code review instructions
 - Inspect `sources/31-release-preflight-all-published-packages.jsonl`.
+
+## Step 22: Correct logcopter rollout scope and save reusable adoption scripts
+
+The follow-up clarified that “logcopter bumping” was not just the generic dependency bump target; the intended release-train baseline is actual generated logcopter package loggers. I corrected course by saving the mechanical inventory/adoption commands as ticket scripts and applying generated `logcopter.go` files to the remaining release-train repositories that did not have them yet.
+
+This changed the rollout from Makefile-only dependency hygiene into real package logging adoption: each converted repository now has `logcopter_generate.go`, checked-in package-local `logcopter.go` files, and `make logcopter-check` so CI/operators can detect generated logger drift before a mutating `go generate ./...` hides it.
+
+### Prompt Context
+
+**User prompt (verbatim):** "no, the logcopter part is actually about using logcopter and adding generated logcopter go to the package."
+
+**Assistant interpretation:** The previous Makefile-only `bump-go-go-golems` work was incomplete; continue by adopting generated logcopter package loggers in repositories that lack them.
+
+**Inferred user intent:** Make every active release-train package use logcopter’s area-scoped package logger pattern, not merely depend on or bump logcopter indirectly.
+
+**Commit (code):** multiple package commits — "Adopt logcopter package loggers"
+
+### What I did
+- Added reusable scripts under `scripts/`:
+  - `11-inventory-logcopter-adoption.sh`
+  - `12-adopt-logcopter-package-loggers.sh`
+- Saved inventory evidence in `sources/32-logcopter-adoption-inventory.tsv` and `sources/33-logcopter-adoption-final-inventory.tsv`.
+- Converted missing repositories to generated logcopter package loggers:
+  - `css-visual-diff`
+  - `discord-bot`
+  - `go-minitrace`
+  - `workspace-manager`
+  - `loupedeck`
+  - `goja-git`
+  - `go-go-goja`
+- Updated release-train/logcopter/docsctl playbooks to say the logcopter baseline is generated package loggers plus `make logcopter-check`, while `bump-go-go-golems` is only the dependency handoff.
+
+### Why
+- The release train needs consistent runtime log areas across packages.
+- Generated `logcopter.go` files make package diagnostics configurable by area and reload-aware via logcopter.
+- Reusable scripts preserve the rollout procedure for future tooling.
+
+### What worked
+- `make logcopter-check` passed in converted repositories.
+- `GOWORK=off go test ./...` passed for each converted repository that was tested in this step.
+- Existing loupedeck hooks also ran lint and GoReleaser snapshot successfully.
+
+### What didn't work
+- The first helper script version used plain `go get`, which failed in the loupedeck workspace because `go.work` listed an older Go version:
+  - `go.mod requires go >= 1.26.3; switching to go1.26.3`
+  - `go.work lists go 1.26.2; to update it: go work use`
+- I fixed the helper to use `GOWORK=off go get ...`.
+- The go-go-goja adoption initially failed because generated `modules/logcopter.go` conflicted with existing `github.com/rs/zerolog/log` imports:
+  - `log already declared through import of package log ("github.com/rs/zerolog/log")`
+- go-minitrace had `log.Err(err)` calls; logcopter package loggers use `log.Error().Err(err)`, so I converted those call sites.
+
+### What I learned
+- The generic bump target is useful but is not logcopter adoption.
+- `go generate ./...` can trigger frontend/Dagger generation while adding logcopter, so scripts should document that they perform a broad mechanical pass and require review.
+- Logcopter package loggers preserve zerolog-style `Debug/Info/Warn/Error` chains, but not every global zerolog convenience such as `log.Err(err)`.
+
+### What was tricky to build
+- Root workspaces with stale `go.work` settings can break plain Go commands; the helper must force `GOWORK=off` for dependency edits.
+- Existing packages that import `github.com/rs/zerolog/log` conflict with generated `var log`; the script removes those imports only in directories where a generated `logcopter.go` now exists.
+- Some remaining global zerolog imports are startup/fatal or tool-specific cases rather than package diagnostics; those warrant review rather than blind conversion.
+
+### What warrants a second pair of eyes
+- Whether main-package startup fatal logging should also move to generated package loggers or remain global zerolog.
+- Whether the generated package pattern lists should include examples/tools in every repo or stay focused on runtime packages.
+- Whether the saved shell script should become a first-class `ggg rollout logcopter` command.
+
+### What should be done in the future
+- Convert `11-inventory-logcopter-adoption.sh` and `12-adopt-logcopter-package-loggers.sh` into a structured `ggg rollout logcopter` profile.
+- Add a preflight check for `logcopter_generate.go` + `make logcopter-check` drift.
+
+### Code review instructions
+- Start with each repository’s `logcopter_generate.go`, `Makefile`, and generated `**/logcopter.go` files.
+- Validate with:
+  - `make logcopter-check`
+  - `GOWORK=off go test ./...`
+- Review any removed `github.com/rs/zerolog/log` imports and `log.Err(err)` conversions.
+
+### Technical details
+- Scripts live in the INFRA-003 ticket scripts directory so they can be promoted into tooling later.
+- Final inventory evidence is `sources/33-logcopter-adoption-final-inventory.tsv`.

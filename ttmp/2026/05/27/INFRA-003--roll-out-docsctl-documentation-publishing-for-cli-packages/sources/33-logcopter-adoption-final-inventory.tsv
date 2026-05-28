@@ -1,0 +1,11 @@
+repo	path	dep	generate_file	generated_count	make_check	make_bump	zerolog_log_imports	branch_status
+css-visual-diff	/home/manuel/code/wesen/go-go-golems/css-visual-diff	yes	yes	13	yes	yes	0	## main...origin/main
+discord-bot	/home/manuel/code/wesen/go-go-golems/discord-bot	yes	yes	7	yes	yes	0	## main...origin/main
+go-go-goja-release-fix	/tmp/go-go-goja-release-fix	yes	yes	74	yes	yes	2	## main...origin/main
+go-minitrace	/home/manuel/code/wesen/go-go-golems/go-minitrace	yes	yes	22	yes	yes	0	## main...origin/main
+loupedeck	/home/manuel/code/wesen/corporate-headquarters/loupedeck	yes	yes	28	yes	yes	0	## main...origin/main
+workspace-manager	/home/manuel/code/wesen/go-go-golems/workspace-manager	yes	yes	20	yes	yes	1	## main...origin/main
+goja-git	/home/manuel/code/wesen/go-go-golems/goja-git	yes	yes	3	yes	yes	0	## main...origin/main
+geppetto	/home/manuel/code/wesen/go-go-golems/geppetto	yes	yes	50	yes	yes	14	## main...origin/main
+pinocchio	/home/manuel/code/wesen/go-go-golems/pinocchio	yes	yes	43	yes	yes	7	## main...origin/main
+glazed	/home/manuel/code/wesen/go-go-golems/glazed	yes	yes	59	yes	yes	3	## HEAD (no branch)

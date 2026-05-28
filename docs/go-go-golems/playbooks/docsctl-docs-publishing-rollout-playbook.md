@@ -137,7 +137,7 @@ grep -n "glazed-lint" Makefile || true
 ggg release preflight --repo . --output json || true
 ```
 
-If `bump-go-go-golems` is missing and the repo has direct `github.com/go-go-golems/...` requirements, add the `GOWORK=off` snippet from `examples/go-go-golems/Makefile.bump-go-go-golems-gowork-off.snippet.mk`. This keeps docsctl releases aligned with logcopter, xgoja, and Glazed dependency rollouts.
+If logcopter is missing, add the generated package loggers first (`logcopter_generate.go`, checked-in `**/logcopter.go`, and `make logcopter-check`). If `bump-go-go-golems` is missing and the repo has direct `github.com/go-go-golems/...` requirements, add the `GOWORK=off` snippet from `examples/go-go-golems/Makefile.bump-go-go-golems-gowork-off.snippet.mk`. This keeps docsctl releases aligned with logcopter, xgoja, and Glazed dependency rollouts.
 
 ## Step 1: prove the package can export help locally
 

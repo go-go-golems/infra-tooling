@@ -222,3 +222,14 @@ Ran release preflight across all published INFRA-003 packages.
 
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/31-release-preflight-all-published-packages.jsonl — Preflight validation across published package set
 
+
+## 2026-05-28
+
+Corrected logcopter rollout scope: saved reusable inventory/adoption scripts and adopted generated logcopter package loggers across remaining release-train packages.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/scripts/11-inventory-logcopter-adoption.sh — Reusable inventory script for logcopter adoption state
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/scripts/12-adopt-logcopter-package-loggers.sh — Reusable mechanical adoption script for generated package loggers
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/33-logcopter-adoption-final-inventory.tsv — Final evidence that target repositories now have generated logcopter files and checks
+

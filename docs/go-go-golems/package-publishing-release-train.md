@@ -36,7 +36,7 @@ logcopter -> glazed/clay -> geppetto -> pinocchio -> leaf applications
 
 The exact order depends on the current `go.mod` graph. Inspect direct dependencies rather than relying on memory.
 
-Every release-train participant should have a generic `make bump-go-go-golems` target, even if it has not yet adopted generated logcopter package loggers. The target is the standard handoff point between upstream releases and downstream validation; it replaces stale `bump-glazed` lists and keeps logcopter, Glazed, xgoja, docsctl-capable CLIs, and leaf applications on the same dependency-bump path. Prefer the `GOWORK=off` variant in active workspaces.
+Every release-train participant should have two logcopter-related baselines: generated package loggers (`logcopter_generate.go`, checked-in `**/logcopter.go`, and `make logcopter-check`) and a generic `make bump-go-go-golems` target. Generated loggers provide area-scoped runtime logging; the bump target is the standard handoff point between upstream releases and downstream validation. Together they replace stale `bump-glazed` lists and keep logcopter, Glazed, xgoja, docsctl-capable CLIs, and leaf applications on the same dependency-bump path. Prefer the `GOWORK=off` variant in active workspaces.
 
 ## Early downstream PRs
 
@@ -222,7 +222,7 @@ gh pr merge <n> --squash --delete-branch=false
 
 Use these checks before declaring a repository release-train-ready:
 
-- **Logcopter:** `go.mod` should consume published `github.com/go-go-golems/logcopter` when the repo has package loggers; `make logcopter-check` must run before mutating `go generate ./...`; every repo should still have `make bump-go-go-golems` for downstream bumps.
+- **Logcopter:** release-train repos should have `logcopter_generate.go`, checked-in generated `**/logcopter.go`, a direct/tool dependency on published `github.com/go-go-golems/logcopter`, and `make logcopter-check`; run the non-mutating check before mutating `go generate ./...`.
 - **Docsctl:** release workflows should call `go-go-golems/infra-tooling/.github/workflows/publish-docsctl.yml@main`, keep `id-token: write` scoped to the publish job, and be verified with `ggg release watch --verify-docs` plus `ggg release verify-docs`.
 - **xgoja:** JavaScript-provider or runtime repos must validate with `GOWORK=off` after upstream xgoja tags; check GoReleaser CGO settings when tree-sitter packages are present.
 - **Glazed linting:** run `make glazed-lint` after dependency bumps so downstream code is checked against the released Glazed analyzer; use reasoned `//glazedclilint:ignore ...` suppressions or exact allow paths rather than broad directory exclusions.
