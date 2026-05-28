@@ -1385,3 +1385,79 @@ This changed the rollout from Makefile-only dependency hygiene into real package
 ### Technical details
 - Scripts live in the INFRA-003 ticket scripts directory so they can be promoted into tooling later.
 - Final inventory evidence is `sources/33-logcopter-adoption-final-inventory.tsv`.
+
+## Step 23: Add GitHub Actions status helpers for release-train polling
+
+This step turned the ad-hoc `gh run list` loops used during the logcopter follow-up into first-class `ggg` commands. The new helpers let an operator inspect one repository/commit or a whole rollout manifest, tolerate known noisy workflows such as Secret Scanning, and fail on real CI/release workflow failures before tags and downstream bumps proceed.
+
+The implementation also documents the intended command contract so the shell/JQ pattern can be promoted into a stable release-train runbook: `ggg run status` for one repo, `ggg batch actions` for a YAML manifest, exit `0` for all clear, exit `1` for non-ignored failures, and exit `2` for pending/no matching runs.
+
+### Prompt Context
+
+**User prompt (verbatim):** "alright, implement both ggg helpers, add a concise implementation guide, add tasks to the ticket, then implementation step by step, commit at appropriate intervals, keep a diary. then resume your release train work (merging, ec...)"
+
+**Assistant interpretation:** Implement the two proposed GitHub Actions helpers (`ggg run status` and `ggg batch actions`), record the plan/tasks/diary in INFRA-003, then continue release-train operations.
+
+**Inferred user intent:** Stop using bespoke `gh run list` polling for release train status; make the workflow repeatable and documented before continuing package releases and downstream dependency bumps.
+
+**Commit (code):** a062cb9 — "Add GitHub Actions status helpers"
+
+**Commit (docs/evidence):** 5e73cfd — "Document GitHub Actions status helpers"
+
+### What I did
+- Added `pkg/actionstatus` for GitHub Actions run collection, classification, manifest loading, and exit-code state.
+- Added `ggg run status` under a new `internal/cli/run` command group.
+- Added `ggg batch actions` under the existing `batch` command group.
+- Added table/json/yaml rendering for action-run rows and summaries.
+- Added unit tests for status classification and exit-code state.
+- Added `design-doc/03-ggg-github-actions-status-helper-implementation-guide.md`.
+- Added ticket tasks 33-35 and checked them after implementation.
+- Added `scripts/13-logcopter-action-runs.yaml` and saved validation artifacts in `sources/35-*` through `sources/38-*`.
+- Updated release-train and logcopter playbooks to use the new helpers after merges and before tags/downstream bumps.
+
+### Why
+- The logcopter rollout needed a clear way to distinguish tolerated Secret Scanning failures from real action failures.
+- `gh run list`/`jq` loops are easy to mistype and hard to hand off.
+- Release-train decisions should be reproducible from ticket artifacts.
+
+### What worked
+- `go test ./...` passed.
+- `go build -o ~/.local/bin/ggg ./cmd/ggg` passed.
+- `ggg run status --repo go-go-golems/go-go-goja --branch main --sha 2a5b79c --ignore-workflow "Secret Scanning" --output json` exited `0`.
+- `ggg batch actions scripts/13-logcopter-action-runs.yaml --ignore-workflow "Secret Scanning" --output json` exited `0` with summary `total=43`, `success=35`, `ignored_failures=8`, `failed=0`, `pending=0`.
+
+### What didn't work
+- N/A for the implemented helper path. The preceding manual polling showed why the helper was needed: go-go-goja had actionable failures first (`golangci-lint`, disabled `release.yml`, and `publish-image` GitOps PR), while Secret Scanning failures were expected to be tolerated.
+
+### What I learned
+- A simple workflow-name ignore is enough for the current release train because the repeated tolerated failure is consistently named `Secret Scanning`.
+- `startup_failure` must be treated as a real failure; it caught the disabled go-go-goja `release.yml` issue earlier.
+- Batch output needs both per-run details and a summary row so operators can save evidence without losing diagnosis links.
+
+### What was tricky to build
+- The command has to filter by SHA prefix after `gh run list`, because the GitHub CLI run-list API is branch-oriented rather than commit-oriented.
+- Exit semantics need to distinguish failed from pending; otherwise a watch loop cannot know whether to wait or stop for operator action.
+- The batch manifest needs per-repo `branch`, `sha`, and optional `limit` so it can handle multi-repo release-train evidence without relying on current local checkouts.
+
+### What warrants a second pair of eyes
+- Whether ignored workflow matching should support glob/regex or repo-specific ignore rules.
+- Whether `no_runs` should remain exit `2` or become exit `1` for stricter release trains.
+- Whether this should use GraphQL/API directly instead of shelling out to `gh run list`.
+
+### What should be done in the future
+- Add a `--markdown-report` mode if operators want copy/paste status reports.
+- Add defaults for common go-go-golems ignored workflows in config rather than repeated CLI flags.
+
+### Code review instructions
+- Start with `pkg/actionstatus/actionstatus.go` and `pkg/actionstatus/actionstatus_test.go`.
+- Then review `internal/cli/run/status.go`, `internal/cli/batch/actions.go`, and `internal/cli/actionoutput/output.go`.
+- Validate with:
+  - `go test ./...`
+  - `go build -o ~/.local/bin/ggg ./cmd/ggg`
+  - `ggg run status --repo go-go-golems/go-go-goja --branch main --sha 2a5b79c --ignore-workflow "Secret Scanning" --output json`
+  - `ggg batch actions ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/scripts/13-logcopter-action-runs.yaml --ignore-workflow "Secret Scanning" --output json`
+
+### Technical details
+- Per-run classifications: `ok`, `ignored_failure`, `failed`, `pending`, `other`.
+- Summary states: `ok`, `failed`, `pending`, `no_runs`.
+- Exit codes: `0` ok, `1` non-ignored failure, `2` pending/no runs.

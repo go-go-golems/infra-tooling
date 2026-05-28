@@ -233,3 +233,15 @@ Corrected logcopter rollout scope: saved reusable inventory/adoption scripts and
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/scripts/12-adopt-logcopter-package-loggers.sh — Reusable mechanical adoption script for generated package loggers
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/33-logcopter-adoption-final-inventory.tsv — Final evidence that target repositories now have generated logcopter files and checks
 
+
+## 2026-05-28
+
+Added ggg GitHub Actions status helpers (, ) with guide, tests, and release-train validation artifacts.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/batch/actions.go — Batch actions status command
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/run/status.go — Single-repository actions status command
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/pkg/actionstatus/actionstatus.go — GitHub Actions run collection and classification
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/design-doc/03-ggg-github-actions-status-helper-implementation-guide.md — Implementation guide and command contract
+
