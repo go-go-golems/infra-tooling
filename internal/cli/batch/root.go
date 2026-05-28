@@ -12,6 +12,6 @@ func NewCommand() (*cobra.Command, error) {
 	if err != nil {
 		return nil, err
 	}
-	root.AddCommand(ready, comments)
+	root.AddCommand(ready, comments, newActionsCommand())
 	return root, nil
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/go-go-golems/infra-tooling/internal/cli/pr"
 	"github.com/go-go-golems/infra-tooling/internal/cli/release"
 	"github.com/go-go-golems/infra-tooling/internal/cli/rollout"
+	"github.com/go-go-golems/infra-tooling/internal/cli/run"
 	"github.com/spf13/cobra"
 )
 
@@ -30,11 +31,15 @@ func NewRootCommand() (*cobra.Command, error) {
 	if err != nil {
 		return nil, err
 	}
+	runCmd, err := run.NewCommand()
+	if err != nil {
+		return nil, err
+	}
 	rolloutCmd, err := rollout.NewCommand()
 	if err != nil {
 		return nil, err
 	}
-	root.AddCommand(prCmd, releaseCmd, batchCmd, rolloutCmd)
+	root.AddCommand(prCmd, releaseCmd, batchCmd, runCmd, rolloutCmd)
 	root.AddCommand(&cobra.Command{Use: "repo", Short: "Repository dependency and validation commands (planned)"})
 	root.AddCommand(&cobra.Command{Use: "train", Short: "Release-train orchestration commands (planned)"})
 	return root, nil
