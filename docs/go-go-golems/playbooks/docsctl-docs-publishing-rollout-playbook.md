@@ -339,12 +339,22 @@ The PR description should include:
 
 Docs publishing runs on tag push. A workflow file merged to `main` is not enough proof; the publish job must run in the release/tag context because Vault roles bind release tag claims.
 
-After merge, create or reuse the normal release process. Prefer the `ggg` release helpers for Go modules because they compute the next semantic version, push the tag, and verify the module through `proxy.golang.org`:
+After merge, create or reuse the normal release process. Prefer the `ggg` release helpers for Go modules because they compute the next semantic version, push the tag, and verify the module through `proxy.golang.org`.
+
+Run release preflight before creating a durable public tag:
 
 ```bash
+ggg release preflight --output json
+```
+
+Preflight checks for common tag-time failures such as stale `.goreleaser.yaml` placeholders, missing `main:` paths, CGO-disabled tree-sitter builds, and frontend `go generate` hooks that need pnpm setup. Use `--strict` if warnings should block the release.
+
+Then tag:
+
+```bash
+ggg release tag-patch --dry-run --yes --output json
 ggg release tag-patch --yes --output json
-# or: ggg release tag-minor --yes --output json
-# or: ggg release tag-major --yes --output json
+# or: ggg release tag-minor/tag-major --yes --output json
 ```
 
 Use `--dry-run --yes --output json` first when you want to inspect the exact tag and commit before pushing. The command tags the target commit directly and should not leave your worktree in detached HEAD state.

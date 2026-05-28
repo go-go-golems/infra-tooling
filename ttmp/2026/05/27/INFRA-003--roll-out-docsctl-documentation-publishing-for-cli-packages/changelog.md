@@ -202,3 +202,14 @@ Completed docs publication for css-visual-diff and go-go-goja after release work
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/28-final-docsctl-published-packages-summary.txt — Final published package summary
 - /tmp/go-go-goja-release-fix/.goreleaser.yaml — GoReleaser fixes for docs-published v0.6.3
 
+
+## 2026-05-27
+
+Added ggg release preflight and amended the rollout automation article with INFRA-003 lessons.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/go-go-parc/Projects/2026/05/27/ARTICLE - ggg Rollout Automation - Real-World Testing and Implementation.md — Obsidian article addendum
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/release/preflight.go — Release preflight command
+- /home/manuel/code/wesen/go-go-golems/infra-tooling/internal/cli/release/preflight_test.go — Preflight regression tests
+

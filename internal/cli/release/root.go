@@ -11,6 +11,6 @@ func NewCommand() (*cobra.Command, error) {
 		}
 		root.AddCommand(cmd)
 	}
-	root.AddCommand(newWatchCommand(), newVerifyDocsCommand())
+	root.AddCommand(newWatchCommand(), newVerifyDocsCommand(), newPreflightCommand())
 	return root, nil
 }

@@ -1196,3 +1196,61 @@ The final successful docs-published versions are `css-visual-diff v0.1.5` and `g
   - css-visual-diff `2f01366`, `4d4f668`
   - go-go-goja `e61327b`, `abf0a95`
 - Review final verification artifacts in `sources/26-*`, `sources/27-*`, and `sources/28-*`.
+
+## Step 20: Add release preflight and amend the rollout automation article
+
+I added `ggg release preflight`, documented it in the release playbooks, and amended the Obsidian article about `ggg` rollout automation with the INFRA-003 release/docs publishing lessons.
+
+This command is the direct follow-up to the failed `css-visual-diff` and `go-go-goja` tags: it checks the repository before a durable public tag is created and reports the kinds of mistakes that caused those failed releases.
+
+### Prompt Context
+
+**User prompt (verbatim):** "add it, continue"
+
+**Assistant interpretation:** Implement the release preflight command suggested by the final publication report, update durable docs, and continue hardening the rollout workflow.
+
+**Inferred user intent:** Prevent future rollout releases from repeating the failed-tag problems found during INFRA-003.
+
+**Commit (code):** pending — "Add release preflight checks"
+
+### What I did
+- Added `internal/cli/release/preflight.go`.
+- Added `internal/cli/release/preflight_test.go`.
+- Registered `ggg release preflight` in `internal/cli/release/root.go`.
+- Updated docsctl and package release-train playbooks to run preflight before tagging.
+- Amended the Obsidian article:
+  - `/home/manuel/code/wesen/go-go-golems/go-go-parc/Projects/2026/05/27/ARTICLE - ggg Rollout Automation - Real-World Testing and Implementation.md`
+- Saved preflight validation artifacts:
+  - `sources/29-release-preflight-css-visual-diff.json`
+  - `sources/30-release-preflight-go-go-goja.json`
+
+### Why
+- Failed tags are permanent public release history.
+- The rollout exposed predictable failure classes: stale GoReleaser placeholders, missing command paths, CGO-disabled tree-sitter builds, and frontend generation without pnpm dependencies.
+
+### What worked
+- `go test ./...` passes with new preflight tests.
+- `css-visual-diff` now preflights cleanly.
+- `go-go-goja` reports warnings for frontend/pnpm heuristics but no blocking errors after the release fixes.
+
+### What didn't work
+- The first main-path regex did not match YAML list items such as `- main: ./cmd/XXX`; the test caught this and I fixed the regex to allow an optional list dash.
+
+### What I learned
+- Release preflight should classify some findings as warnings because static heuristics cannot always know which frontend package a `go generate` hook actually uses.
+
+### What was tricky to build
+- The command has to be useful without becoming a full GoReleaser interpreter. It intentionally uses targeted, evidence-backed checks based on real rollout failures.
+
+### What warrants a second pair of eyes
+- The frontend/pnpm heuristic may be noisy in repositories with unrelated web directories. Review whether it should inspect `go:generate` files more deeply before warning.
+
+### What should be done in the future
+- Add a batch release preflight command for repo lists.
+- Add richer GoReleaser parsing if more release config failure modes appear.
+
+### Code review instructions
+- Review `internal/cli/release/preflight.go` and `preflight_test.go`.
+- Run:
+  - `go test ./...`
+  - `ggg release preflight --repo <repo> --output json`

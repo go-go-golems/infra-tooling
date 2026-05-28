@@ -83,12 +83,15 @@ git describe origin/main --tags --always
 
 If `origin/main` is ahead of the latest tag and downstream needs those commits, publish a new release before proceeding downstream.
 
-For Go module releases, prefer:
+For Go module releases, run preflight before creating any tag, then tag:
 
 ```bash
+ggg release preflight --output json
 ggg release tag-patch --dry-run --yes --output json
 ggg release tag-patch --yes --output json
 ```
+
+Use `ggg release preflight --strict` when you want warnings (for example frontend generation or pnpm setup warnings) to block the release until reviewed.
 
 If the package also publishes docs through docsctl, watch the release and verify the docs URL:
 

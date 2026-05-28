@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "repo": "/tmp/go-go-goja-release-fix",
+  "findings": [
+    {
+      "severity": "warning",
+      "code": "generate_frontend_without_pnpm_setup",
+      "message": "GoReleaser runs go generate and frontend package(s) exist, but release workflow does not set up pnpm",
+      "file": "/tmp/go-go-goja-release-fix/.github/workflows/release.yaml",
+      "hint": "Add pnpm/action-setup before GoReleaser or remove frontend generation from release hooks."
+    },
+    {
+      "severity": "warning",
+      "code": "generate_frontend_without_install",
+      "message": "Frontend package may need dependencies before go generate: web",
+      "file": "/tmp/go-go-goja-release-fix/.github/workflows/release.yaml",
+      "hint": "Install dependencies with `pnpm --dir web install --frozen-lockfile` before GoReleaser."
+    }
+  ]
+}
