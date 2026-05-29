@@ -21,10 +21,21 @@ REQUIRED_TARGET_KEYS = {
     "gitops_repo",
     "gitops_branch",
     "manifest_path",
-    "container_name",
 }
 
 OPTIONAL_TARGET_KEYS = {
+    "container_name",
+    "patch_strategy",
+    "images",
+}
+
+REQUIRED_TARGET_IMAGE_KEYS = {
+    "container_name",
+}
+
+OPTIONAL_TARGET_IMAGE_KEYS = {
+    "image_name",
+    "image",
     "patch_strategy",
 }
 
@@ -62,13 +73,51 @@ def run(
     return subprocess.run(cmd, **kwargs)
 
 
-def load_targets(config_path: Path) -> list[dict[str, str]]:
+def normalize_target_image(raw_image: Any, raw_target: dict[str, Any]) -> dict[str, str]:
+    if not isinstance(raw_image, dict):
+        raise ValueError(f"target {raw_target!r} has non-object image entry {raw_image!r}")
+
+    missing = sorted(REQUIRED_TARGET_IMAGE_KEYS - set(raw_image))
+    if missing:
+        raise ValueError(
+            f"target {raw_target!r} image entry {raw_image!r} is missing keys: {', '.join(missing)}"
+        )
+
+    image = {key: str(raw_image[key]).strip() for key in REQUIRED_TARGET_IMAGE_KEYS}
+    for key in OPTIONAL_TARGET_IMAGE_KEYS:
+        if key in raw_image:
+            image[key] = str(raw_image[key]).strip()
+
+    empty_values = sorted(key for key, value in image.items() if not value)
+    if empty_values:
+        raise ValueError(
+            f"target {raw_target!r} image entry {raw_image!r} has empty values for keys: "
+            f"{', '.join(empty_values)}"
+        )
+
+    if "image" in image and "image_name" in image:
+        raise ValueError(
+            f"target {raw_target!r} image entry {raw_image!r} must use either image or image_name, not both"
+        )
+
+    patch_strategy = image.get("patch_strategy", raw_target.get("patch_strategy", "container-image"))
+    if patch_strategy not in SUPPORTED_PATCH_STRATEGIES:
+        supported = ", ".join(sorted(SUPPORTED_PATCH_STRATEGIES))
+        raise ValueError(
+            f"target {raw_target!r} image entry {raw_image!r} has unsupported patch_strategy "
+            f"{patch_strategy!r}; supported values: {supported}"
+        )
+    image["patch_strategy"] = patch_strategy
+    return image
+
+
+def load_targets(config_path: Path) -> list[dict[str, Any]]:
     payload = json.loads(config_path.read_text(encoding="utf-8"))
     targets = payload.get("targets", [])
     if not isinstance(targets, list) or not targets:
         raise ValueError(f"no targets defined in {config_path}")
 
-    normalized: list[dict[str, str]] = []
+    normalized: list[dict[str, Any]] = []
     seen_names: set[str] = set()
     for raw_target in targets:
         if not isinstance(raw_target, dict):
@@ -77,16 +126,23 @@ def load_targets(config_path: Path) -> list[dict[str, str]]:
         if missing:
             raise ValueError(f"target {raw_target!r} is missing keys: {', '.join(missing)}")
 
-        target = {key: str(raw_target[key]).strip() for key in REQUIRED_TARGET_KEYS}
+        target: dict[str, Any] = {key: str(raw_target[key]).strip() for key in REQUIRED_TARGET_KEYS}
         for key in OPTIONAL_TARGET_KEYS:
-            if key in raw_target:
+            if key in raw_target and key != "images":
                 target[key] = str(raw_target[key]).strip()
 
-        empty_values = sorted(key for key, value in target.items() if not value)
+        empty_values = sorted(key for key, value in target.items() if isinstance(value, str) and not value)
         if empty_values:
             raise ValueError(
                 f"target {raw_target!r} has empty values for keys: {', '.join(empty_values)}"
             )
+
+        has_legacy_container = "container_name" in target
+        has_images = "images" in raw_target
+        if has_legacy_container and has_images:
+            raise ValueError(f"target {raw_target!r} must use either container_name or images, not both")
+        if not has_legacy_container and not has_images:
+            raise ValueError(f"target {raw_target!r} must define container_name or images")
 
         patch_strategy = target.get("patch_strategy", "container-image")
         if patch_strategy not in SUPPORTED_PATCH_STRATEGIES:
@@ -97,6 +153,21 @@ def load_targets(config_path: Path) -> list[dict[str, str]]:
             )
         target["patch_strategy"] = patch_strategy
 
+        if has_images:
+            raw_images = raw_target["images"]
+            if not isinstance(raw_images, list) or not raw_images:
+                raise ValueError(f"target {raw_target!r} images must be a non-empty list")
+            target_images = [normalize_target_image(raw_image, raw_target) for raw_image in raw_images]
+            seen_containers: set[str] = set()
+            for image_entry in target_images:
+                container_name = image_entry["container_name"]
+                if container_name in seen_containers:
+                    raise ValueError(
+                        f"target {raw_target!r} has duplicate image container_name {container_name!r}"
+                    )
+                seen_containers.add(container_name)
+            target["images"] = target_images
+
         if target["name"] in seen_names:
             raise ValueError(f"duplicate target name {target['name']!r} in {config_path}")
         seen_names.add(target["name"])
@@ -105,15 +176,15 @@ def load_targets(config_path: Path) -> list[dict[str, str]]:
     return normalized
 
 
-def validate_targets(config_path: Path) -> list[dict[str, str]]:
+def validate_targets(config_path: Path) -> list[dict[str, Any]]:
     return load_targets(config_path)
 
 
 def select_targets(
-    targets: list[dict[str, str]],
+    targets: list[dict[str, Any]],
     target_name: str | None,
     all_targets: bool,
-) -> list[dict[str, str]]:
+) -> list[dict[str, Any]]:
     if target_name and all_targets:
         raise ValueError("use either --target or --all-targets, not both")
     if all_targets:
@@ -271,25 +342,85 @@ def patch_static_publisher_job(
     return True, original, updated
 
 
-def patch_target_manifest(
+def image_with_tag(image_name: str, source_image: str) -> str:
+    if ":" not in source_image:
+        raise ValueError(
+            f"multi-image targets using image_name require --image to include a tag; got {source_image!r}"
+        )
+    return f"{image_name}:{source_image.rsplit(':', 1)[1]}"
+
+
+def resolve_target_image(image_entry: dict[str, str], source_image: str) -> str:
+    if "image" in image_entry:
+        return image_entry["image"]
+    if "image_name" in image_entry:
+        return image_with_tag(image_entry["image_name"], source_image)
+    return source_image
+
+
+def patch_one_image(
     manifest_path: Path,
-    target: dict[str, str],
+    original: str,
+    container_name: str,
     image: str,
-) -> tuple[bool, str, str]:
-    strategy = target.get("patch_strategy", "container-image")
+    strategy: str,
+) -> tuple[bool, str]:
     if strategy == "container-image":
-        return patch_manifest_image(
+        return replace_manifest_image_text(
             manifest_path=manifest_path,
-            container_name=target["container_name"],
+            original=original,
+            container_name=container_name,
             image=image,
         )
     if strategy == "static-publisher-job":
-        return patch_static_publisher_job(
+        new_release = release_from_image(image)
+        _, with_image = replace_manifest_image_text(
             manifest_path=manifest_path,
-            container_name=target["container_name"],
+            original=original,
+            container_name=container_name,
             image=image,
         )
+        releases = sorted(set(RELEASE_RE.findall(with_image)))
+        if not releases:
+            raise ValueError(f"no sha-* release token found in static publisher manifest {manifest_path}")
+        updated = RELEASE_RE.sub(new_release, with_image)
+        return updated != original, updated
     raise ValueError(f"unsupported patch_strategy {strategy!r}")
+
+
+def patch_target_manifest(
+    manifest_path: Path,
+    target: dict[str, Any],
+    image: str,
+) -> tuple[bool, str, str]:
+    original = manifest_path.read_text(encoding="utf-8")
+    updated = original
+    changed_any = False
+
+    if "images" in target:
+        for image_entry in target["images"]:
+            resolved_image = resolve_target_image(image_entry, image)
+            changed, updated = patch_one_image(
+                manifest_path=manifest_path,
+                original=updated,
+                container_name=image_entry["container_name"],
+                image=resolved_image,
+                strategy=image_entry.get("patch_strategy", target.get("patch_strategy", "container-image")),
+            )
+            changed_any = changed_any or changed
+    else:
+        changed_any, updated = patch_one_image(
+            manifest_path=manifest_path,
+            original=updated,
+            container_name=target["container_name"],
+            image=image,
+            strategy=target.get("patch_strategy", "container-image"),
+        )
+
+    if not changed_any:
+        return False, original, original
+    manifest_path.write_text(updated, encoding="utf-8")
+    return True, original, updated
 
 
 def ensure_git_identity(repo_dir: Path) -> None:
@@ -302,7 +433,7 @@ def ensure_git_identity(repo_dir: Path) -> None:
     run(["git", "config", "user.email", author_email], cwd=repo_dir)
 
 
-def get_existing_pr_number(repo_dir: Path, target: dict[str, str], branch_name: str) -> str:
+def get_existing_pr_number(repo_dir: Path, target: dict[str, Any], branch_name: str) -> str:
     return run(
         [
             "gh",
@@ -326,7 +457,7 @@ def get_existing_pr_number(repo_dir: Path, target: dict[str, str], branch_name: 
 
 def open_or_update_pr(
     repo_dir: Path,
-    target: dict[str, str],
+    target: dict[str, Any],
     branch_name: str,
     title: str,
     body: str,
@@ -357,7 +488,7 @@ def open_or_update_pr(
     return get_existing_pr_number(repo_dir, target, branch_name)
 
 
-def clone_repo(target: dict[str, str], token: str) -> Path:
+def clone_repo(target: dict[str, Any], token: str) -> Path:
     temp_dir = Path(tempfile.mkdtemp(prefix=f"gitops-{target['name']}-"))
     remote_url = f"https://x-access-token:{token}@github.com/{target['gitops_repo']}.git"
     run(
@@ -386,7 +517,24 @@ def render_diff(path: Path, original: str, updated: str) -> str:
     return "\n".join(diff)
 
 
-def build_pr_body(target: dict[str, str], image: str) -> str:
+def target_image_lines(target: dict[str, Any], image: str) -> list[str]:
+    if "images" not in target:
+        return [f"- Image: `{image}`"]
+    lines = ["- Images:"]
+    for image_entry in target["images"]:
+        resolved_image = resolve_target_image(image_entry, image)
+        lines.append(f"  - `{image_entry['container_name']}`: `{resolved_image}`")
+    return lines
+
+
+def rollback_line(target: dict[str, Any]) -> str:
+    if "images" in target:
+        containers = ", ".join(f"`{entry['container_name']}`" for entry in target["images"])
+        return f"- revert this PR merge, or open a new PR that resets {containers} to the previous immutable tags"
+    return f"- revert this PR merge, or open a new PR that resets `{target['container_name']}` to the previous immutable tag"
+
+
+def build_pr_body(target: dict[str, Any], image: str) -> str:
     source_repo = os.environ.get("GITHUB_REPOSITORY", "")
     source_sha = os.environ.get("GITHUB_SHA", "")
     workflow_run = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
@@ -395,7 +543,7 @@ def build_pr_body(target: dict[str, str], image: str) -> str:
     lines = [
         f"Automated image bump for `{target['name']}`.",
         "",
-        f"- Image: `{image}`",
+        *target_image_lines(target, image),
         f"- Target manifest: `{target['manifest_path']}`",
     ]
     if source_repo and source_sha:
@@ -406,7 +554,7 @@ def build_pr_body(target: dict[str, str], image: str) -> str:
         [
             "",
             "Rollback:",
-            f"- revert this PR merge, or open a new PR that resets `{target['container_name']}` to the previous immutable tag",
+            rollback_line(target),
         ]
     )
     return "\n".join(lines)
@@ -430,7 +578,7 @@ def append_github_outputs(
 
 
 def process_target(
-    target: dict[str, str],
+    target: dict[str, Any],
     image: str,
     gitops_repo_dir: Path | None,
     dry_run: bool,

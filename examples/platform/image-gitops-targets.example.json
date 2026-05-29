@@ -6,6 +6,26 @@
       "gitops_branch": "main",
       "manifest_path": "gitops/kustomize/my-app/deployment.yaml",
       "container_name": "my-app"
+    },
+    {
+      "name": "multi-container-app-prod",
+      "gitops_repo": "wesen/2026-03-27--hetzner-k3s",
+      "gitops_branch": "main",
+      "manifest_path": "gitops/kustomize/multi-container-app/deployment.yaml",
+      "images": [
+        {
+          "container_name": "app",
+          "image_name": "ghcr.io/example-org/app"
+        },
+        {
+          "container_name": "worker",
+          "image_name": "ghcr.io/example-org/app"
+        },
+        {
+          "container_name": "ssr",
+          "image_name": "ghcr.io/example-org/app-ssr"
+        }
+      ]
     }
   ]
 }

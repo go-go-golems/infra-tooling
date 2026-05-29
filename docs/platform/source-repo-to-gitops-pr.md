@@ -203,12 +203,18 @@ Each target describes:
 - `manifest_path`
   - YAML file containing the image field to update
 - `container_name`
-  - exact Kubernetes container name inside that manifest
+  - exact Kubernetes container name inside that manifest for the common single-image target shape
+- `images`
+  - optional multi-image target shape for deployments that must update several containers in one commit/PR
+  - mutually exclusive with top-level `container_name`
+  - each entry has `container_name` plus either `image_name` or `image`
+  - `image_name` reuses the tag from the workflow's published `image` input, which is useful when one commit publishes related images such as `app` and `app-ssr`
+  - `image` is an explicit full image reference for rare fixed-image cases
 - `patch_strategy` (optional)
   - `container-image` by default; updates only the named container's `image:` field
   - `static-publisher-job`; updates the named container image and rewrites every `sha-*` release token in the manifest to match the new immutable image tag
 
-Example:
+Single-container example:
 
 ```json
 {
@@ -223,6 +229,37 @@ Example:
   ]
 }
 ```
+
+Multi-container example:
+
+```json
+{
+  "targets": [
+    {
+      "name": "docs-yolo-prod",
+      "gitops_repo": "wesen/2026-03-27--hetzner-k3s",
+      "gitops_branch": "main",
+      "manifest_path": "gitops/kustomize/docs-yolo/deployment.yaml",
+      "images": [
+        {
+          "container_name": "docs-browser",
+          "image_name": "ghcr.io/go-go-golems/glazed"
+        },
+        {
+          "container_name": "docs-registry",
+          "image_name": "ghcr.io/go-go-golems/glazed"
+        },
+        {
+          "container_name": "docs-ssr",
+          "image_name": "ghcr.io/go-go-golems/glazed-ssr"
+        }
+      ]
+    }
+  ]
+}
+```
+
+If the workflow calls `open-gitops-pr` with `image=ghcr.io/go-go-golems/glazed:sha-1234567`, this target patches the first two containers to `ghcr.io/go-go-golems/glazed:sha-1234567` and the SSR container to `ghcr.io/go-go-golems/glazed-ssr:sha-1234567` in one GitOps commit and one pull request.
 
 ### Static publisher Job variant
 
