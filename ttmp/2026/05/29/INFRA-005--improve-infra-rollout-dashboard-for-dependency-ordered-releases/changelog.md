@@ -20,3 +20,11 @@
 - Populated 342 issue-log rows and 808 issue timeline steps.
 - Exported issue-log snapshots under `sources/07-repo-issue-log.csv`, `sources/08-repo-issue-steps.csv`, `sources/09-issue-log-summary.txt`, and `sources/10-sample-repo-issue-details.txt`.
 - Updated the dashboard analysis and design guide to include issue/fix history on repository detail pages.
+
+## 2026-05-29 19:15 UTC — Implemented first dependency-aware dashboard pages
+
+- Extended the INFRA-004 rollout tracker script with dependency/release CLI queries: `deps-modules`, `deps-edges`, `deps-release-order`, `deps-bumps`, `deps-scan`, `issue-list`, and `issue-refresh`.
+- Added dashboard routes for `/release-train`, `/bumps`, and `/repo?repo=<name>`.
+- Repository detail pages now render tracker state, dependencies, dependents, bump candidates, grouped issue/fix history, issue timelines, validations, and raw events.
+- Validated CLI queries and HTML render functions against the populated INFRA-004 SQLite DB.
+- Code commit: `0973b71b5807b87140be0719795e104fc4a01b00`.

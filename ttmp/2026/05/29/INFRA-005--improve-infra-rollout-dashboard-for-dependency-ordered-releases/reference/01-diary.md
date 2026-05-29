@@ -153,3 +153,102 @@ ttmp/2026/05/29/INFRA-005--improve-infra-rollout-dashboard-for-dependency-ordere
 - Release order layer counts:
   - `verified_unreleased_go_mod_direct`: layers 1/2/3 = 25/10/1
   - `verified_unreleased_tracker_upstreams`: layers 1/2/3 = 25/9/2
+
+## Step 2: Implement the First Dependency-Aware Dashboard Pages
+
+This step turned the dependency and issue-history tables into operator-facing views. The dashboard can now answer the first useful questions directly: what should be released in dependency order, what dependency bumps are available, and what happened to an individual repository during the rollout.
+
+The implementation deliberately stayed inside the existing small Python tracker. It adds plain HTML routes and CLI queries without introducing a frontend build, a web framework, or background jobs. That keeps the dashboard close to the SQLite database and preserves the fast operator workflow that worked during INFRA-004.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Add tasks to the ticket, then implement them task by task, committing at appropriate intervals, keeping a diary"
+
+**Assistant interpretation:** Add concrete INFRA-005 implementation tasks, complete the highest-value dashboard tasks in order, commit code and docs at sensible boundaries, and update the diary as work progresses.
+
+**Inferred user intent:** Move from design artifacts to working dashboard functionality while preserving reviewable commits and continuation-friendly ticket notes.
+
+**Commit (code):** `0973b71b5807b87140be0719795e104fc4a01b00` — "Add dependency dashboard views and CLI queries"
+
+### What I did
+
+- Added implementation-specific tasks to INFRA-005 and checked off the tasks completed by this step.
+- Extended `scripts/02-rollout-tracker.py` with dependency CLI commands:
+  - `deps-scan`
+  - `deps-modules`
+  - `deps-edges`
+  - `deps-release-order`
+  - `deps-bumps`
+- Added issue-history CLI commands:
+  - `issue-refresh`
+  - `issue-list`
+- Added dashboard routes:
+  - `/release-train`
+  - `/bumps`
+  - `/repo?repo=<name>`
+- Linked repository names from the overview table to the new repository detail route.
+- Rendered release layers from `release_order_layers`.
+- Rendered grouped bump candidates from `dependency_bump_candidates`.
+- Rendered repository detail pages from `repos`, `internal_dependency_edges`, `dependency_bump_candidates`, `repo_issue_log`, `repo_issue_steps`, `validations`, and `events`.
+- Validated the new script with `python -m py_compile` and smoke-tested CLI/render functions against the populated INFRA-004 DB.
+
+### Why
+
+- The most valuable dashboard improvement was to turn the database into an operator decision tool: release order, bump queue, and per-repository history.
+- The repo detail page needed grouped issue/fix history rather than only raw event rows.
+- CLI commands make the same data available outside the browser and are easier to test in ticket workflows.
+
+### What worked
+
+- `deps-release-order` prints the dependency-ordered release layers from the SQLite DB.
+- `deps-bumps --dependency parka` correctly shows downstream consumers such as `escuse-me` and `sqleton`.
+- `issue-list --repo smailnail` shows grouped issue/fix categories including workflow YAML, Glazed lint, govulncheck, logcopter, and main verification.
+- Direct calls to `html_release_train`, `html_bumps`, and `html_repo_detail(..., "smailnail")` all rendered non-empty HTML without exceptions.
+
+### What didn't work
+
+- N/A for the implementation itself. The main caveat is that `repo_issue_log` is heuristic because it is derived from existing event/validation text.
+
+### What I learned
+
+- The existing dashboard can be extended substantially without a framework if query/render code is kept simple and route-specific.
+- The issue-history tables make repository pages far more useful than raw events alone, but classification quality depends on how consistently future events are written.
+- Keeping dependency and issue refresh as explicit commands is safer than refreshing them on every browser request.
+
+### What was tricky to build
+
+- The tricky part was keeping the old overview route intact while adding richer pages. I avoided changing the existing data model for `repos` and instead made the new routes optional: if derived tables are missing, the page tells the operator what scanner to run.
+- The repository page pulls from many tables. I kept it read-only and bounded raw events/validations to recent rows so the page remains useful even for noisy repositories.
+
+### What warrants a second pair of eyes
+
+- Review the HTML rendering for escaping and route behavior. The implementation uses `html.escape`, but this should be checked because dashboard rows include free-form event text.
+- Review whether the new CLI command names should be kept as top-level commands or grouped under a future nested `deps`/`issues` subcommand.
+- Review the generated bump command snippets; they intentionally do not try to infer every repository-specific validation command.
+
+### What should be done in the future
+
+- Add logcopter and Glazed health panels.
+- Add blocked/skipped backlog and failure-classification views.
+- Add tests around query/render helpers using a small fixture SQLite DB.
+
+### Code review instructions
+
+- Start with `scripts/02-rollout-tracker.py` around the new `html_release_train`, `html_bumps`, `html_repo_detail`, `deps_*_cmd`, and `issue_list_cmd` functions.
+- Validate with:
+
+```bash
+python -m py_compile ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/scripts/02-rollout-tracker.py
+python ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/scripts/02-rollout-tracker.py deps-release-order
+python ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/scripts/02-rollout-tracker.py deps-bumps --dependency parka
+python ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/scripts/02-rollout-tracker.py issue-list --repo smailnail
+```
+
+### Technical details
+
+- New routes are served by the existing `dashboard` command:
+  - `http://127.0.0.1:8765/release-train`
+  - `http://127.0.0.1:8765/bumps`
+  - `http://127.0.0.1:8765/repo?repo=smailnail`
+- The dependency refresh command invokes the INFRA-005 dependency scanner by default.
+- The issue refresh command invokes the INFRA-005 issue-log scanner by default.
