@@ -1,0 +1,8 @@
+train_name                             layer  c 
+-------------------------------------  -----  --
+verified_unreleased_go_mod_direct      1      25
+verified_unreleased_go_mod_direct      2      10
+verified_unreleased_go_mod_direct      3      1 
+verified_unreleased_tracker_upstreams  1      25
+verified_unreleased_tracker_upstreams  2      9 
+verified_unreleased_tracker_upstreams  3      2 

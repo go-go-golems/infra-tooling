@@ -1,0 +1,9 @@
+category     status  c  
+-----------  ------  ---
+glazed_lint  fail    17 
+glazed_lint  pass    137
+glazed_lint  skip    39 
+glazed_lint  warn    52 
+logcopter    fail    22 
+logcopter    pass    287
+logcopter    warn    69 

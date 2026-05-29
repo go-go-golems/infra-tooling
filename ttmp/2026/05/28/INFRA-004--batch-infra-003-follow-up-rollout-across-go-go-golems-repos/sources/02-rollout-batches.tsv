@@ -1,0 +1,71 @@
+batch	repo	logcopter	docsctl	glazed_lint	xgoja	module	first_party_upstreams
+B1	logcopter	yes				github.com/go-go-golems/logcopter	-
+B1	bobatea	yes				github.com/go-go-golems/bobatea	geppetto
+B1	common-sense	yes		yes		github.com/go-go-golems/common-sense	glazed
+B1	dmeta	yes		yes		github.com/go-go-golems/dmeta	glazed,logcopter
+B1	esper	yes		yes		github.com/go-go-golems/esper	glazed,logcopter
+B1	go-go-os-backend	yes				github.com/go-go-golems/go-go-os-backend	go-go-goja
+B1	go-sqlite-regexp	yes				github.com/go-go-golems/go-sqlite-regexp	-
+B1	infra-tooling	yes		yes		github.com/go-go-golems/infra-tooling	glazed,logcopter
+B1	sanitize	yes		yes		github.com/go-go-golems/sanitize	glazed
+B2	ai-in-action-app	yes				github.com/go-go-golems/ai-in-action-app	logcopter
+B2	barbar	yes				github.com/go-go-golems/barbar	-
+B2	bubble-table	yes				github.com/evertras/bubble-table	-
+B2	go-go-agent-action	yes				github.com/go-go-golems/go-go-agent-action	logcopter
+B2	go-go-app-arc-agi	yes				github.com/go-go-golems/go-go-app-arc-agi	go-go-os-backend,logcopter
+B2	go-go-app-sqlite	yes				github.com/go-go-golems/go-go-app-sqlite	logcopter
+B2	go-go-host	yes				github.com/go-go-golems/XXX	glazed,go-go-goja,logcopter
+B2	oak-git-db	yes				github.com/go-go-golems/oak-git-db	logcopter
+B2	raza	yes				github.com/wesen/raza	-
+B2	salad	yes				github.com/go-go-golems/salad	logcopter
+B2	terraform-provider-stytch-b2b	yes				github.com/mento/terraform-provider-stytch-b2b	-
+B2	voyage	yes				github.com/go-go-golems/voyage	-
+B3	markdown-quizz	yes		yes		github.com/go-go-golems/XXX	glazed
+B3	plunger	yes		yes		github.com/go-go-golems/plunger	clay,glazed
+B3	refactorio	yes		yes		github.com/go-go-golems/refactorio	glazed,oak
+B3	go-go-app-inventory	yes		yes		github.com/go-go-golems/go-go-app-inventory	geppetto,glazed,go-go-goja,go-go-os-backend,pinocchio,plz-confirm
+B4	almanach	yes	yes	yes		github.com/go-go-golems/almanach	glazed
+B4	biberon	yes	yes	yes		github.com/go-go-golems/biberon	glazed
+B4	bucheron	yes	yes	yes		github.com/go-go-golems/bucheron	glazed
+B4	codex-sessions	yes	yes	yes		github.com/go-go-golems/codex-session	glazed
+B4	devctl	yes	yes	yes		github.com/go-go-golems/devctl	glazed
+B4	docmgr	yes	yes	yes		github.com/go-go-golems/docmgr	glazed
+B4	font-util	yes	yes	yes		github.com/go-go-golems/font-util	glazed
+B4	gitcommit	yes	yes	yes		github.com/go-go-golems/gitcommit	glazed
+B4	go-emrichen	yes	yes	yes		github.com/go-go-golems/go-emrichen	glazed
+B4	harkonnen	yes	yes	yes		github.com/go-go-golems/harkonnen	glazed
+B4	openai-mock-server	yes	yes	yes		mock-openai-server	glazed
+B4	sessionstream	yes	yes	yes		github.com/go-go-golems/sessionstream	glazed
+B4	tactician	yes	yes	yes		github.com/go-go-golems/tactician	glazed
+B4	cliopatra	yes	yes	yes		github.com/go-go-golems/cliopatra	clay,glazed
+B4	ecrivain	yes	yes	yes		github.com/go-go-golems/ecrivain	clay,glazed
+B4	js-analyzer	yes	yes	yes		github.com/go-go-golems/js-analyzer	glazed,go-go-goja
+B4	mastoid	yes	yes	yes		github.com/go-go-golems/mastoid	clay,glazed
+B4	parka	yes	yes	yes		github.com/go-go-golems/parka	clay,glazed
+B4	plz-confirm	yes	yes	yes		github.com/go-go-golems/plz-confirm	glazed,go-go-goja
+B4	prescribe	yes	yes	yes		github.com/go-go-golems/prescribe	geppetto,glazed
+B4	prompto	yes	yes	yes		github.com/go-go-golems/prompto	clay,glazed
+B4	remarquee	yes	yes	yes		github.com/go-go-golems/remarquee	geppetto,glazed
+B4	uhoh	yes	yes	yes		github.com/go-go-golems/uhoh	clay,glazed
+B4	vault-envrc-generator	yes	yes	yes		github.com/go-go-golems/vault-envrc-generator	clay,glazed
+B4	zine-layout	yes	yes	yes		github.com/go-go-golems/zine-layout	glazed,go-emrichen
+B4	go-go-mcp	yes	yes	yes		github.com/go-go-golems/go-go-mcp	clay,geppetto,glazed
+B4	oak	yes	yes	yes		github.com/go-go-golems/oak	bobatea,clay,glazed
+B4	sqleton	yes	yes	yes		github.com/go-go-golems/sqleton	clay,glazed,parka
+B4	form-generator	yes	yes	yes		github.com/go-go-golems/form-generator	clay,glazed,sqleton,uhoh
+B4	escuse-me	yes	yes	yes		github.com/go-go-golems/escuse-me	clay,geppetto,glazed,go-emrichen,parka
+B4	web-agent-example	yes	yes	yes		github.com/go-go-golems/web-agent-example	clay,geppetto,glazed,go-go-goja,pinocchio
+B4	go-go-agent	yes	yes	yes		github.com/go-go-golems/go-go-agent	bobatea,clay,geppetto,glazed,go-emrichen,pinocchio
+B4	jesus	yes	yes	yes		github.com/go-go-golems/jesus	clay,geppetto,glazed,go-go-goja,go-go-mcp,pinocchio
+B4	geppetto		yes			github.com/go-go-golems/geppetto	glazed,go-emrichen,go-go-goja,logcopter,sanitize
+B5	cozodb-goja	yes		yes	yes	github.com/go-go-golems/cozodb-goja	glazed,go-go-goja
+B5	go-go-gepa	yes	yes	yes	yes	github.com/go-go-golems/go-go-gepa	clay,geppetto,glazed,go-go-goja,go-go-os-backend
+B5	go-go-goja				yes	github.com/go-go-golems/go-go-goja	bobatea,geppetto,glazed,logcopter
+B5	go-minitrace				yes	github.com/go-go-golems/go-minitrace	clay,glazed,go-go-goja,logcopter
+B5	goja-github-actions	yes	yes	yes	yes	github.com/go-go-golems/goja-github-actions	glazed,go-go-goja
+B5	openai-app-server	yes		yes	yes	github.com/go-go-golems/openai-app-server	glazed,go-go-goja
+B5	pinocchio				yes	github.com/go-go-golems/pinocchio	bobatea,clay,geppetto,glazed,go-go-goja,logcopter,sanitize,sessionstream,uhoh
+B5	scraper	yes	yes	yes	yes	github.com/go-go-golems/scraper	glazed,go-go-goja,sessionstream
+B5	smailnail	yes	yes	yes	yes	github.com/go-go-golems/smailnail	clay,geppetto,glazed,go-go-goja,go-go-mcp
+B5	vm-system	yes	yes	yes	yes	github.com/go-go-golems/vm-system	glazed,go-go-goja
+B5	workspace-manager				yes	github.com/go-go-golems/workspace-manager	clay,glazed,go-go-goja,logcopter

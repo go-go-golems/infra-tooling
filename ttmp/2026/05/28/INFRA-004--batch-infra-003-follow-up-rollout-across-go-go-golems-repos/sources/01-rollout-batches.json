@@ -1,0 +1,1094 @@
+{
+  "root": "/home/manuel/code/wesen/go-go-golems",
+  "inventory": "/home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/27/INFRA-003--roll-out-docsctl-documentation-publishing-for-cli-packages/sources/41-repository-follow-up-inventory.json",
+  "batches": [
+    {
+      "id": "B1",
+      "name": "foundation and upstream libraries",
+      "policy": "Run first where needed as dependencies; avoid downstream PRs until these are merged/released.",
+      "repos": [
+        {
+          "repo": "logcopter",
+          "path": "/home/manuel/code/wesen/go-go-golems/logcopter",
+          "module": "github.com/go-go-golems/logcopter",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": []
+        },
+        {
+          "repo": "bobatea",
+          "path": "/home/manuel/code/wesen/go-go-golems/bobatea",
+          "module": "github.com/go-go-golems/bobatea",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "geppetto"
+          ]
+        },
+        {
+          "repo": "common-sense",
+          "path": "/home/manuel/code/wesen/go-go-golems/common-sense",
+          "module": "github.com/go-go-golems/common-sense",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "dmeta",
+          "path": "/home/manuel/code/wesen/go-go-golems/dmeta",
+          "module": "github.com/go-go-golems/dmeta",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "logcopter"
+          ]
+        },
+        {
+          "repo": "esper",
+          "path": "/home/manuel/code/wesen/go-go-golems/esper",
+          "module": "github.com/go-go-golems/esper",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "logcopter"
+          ]
+        },
+        {
+          "repo": "go-go-os-backend",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-go-os-backend",
+          "module": "github.com/go-go-golems/go-go-os-backend",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "go-go-goja"
+          ]
+        },
+        {
+          "repo": "go-sqlite-regexp",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-sqlite-regexp",
+          "module": "github.com/go-go-golems/go-sqlite-regexp",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": []
+        },
+        {
+          "repo": "infra-tooling",
+          "path": "/home/manuel/code/wesen/go-go-golems/infra-tooling",
+          "module": "github.com/go-go-golems/infra-tooling",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "logcopter"
+          ]
+        },
+        {
+          "repo": "sanitize",
+          "path": "/home/manuel/code/wesen/go-go-golems/sanitize",
+          "module": "github.com/go-go-golems/sanitize",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B2",
+      "name": "leaf logcopter-only repositories",
+      "policy": "Low API risk; one baseline PR per repo, run validation, merge before release train tagging.",
+      "repos": [
+        {
+          "repo": "ai-in-action-app",
+          "path": "/home/manuel/code/wesen/go-go-golems/ai-in-action-app",
+          "module": "github.com/go-go-golems/ai-in-action-app",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "logcopter"
+          ]
+        },
+        {
+          "repo": "barbar",
+          "path": "/home/manuel/code/wesen/go-go-golems/barbar",
+          "module": "github.com/go-go-golems/barbar",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": []
+        },
+        {
+          "repo": "bubble-table",
+          "path": "/home/manuel/code/wesen/go-go-golems/bubble-table",
+          "module": "github.com/evertras/bubble-table",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": []
+        },
+        {
+          "repo": "go-go-agent-action",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-go-agent-action",
+          "module": "github.com/go-go-golems/go-go-agent-action",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "logcopter"
+          ]
+        },
+        {
+          "repo": "go-go-app-arc-agi",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-go-app-arc-agi",
+          "module": "github.com/go-go-golems/go-go-app-arc-agi",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "go-go-os-backend",
+            "logcopter"
+          ]
+        },
+        {
+          "repo": "go-go-app-sqlite",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-go-app-sqlite",
+          "module": "github.com/go-go-golems/go-go-app-sqlite",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "logcopter"
+          ]
+        },
+        {
+          "repo": "go-go-host",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-go-host",
+          "module": "github.com/go-go-golems/XXX",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "go-go-goja",
+            "logcopter"
+          ]
+        },
+        {
+          "repo": "oak-git-db",
+          "path": "/home/manuel/code/wesen/go-go-golems/oak-git-db",
+          "module": "github.com/go-go-golems/oak-git-db",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "logcopter"
+          ]
+        },
+        {
+          "repo": "raza",
+          "path": "/home/manuel/code/wesen/go-go-golems/raza",
+          "module": "github.com/wesen/raza",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": []
+        },
+        {
+          "repo": "salad",
+          "path": "/home/manuel/code/wesen/go-go-golems/salad",
+          "module": "github.com/go-go-golems/salad",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "logcopter"
+          ]
+        },
+        {
+          "repo": "terraform-provider-stytch-b2b",
+          "path": "/home/manuel/code/wesen/go-go-golems/terraform-provider-stytch-b2b",
+          "module": "github.com/mento/terraform-provider-stytch-b2b",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": []
+        },
+        {
+          "repo": "voyage",
+          "path": "/home/manuel/code/wesen/go-go-golems/voyage",
+          "module": "github.com/go-go-golems/voyage",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": []
+        }
+      ]
+    },
+    {
+      "id": "B3",
+      "name": "Glazed linting without docsctl",
+      "policy": "Add glazed-lint with logcopter where safe; no docs publish/Vault work.",
+      "repos": [
+        {
+          "repo": "markdown-quizz",
+          "path": "/home/manuel/code/wesen/go-go-golems/markdown-quizz",
+          "module": "github.com/go-go-golems/XXX",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "plunger",
+          "path": "/home/manuel/code/wesen/go-go-golems/plunger",
+          "module": "github.com/go-go-golems/plunger",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "glazed"
+          ]
+        },
+        {
+          "repo": "refactorio",
+          "path": "/home/manuel/code/wesen/go-go-golems/refactorio",
+          "module": "github.com/go-go-golems/refactorio",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "oak"
+          ]
+        },
+        {
+          "repo": "go-go-app-inventory",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-go-app-inventory",
+          "module": "github.com/go-go-golems/go-go-app-inventory",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "geppetto",
+            "glazed",
+            "go-go-goja",
+            "go-go-os-backend",
+            "pinocchio",
+            "plz-confirm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B4",
+      "name": "docsctl + Glazed CLI leaf packages",
+      "policy": "Add docsctl release job only after local help export/validate succeeds and Vault role is ready.",
+      "repos": [
+        {
+          "repo": "almanach",
+          "path": "/home/manuel/code/wesen/go-go-golems/almanach",
+          "module": "github.com/go-go-golems/almanach",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "biberon",
+          "path": "/home/manuel/code/wesen/go-go-golems/biberon",
+          "module": "github.com/go-go-golems/biberon",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "bucheron",
+          "path": "/home/manuel/code/wesen/go-go-golems/bucheron",
+          "module": "github.com/go-go-golems/bucheron",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "codex-sessions",
+          "path": "/home/manuel/code/wesen/go-go-golems/codex-sessions",
+          "module": "github.com/go-go-golems/codex-session",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "devctl",
+          "path": "/home/manuel/code/wesen/go-go-golems/devctl",
+          "module": "github.com/go-go-golems/devctl",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "docmgr",
+          "path": "/home/manuel/code/wesen/go-go-golems/docmgr",
+          "module": "github.com/go-go-golems/docmgr",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "font-util",
+          "path": "/home/manuel/code/wesen/go-go-golems/font-util",
+          "module": "github.com/go-go-golems/font-util",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "gitcommit",
+          "path": "/home/manuel/code/wesen/go-go-golems/gitcommit",
+          "module": "github.com/go-go-golems/gitcommit",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "go-emrichen",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-emrichen",
+          "module": "github.com/go-go-golems/go-emrichen",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "harkonnen",
+          "path": "/home/manuel/code/wesen/go-go-golems/harkonnen",
+          "module": "github.com/go-go-golems/harkonnen",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "openai-mock-server",
+          "path": "/home/manuel/code/wesen/go-go-golems/openai-mock-server",
+          "module": "mock-openai-server",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "sessionstream",
+          "path": "/home/manuel/code/wesen/go-go-golems/sessionstream",
+          "module": "github.com/go-go-golems/sessionstream",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "tactician",
+          "path": "/home/manuel/code/wesen/go-go-golems/tactician",
+          "module": "github.com/go-go-golems/tactician",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed"
+          ]
+        },
+        {
+          "repo": "cliopatra",
+          "path": "/home/manuel/code/wesen/go-go-golems/cliopatra",
+          "module": "github.com/go-go-golems/cliopatra",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "glazed"
+          ]
+        },
+        {
+          "repo": "ecrivain",
+          "path": "/home/manuel/code/wesen/go-go-golems/ecrivain",
+          "module": "github.com/go-go-golems/ecrivain",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "glazed"
+          ]
+        },
+        {
+          "repo": "js-analyzer",
+          "path": "/home/manuel/code/wesen/go-go-golems/js-analyzer",
+          "module": "github.com/go-go-golems/js-analyzer",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "go-go-goja"
+          ]
+        },
+        {
+          "repo": "mastoid",
+          "path": "/home/manuel/code/wesen/go-go-golems/mastoid",
+          "module": "github.com/go-go-golems/mastoid",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "glazed"
+          ]
+        },
+        {
+          "repo": "parka",
+          "path": "/home/manuel/code/wesen/go-go-golems/parka",
+          "module": "github.com/go-go-golems/parka",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "glazed"
+          ]
+        },
+        {
+          "repo": "plz-confirm",
+          "path": "/home/manuel/code/wesen/go-go-golems/plz-confirm",
+          "module": "github.com/go-go-golems/plz-confirm",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "go-go-goja"
+          ]
+        },
+        {
+          "repo": "prescribe",
+          "path": "/home/manuel/code/wesen/go-go-golems/prescribe",
+          "module": "github.com/go-go-golems/prescribe",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "geppetto",
+            "glazed"
+          ]
+        },
+        {
+          "repo": "prompto",
+          "path": "/home/manuel/code/wesen/go-go-golems/prompto",
+          "module": "github.com/go-go-golems/prompto",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "glazed"
+          ]
+        },
+        {
+          "repo": "remarquee",
+          "path": "/home/manuel/code/wesen/go-go-golems/remarquee",
+          "module": "github.com/go-go-golems/remarquee",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "geppetto",
+            "glazed"
+          ]
+        },
+        {
+          "repo": "uhoh",
+          "path": "/home/manuel/code/wesen/go-go-golems/uhoh",
+          "module": "github.com/go-go-golems/uhoh",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "glazed"
+          ]
+        },
+        {
+          "repo": "vault-envrc-generator",
+          "path": "/home/manuel/code/wesen/go-go-golems/vault-envrc-generator",
+          "module": "github.com/go-go-golems/vault-envrc-generator",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "glazed"
+          ]
+        },
+        {
+          "repo": "zine-layout",
+          "path": "/home/manuel/code/wesen/go-go-golems/zine-layout",
+          "module": "github.com/go-go-golems/zine-layout",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "go-emrichen"
+          ]
+        },
+        {
+          "repo": "go-go-mcp",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-go-mcp",
+          "module": "github.com/go-go-golems/go-go-mcp",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "geppetto",
+            "glazed"
+          ]
+        },
+        {
+          "repo": "oak",
+          "path": "/home/manuel/code/wesen/go-go-golems/oak",
+          "module": "github.com/go-go-golems/oak",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "bobatea",
+            "clay",
+            "glazed"
+          ]
+        },
+        {
+          "repo": "sqleton",
+          "path": "/home/manuel/code/wesen/go-go-golems/sqleton",
+          "module": "github.com/go-go-golems/sqleton",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "glazed",
+            "parka"
+          ]
+        },
+        {
+          "repo": "form-generator",
+          "path": "/home/manuel/code/wesen/go-go-golems/form-generator",
+          "module": "github.com/go-go-golems/form-generator",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "glazed",
+            "sqleton",
+            "uhoh"
+          ]
+        },
+        {
+          "repo": "escuse-me",
+          "path": "/home/manuel/code/wesen/go-go-golems/escuse-me",
+          "module": "github.com/go-go-golems/escuse-me",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "geppetto",
+            "glazed",
+            "go-emrichen",
+            "parka"
+          ]
+        },
+        {
+          "repo": "web-agent-example",
+          "path": "/home/manuel/code/wesen/go-go-golems/web-agent-example",
+          "module": "github.com/go-go-golems/web-agent-example",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "geppetto",
+            "glazed",
+            "go-go-goja",
+            "pinocchio"
+          ]
+        },
+        {
+          "repo": "go-go-agent",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-go-agent",
+          "module": "github.com/go-go-golems/go-go-agent",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "bobatea",
+            "clay",
+            "geppetto",
+            "glazed",
+            "go-emrichen",
+            "pinocchio"
+          ]
+        },
+        {
+          "repo": "jesus",
+          "path": "/home/manuel/code/wesen/go-go-golems/jesus",
+          "module": "github.com/go-go-golems/jesus",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "clay",
+            "geppetto",
+            "glazed",
+            "go-go-goja",
+            "go-go-mcp",
+            "pinocchio"
+          ]
+        },
+        {
+          "repo": "geppetto",
+          "path": "/home/manuel/code/wesen/go-go-golems/geppetto",
+          "module": "github.com/go-go-golems/geppetto",
+          "flags": {
+            "logcopter": false,
+            "docsctl": true,
+            "glazed_lint": false,
+            "xgoja": false
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "go-emrichen",
+            "go-go-goja",
+            "logcopter",
+            "sanitize"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B5",
+      "name": "xgoja provider/API-intent candidates",
+      "policy": "Do not implement provider bindings until API intent is confirmed; may still do logcopter/glazed baseline separately.",
+      "repos": [
+        {
+          "repo": "cozodb-goja",
+          "path": "/home/manuel/code/wesen/go-go-golems/cozodb-goja",
+          "module": "github.com/go-go-golems/cozodb-goja",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": true,
+            "xgoja": true
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "go-go-goja"
+          ]
+        },
+        {
+          "repo": "go-go-gepa",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-go-gepa",
+          "module": "github.com/go-go-golems/go-go-gepa",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": true
+          },
+          "first_party_upstreams": [
+            "clay",
+            "geppetto",
+            "glazed",
+            "go-go-goja",
+            "go-go-os-backend"
+          ]
+        },
+        {
+          "repo": "go-go-goja",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-go-goja",
+          "module": "github.com/go-go-golems/go-go-goja",
+          "flags": {
+            "logcopter": false,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": true
+          },
+          "first_party_upstreams": [
+            "bobatea",
+            "geppetto",
+            "glazed",
+            "logcopter"
+          ]
+        },
+        {
+          "repo": "go-minitrace",
+          "path": "/home/manuel/code/wesen/go-go-golems/go-minitrace",
+          "module": "github.com/go-go-golems/go-minitrace",
+          "flags": {
+            "logcopter": false,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": true
+          },
+          "first_party_upstreams": [
+            "clay",
+            "glazed",
+            "go-go-goja",
+            "logcopter"
+          ]
+        },
+        {
+          "repo": "goja-github-actions",
+          "path": "/home/manuel/code/wesen/go-go-golems/goja-github-actions",
+          "module": "github.com/go-go-golems/goja-github-actions",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": true
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "go-go-goja"
+          ]
+        },
+        {
+          "repo": "openai-app-server",
+          "path": "/home/manuel/code/wesen/go-go-golems/openai-app-server",
+          "module": "github.com/go-go-golems/openai-app-server",
+          "flags": {
+            "logcopter": true,
+            "docsctl": false,
+            "glazed_lint": true,
+            "xgoja": true
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "go-go-goja"
+          ]
+        },
+        {
+          "repo": "pinocchio",
+          "path": "/home/manuel/code/wesen/go-go-golems/pinocchio",
+          "module": "github.com/go-go-golems/pinocchio",
+          "flags": {
+            "logcopter": false,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": true
+          },
+          "first_party_upstreams": [
+            "bobatea",
+            "clay",
+            "geppetto",
+            "glazed",
+            "go-go-goja",
+            "logcopter",
+            "sanitize",
+            "sessionstream",
+            "uhoh"
+          ]
+        },
+        {
+          "repo": "scraper",
+          "path": "/home/manuel/code/wesen/go-go-golems/scraper",
+          "module": "github.com/go-go-golems/scraper",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": true
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "go-go-goja",
+            "sessionstream"
+          ]
+        },
+        {
+          "repo": "smailnail",
+          "path": "/home/manuel/code/wesen/go-go-golems/smailnail",
+          "module": "github.com/go-go-golems/smailnail",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": true
+          },
+          "first_party_upstreams": [
+            "clay",
+            "geppetto",
+            "glazed",
+            "go-go-goja",
+            "go-go-mcp"
+          ]
+        },
+        {
+          "repo": "vm-system",
+          "path": "/home/manuel/code/wesen/go-go-golems/vm-system",
+          "module": "github.com/go-go-golems/vm-system",
+          "flags": {
+            "logcopter": true,
+            "docsctl": true,
+            "glazed_lint": true,
+            "xgoja": true
+          },
+          "first_party_upstreams": [
+            "glazed",
+            "go-go-goja"
+          ]
+        },
+        {
+          "repo": "workspace-manager",
+          "path": "/home/manuel/code/wesen/go-go-golems/workspace-manager",
+          "module": "github.com/go-go-golems/workspace-manager",
+          "flags": {
+            "logcopter": false,
+            "docsctl": false,
+            "glazed_lint": false,
+            "xgoja": true
+          },
+          "first_party_upstreams": [
+            "clay",
+            "glazed",
+            "go-go-goja",
+            "logcopter"
+          ]
+        }
+      ]
+    }
+  ]
+}

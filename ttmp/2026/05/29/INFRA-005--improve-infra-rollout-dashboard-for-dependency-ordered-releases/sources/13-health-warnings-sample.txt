@@ -1,0 +1,122 @@
+repo                           category     check_key                     status  summary                                                details                                                    
+-----------------------------  -----------  ----------------------------  ------  -----------------------------------------------------  -----------------------------------------------------------
+biberon                        glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+bucheron                       glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+common-sense                   glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+cozodb-goja                    glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+devctl                         glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+ecrivain                       glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+gitcommit                      glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+go-go-gepa                     glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+goja-github-actions            glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+infra-tooling                  glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+markdown-quizz                 glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+mastoid                        glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+openai-app-server              glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+plunger                        glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+plz-confirm                    glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+scraper                        glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+vm-system                      glazed_lint  make_target                   fail    Makefile glazed-lint target missing                                                                               
+barbar                         logcopter    make_check_target             fail    Makefile logcopter-check target missing                                                                           
+barbar                         logcopter    require_version               fail    logcopter require missing                                                                                         
+biberon                        logcopter    make_check_target             fail    Makefile logcopter-check target missing                                                                           
+biberon                        logcopter    require_version               fail    logcopter require missing                                                                                         
+bubble-table                   logcopter    make_check_target             fail    Makefile logcopter-check target missing                                                                           
+bubble-table                   logcopter    require_version               fail    logcopter require missing                                                                                         
+bucheron                       logcopter    make_check_target             fail    Makefile logcopter-check target missing                                                                           
+bucheron                       logcopter    require_version               fail    logcopter require missing                                                                                         
+common-sense                   logcopter    make_check_target             fail    Makefile logcopter-check target missing                                                                           
+common-sense                   logcopter    require_version               fail    logcopter require missing                                                                                         
+ecrivain                       logcopter    make_check_target             fail    Makefile logcopter-check target missing                                                                           
+ecrivain                       logcopter    require_version               fail    logcopter require missing                                                                                         
+infra-tooling                  logcopter    make_check_target             fail    Makefile logcopter-check target missing                                                                           
+logcopter                      logcopter    make_check_target             fail    Makefile logcopter-check target missing                                                                           
+plunger                        logcopter    make_check_target             fail    Makefile logcopter-check target missing                                                                           
+plunger                        logcopter    require_version               fail    logcopter require missing                                                                                         
+raza                           logcopter    make_check_target             fail    Makefile logcopter-check target missing                                                                           
+raza                           logcopter    require_version               fail    logcopter require missing                                                                                         
+terraform-provider-stytch-b2b  logcopter    make_check_target             fail    Makefile logcopter-check target missing                                                                           
+terraform-provider-stytch-b2b  logcopter    require_version               fail    logcopter require missing                                                                                         
+voyage                         logcopter    make_check_target             fail    Makefile logcopter-check target missing                                                                           
+voyage                         logcopter    require_version               fail    logcopter require missing                                                                                         
+biberon                        glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+biberon                        glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+biberon                        glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+bucheron                       glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+bucheron                       glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+bucheron                       glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+common-sense                   glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+common-sense                   glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+common-sense                   glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+cozodb-goja                    glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+cozodb-goja                    glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+cozodb-goja                    glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+devctl                         glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+devctl                         glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+devctl                         glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+ecrivain                       glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+ecrivain                       glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+ecrivain                       glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+gitcommit                      glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+gitcommit                      glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+gitcommit                      glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+go-go-gepa                     glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+go-go-gepa                     glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+go-go-gepa                     glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+go-go-mcp                      glazed_lint  allow_paths                   warn    GLAZED_LINT_ALLOW_PATHS exists without nearby comment  cmd/apps/scholarly/cmd/,cmd/go-go-mcp/cmds/,pkg/embeddable/
+goja-github-actions            glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+goja-github-actions            glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+goja-github-actions            glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+infra-tooling                  glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+infra-tooling                  glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+infra-tooling                  glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+markdown-quizz                 glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+markdown-quizz                 glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+markdown-quizz                 glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+mastoid                        glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+mastoid                        glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+mastoid                        glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+openai-app-server              glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+openai-app-server              glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+openai-app-server              glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+plunger                        glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+plunger                        glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+plunger                        glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+plz-confirm                    glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+plz-confirm                    glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+plz-confirm                    glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+scraper                        glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+scraper                        glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+scraper                        glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+vm-system                      glazed_lint  analyzer_package              warn    glazed-lint analyzer package not found                                                                            
+vm-system                      glazed_lint  package_patterns              warn    glazed-lint package patterns not detected                                                                         
+vm-system                      glazed_lint  version_pin                   warn    GLAZED_VERSION not found                                                                                          
+ai-in-action-app               logcopter    generate_check_package_match  warn    logcopter generate/check package lists differ          generate=./...; check=./cmd/... ./internal/...             
+almanach                       logcopter    generate_file                 warn    logcopter_generate.go missing                                                                                     
+barbar                         logcopter    generate_file                 warn    logcopter_generate.go missing                                                                                     
+barbar                         logcopter    make_generate_target          warn    Makefile logcopter-generate target missing                                                                        
+barbar                         logcopter    tool_directive                warn    logcopter tool directive missing                                                                                  
+biberon                        logcopter    generate_file                 warn    logcopter_generate.go missing                                                                                     
+biberon                        logcopter    make_generate_target          warn    Makefile logcopter-generate target missing                                                                        
+biberon                        logcopter    tool_directive                warn    logcopter tool directive missing                                                                                  
+bobatea                        logcopter    generate_file                 warn    logcopter_generate.go missing                                                                                     
+bubble-table                   logcopter    generate_file                 warn    logcopter_generate.go missing                                                                                     
+bubble-table                   logcopter    make_generate_target          warn    Makefile logcopter-generate target missing                                                                        
+bubble-table                   logcopter    tool_directive                warn    logcopter tool directive missing                                                                                  
+bucheron                       logcopter    generate_file                 warn    logcopter_generate.go missing                                                                                     
+bucheron                       logcopter    make_generate_target          warn    Makefile logcopter-generate target missing                                                                        
+bucheron                       logcopter    tool_directive                warn    logcopter tool directive missing                                                                                  
+codex-sessions                 logcopter    generate_file                 warn    logcopter_generate.go missing                                                                                     
+common-sense                   logcopter    generate_file                 warn    logcopter_generate.go missing                                                                                     
+common-sense                   logcopter    make_generate_target          warn    Makefile logcopter-generate target missing                                                                        
+common-sense                   logcopter    tool_directive                warn    logcopter tool directive missing                                                                                  
+cozodb-goja                    logcopter    generate_check_package_match  warn    logcopter generate/check package lists differ          generate=./...; check=./cmd/... ./pkg/...                  
+dmeta                          logcopter    generate_check_package_match  warn    logcopter generate/check package lists differ          generate=./...; check=./cmd/... ./pkg/...                  
+ecrivain                       logcopter    generate_file                 warn    logcopter_generate.go missing                                                                                     
+ecrivain                       logcopter    make_generate_target          warn    Makefile logcopter-generate target missing                                                                        
+ecrivain                       logcopter    tool_directive                warn    logcopter tool directive missing                                                                                  
+esper                          logcopter    generate_check_package_match  warn    logcopter generate/check package lists differ          generate=./...; check=./cmd/... ./pkg/...                  
+font-util                      logcopter    generate_file                 warn    logcopter_generate.go missing                                                                                     
+form-generator                 logcopter    generate_file                 warn    logcopter_generate.go missing                                                                                     
+go-go-agent                    logcopter    generate_file                 warn    logcopter_generate.go missing                                                                                     
+go-go-agent-action             logcopter    generate_check_package_match  warn    logcopter generate/check package lists differ          generate=./...; check=./internal/... ./cmd/...             
