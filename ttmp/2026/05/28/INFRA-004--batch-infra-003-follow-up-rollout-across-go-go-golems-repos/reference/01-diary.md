@@ -25,7 +25,7 @@ RelatedFiles:
       Note: Persistent rollout progress database
 ExternalSources: []
 Summary: Chronological diary for INFRA-004 batch rollout work.
-LastUpdated: 2026-05-29T00:50:00-04:00
+LastUpdated: 2026-05-29T01:15:00-04:00
 WhatFor: Use this diary to resume INFRA-004 work, audit commands run, and capture PR/release outcomes.
 WhenToUse: Before continuing the rollout or reviewing failures/fixes.
 ---
@@ -860,3 +860,98 @@ GOWORK=off go vet ./...  # check reflect.Ptr findings
 - 8 PRs remaining open, all with pre-existing CI failures.
 - 22 repos released total (15 B1/B2/B5 + 7 B3/B4 this session).
 - Session stats: ~30 repos touched, ~15 go.mod bumps, ~30 CI workflow patches, ~8 lint code fixes.
+
+## Step 10: Opened remaining planned logcopter baselines (15 new PRs)
+
+I opened logcopter baseline PRs for all 18 remaining non-xgoja planned repos in a single batch, using the established pattern (branch, generate, CI alignment, go 1.26.3 bump, commit, push, PR, trigger Codex). Three repos were skipped: mastoid (archived), logcopter (self-referential), geppetto (docsctl-only track). The remaining 15 all had successful local validation and PR creation.
+
+### Prompt Context
+
+**User prompt (verbatim):** "continue updating and creating PRs on all those still planned, so that we can get that work out of the way now. wait for the xgoja ones, but the rest are ok."
+
+**Assistant interpretation:** Open logcopter baseline PRs for all remaining planned repos except the 4 xgoja repos (go-go-goja, go-minitrace, pinocchio, workspace-manager).
+
+**Inferred user intent:** Get all non-xgoja logcopter baseline work into PRs now so CI can start running and Codex can begin reviewing in parallel.
+
+**Commit (code):** 15 per-repo commits on `infra/b5-logcopter-baseline` branches.
+
+### What I did
+
+- Processed 18 repos in 3 batches of 5–6:
+  - **Batch 1:** bobatea #97, go-go-os-backend #6, almanach #3, codex-sessions #2, font-util #1
+  - **Batch 2:** form-generator #1, go-go-agent #6, go-go-mcp #82, js-analyzer #1, mastoid (archived, skipped)
+  - **Batch 3:** prescribe #9, prompto #58, sessionstream #6, tactician #3, uhoh #8, vault-envrc-generator #9, web-agent-example #2, zine-layout #6
+- Each repo received the same treatment:
+  - `go 1.26.3` directive bump
+  - logcopter dependency + tool addition
+  - logcopter-gen package logger generation
+  - Makefile targets (logcopter-generate, logcopter-check)
+  - CI workflow alignment (03-fix-ci-workflows.py)
+  - `.golangci-lint-version` set to v2.12.2
+  - `version:` → `version-file:` in lint.yml
+  - gosec Docker → go install migration
+  - `golang.org/x/net` upgrade to latest
+  - `go mod tidy`
+  - Local validation (logcopter-check + go test)
+- Skipped 3 repos:
+  - `mastoid`: GitHub repository is archived/read-only
+  - `logcopter`: Self-referential (can't add logcopter to logcopter itself)
+  - `geppetto`: docsctl-only track, no logcopter work needed
+- Updated tracker after each PR creation.
+
+### Why
+
+- Opening all PRs at once allows CI to run in parallel and Codex to review concurrently.
+- The user explicitly said to get this work out of the way now.
+- xgoja repos (go-go-goja, go-minitrace, pinocchio, workspace-manager) are deferred per user instruction.
+
+### What worked
+
+- All 15 repos had successful local validation and PR creation.
+- The batch pattern was efficient: each repo took ~1–2 minutes of wall time.
+- No module path mismatches in this batch (all repos use `github.com/go-go-golems/$repo`).
+- `go mod tidy` and `go get golang.org/x/net@latest` resolved dependency upgrades cleanly.
+- js-analyzer has no `.github/workflows/` directory — the script correctly handled this case.
+
+### What didn't work
+
+- mastoid is archived — `git push` failed with "Repository was archived so it is read-only" and `gh pr create` returned a GraphQL error. Had to mark as skipped.
+- The batch function doesn't persist between bash calls — had to inline the full logic each time.
+
+### What I learned
+
+- The go-template canonical CI pattern is now well-established and applied consistently across all repos.
+- The `golang.org/x/net` upgrade to v0.55.0 is needed on most repos for GO-2026-5026.
+- Archived repos (mastoid, voyage) cannot receive PRs and must be excluded from the rollout.
+
+### What was tricky to build
+
+- The batch processing loop requires careful handling of repos without workflows, without Makefiles, or with different module paths. The inline bash approach handles this with `2>/dev/null` guards.
+- Ensuring the `gofmt` step only runs on generated files (not the entire repo).
+
+### What warrants a second pair of eyes
+
+- Verify the logcopter-gen `-area-prefix` and `-strip-prefix` are correct for each repo.
+- Check that js-analyzer (no CI workflows) is correctly handled — it will need CI workflows added separately.
+
+### What should be done in the future
+
+- Wait for CI to complete on all 25 open PRs and merge the ready ones.
+- Add CI workflows to js-analyzer (currently has none).
+- Process xgoja repos when user is ready.
+
+### Code review instructions
+
+- Check the PR list for all 15 new PRs:
+```bash
+python3 scripts/02-rollout-tracker.py list --state pr_open
+```
+- Spot-check 2–3 repos for correct logcopter generation and CI alignment.
+
+### Technical details
+
+- **15 new PRs opened:** bobatea #97, go-go-os-backend #6, almanach #3, codex-sessions #2, font-util #1, form-generator #1, go-go-agent #6, go-go-mcp #82, js-analyzer #1, prescribe #9, prompto #58, sessionstream #6, tactician #3, uhoh #8, vault-envrc-generator #9, web-agent-example #2, zine-layout #6
+- **3 skipped:** mastoid (archived), logcopter (self-referential), geppetto (docsctl-only)
+- **4 deferred (xgoja):** go-go-goja, go-minitrace, pinocchio, workspace-manager
+- **Total PRs now open:** 25 (8 from previous waves + 15 new + 2 B1)
+- **Total released:** 22

@@ -84,3 +84,12 @@ Merging wave: merged and tagged 7 repos (parka v0.6.2, go-go-app-inventory v0.0.
 ### Related Files
 
 - /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/05-rollout-progress.sqlite — Updated tracker with 22 released repos
+
+## 2026-05-29
+
+Opened logcopter baseline PRs for all 15 remaining non-xgoja planned repos (bobatea, go-go-os-backend, almanach, codex-sessions, font-util, form-generator, go-go-agent, go-go-mcp, js-analyzer, prescribe, prompto, sessionstream, tactician, uhoh, vault-envrc-generator, web-agent-example, zine-layout). Skipped mastoid (archived), logcopter (self-referential), geppetto (docsctl-only). All 25 PRs now in CI/Codex review.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/reference/01-diary.md — Step 10: Batch PR opening
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/05-rollout-progress.sqlite — Updated tracker with 25 open PRs
