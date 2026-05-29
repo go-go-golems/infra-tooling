@@ -171,3 +171,9 @@ Step 14: switched the active P1 loop to `ggg` readiness, merged fourteen `ggg`-r
 - Migrated `oak` command loading/runtime code from old Glazed `layers`/`parameters` APIs to current `schema`/`fields`/`values` APIs.
 - Updated `cmd/oak-repl` to the current bobatea REPL streaming/event-bus API.
 - Pushed `oak` main commits `d7a45ae` and `fb1251d`, verified rollout-relevant CI gates, and released `oak v0.5.3`.
+
+## 2026-05-29 18:48 UTC — Released refactorio after oak bump
+
+- Bumped `refactorio` from `oak v0.5.2` to `oak v0.5.3`.
+- Validated logcopter, glazed-lint, tests, and CI-pinned golangci-lint locally.
+- Pushed `refactorio` commit `3e9142b`, verified rollout-relevant main checks, and released `refactorio v0.0.1`.

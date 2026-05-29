@@ -1770,3 +1770,86 @@ cmd/oak/commands/root.go:40:8: SA1019: clay.InitViper is deprecated: Use InitGla
 
 - Release evidence file: `sources/release-train-20260529-layer2/releases.tsv`.
 - Release URL: https://github.com/go-go-golems/oak/releases/tag/v0.5.3
+
+## Step 18: Released Refactorio After the Oak Bump
+
+With `oak v0.5.3` available, I finished the dependent `refactorio` release. This was the straightforward version of the release-train loop: bump one upstream module, tidy, run the local gates, push, poll CI, create a release, and update the tracker.
+
+No application code changes were needed in `refactorio`. The only repository changes were `go.mod` and `go.sum`, moving from `oak v0.5.2` to `oak v0.5.3`.
+
+### Prompt Context
+
+**User prompt (verbatim):** "continue"
+
+**Assistant interpretation:** Continue the dependency-ordered release train after the Oak migration/release, starting with the now-unblocked `refactorio` dependent.
+
+**Inferred user intent:** Keep moving through low-complexity release train tasks: bump, validate, push, poll CI, tag/release, and record results.
+
+**Commit (code):** `3e9142bcafb57deeac39e22b208befe4596ae8ad` — "Bump oak to v0.5.3"
+
+### What I did
+
+- Updated `/home/manuel/code/wesen/go-go-golems/refactorio` from `github.com/go-go-golems/oak v0.5.2` to `v0.5.3`.
+- Ran:
+
+```bash
+GOWORK=off go get github.com/go-go-golems/oak@v0.5.3
+GOWORK=off go mod tidy
+make logcopter-check
+make glazed-lint
+GOWORK=off go test ./...
+GOWORK=off go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run --timeout=5m
+```
+
+- Committed and pushed `refactorio` commit `3e9142bcafb57deeac39e22b208befe4596ae8ad`.
+- Watched GitHub Actions on that commit:
+  - `golang-pipeline`: success
+  - `golangci-lint`: success
+  - `Secret Scanning`: failure, treated as unrelated to the rollout Go/lint/security baseline
+- Created release `refactorio v0.0.1`:
+  - https://github.com/go-go-golems/refactorio/releases/tag/v0.0.1
+- Updated the SQLite tracker and appended release evidence to `sources/release-train-20260529-layer2/releases.tsv`.
+
+### Why
+
+- `refactorio` is a Layer 3 dependent of `oak`; it should consume the newly released Oak tag before being released.
+- This keeps the release train dependency-converged for the Oak/refactorio chain.
+
+### What worked
+
+- The `oak v0.5.3` bump was clean and only changed `go.mod` / `go.sum`.
+- Local logcopter, glazed-lint, tests, and CI-version golangci-lint passed.
+- GitHub `golang-pipeline` and `golangci-lint` passed on the pushed commit.
+- `refactorio v0.0.1` was created successfully.
+
+### What didn't work
+
+- GitHub Secret Scanning failed again, consistent with earlier unrelated secret-scanning failures observed during INFRA-004. I did not treat it as a blocker for this rollout release because the established gate for this work is Go/lint/dependency verification, not the unrelated secret-scanning workflow.
+
+### What I learned
+
+- Once Oak was migrated and released, the downstream `refactorio` bump did not expose additional Glazed or Bobatea compatibility issues.
+- `refactorio` had no semver tags, so the release train initialized it at `v0.0.1`.
+
+### What was tricky to build
+
+- N/A. This was a mechanical bump/release after the Oak migration.
+
+### What warrants a second pair of eyes
+
+- Review whether secret-scanning failures should be fixed in a separate security operations ticket, since they are recurring but out of scope for the Go/lint release train gate.
+
+### What should be done in the future
+
+- Continue the Layer 2 release queue for other dependents whose upstreams are now tagged.
+- Regenerate or inspect release-order state after this tracker update to decide the next best repository.
+
+### Code review instructions
+
+- Review `/home/manuel/code/wesen/go-go-golems/refactorio/go.mod` and `/home/manuel/code/wesen/go-go-golems/refactorio/go.sum`.
+- Validate with the local commands listed above.
+- Confirm release URL: https://github.com/go-go-golems/refactorio/releases/tag/v0.0.1
+
+### Technical details
+
+- Release evidence file: `sources/release-train-20260529-layer2/releases.tsv`.
