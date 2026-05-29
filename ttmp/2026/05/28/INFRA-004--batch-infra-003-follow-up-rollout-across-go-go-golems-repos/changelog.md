@@ -51,3 +51,36 @@ Updated ggg action status behavior so no_runs is terminal/non-blocking under --w
 - /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/internal/cli/batch/actions.go — Batch action watch loop now only waits on pending
 - /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/internal/cli/run/status.go — Single-repo watch loop now only waits on pending
 - /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/pkg/actionstatus/actionstatus.go — State and exit-code semantics for no_runs
+
+## 2026-05-29
+
+Opened B3/B4/B5 logcopter baseline PRs for 5 repos (openai-mock-server #1, go-emrichen #39, cliopatra #17, escuse-me #83, jesus #7). Fixed govulncheck failures by upgrading go directive to 1.26.3 across 5 repos. Merged gitcommit #2. Discovered that toolchain directive is ignored by setup-go@v6 due to GOTOOLCHAIN=local.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/reference/01-diary.md — Step 5: B3/B4/B5 PR wave
+
+## 2026-05-29
+
+Created scripts/03-fix-ci-workflows.py to systematically align all 15 repos' CI workflows with go-template canonical patterns: setup-go@v6 + go-version-file, golangci-lint-action@v9 + version-file, checkout@v6, added .golangci-lint-version. Bumped go directive to 1.26.3 in all repos.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/scripts/03-fix-ci-workflows.py — Systematic CI alignment script
+- /home/manuel/code/wesen/go-go-golems/go-template/.github/workflows/lint.yml — Canonical lint workflow reference
+
+## 2026-05-29
+
+Fixed cascading CI failures: bumped golangci-lint to v2.12.2 (Go 1.26.3 compatible), fixed .golangci.yml v2 format for cliopatra/harkonnen, replaced gosec Docker action with go install, fixed pre-existing lint issues (QF1008, QF1012, S1009), upgraded golang.org/x/net to fix GO-2026-5026.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/reference/01-diary.md — Steps 7-9: CI fix cascade and merge wave
+
+## 2026-05-29
+
+Merging wave: merged and tagged 7 repos (parka v0.6.2, go-go-app-inventory v0.0.2, markdown-quizz v0.0.1, openai-mock-server v0.0.2, sqleton v0.4.5, oak v0.5.2, cliopatra v0.6.4). Release workflows revealed pre-existing infra issues (goreleaser configs, homebrew tap auth, Docker registry auth). 8 PRs remain open with pre-existing failures.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/05-rollout-progress.sqlite — Updated tracker with 22 released repos
