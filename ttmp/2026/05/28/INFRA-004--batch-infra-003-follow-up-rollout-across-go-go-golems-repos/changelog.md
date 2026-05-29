@@ -102,3 +102,61 @@ Added glazed-lint Makefile targets to 31 repos and publish-docs release job to 1
 
 - /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/reference/01-diary.md — Step 11: glazed-lint + publish-docs
 - /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/scripts/04-add-glazed-lint-docsctl.py — Script for adding glazed-lint + docsctl
+
+## 2026-05-29
+
+Step 12: repaired P0 broken main push.yml workflows, fixed glazed-lint analyzer version issues, and verified latest main push.yml runs for almanach, form-generator, tactician, and web-agent-example.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/almanach/.github/workflows/push.yml — P0 main workflow repair
+- /home/manuel/code/wesen/go-go-golems/form-generator/.github/workflows/push.yml — P0 main workflow repair
+- /home/manuel/code/wesen/go-go-golems/tactician/.github/workflows/push.yml — P0 main workflow repair
+- /home/manuel/code/wesen/go-go-golems/web-agent-example/.github/workflows/push.yml — P0 main workflow repair
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/05-rollout-progress.sqlite — Updated dashboard source of truth after P0 verification
+
+
+## 2026-05-29
+
+Step 13: repaired P1 open PR branches, bumped stale glazed-lint analyzer pins, pushed branch fixes, and started CI triage for newly surfaced lint failures.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/reference/01-diary.md — Recorded P1 branch repair and CI triage
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/05-rollout-progress.sqlite — Updated PR branch head SHAs and P1 events
+
+
+## 2026-05-29
+
+Step 14: switched the active P1 loop to `ggg` readiness, merged fourteen `ggg`-ready PRs, fixed current-head Codex feedback and additional lint/glazed-lint blockers, and updated the SQLite dashboard tracker with merge SHAs, branch heads, Codex trigger events, and main workflow verification.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/reference/01-diary.md — Step 14 ggg-driven readiness, Codex feedback, and repair diary
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/05-rollout-progress.sqlite — Updated dashboard source of truth
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/06-open-prs.yaml — Tracker-derived open PR manifest for `ggg batch ready`
+
+## 2026-05-29 16:06 UTC — Closed remaining tracked open PRs
+
+- Repaired the remaining failed-check/Codex-feedback PRs using `ggg` readiness snapshots, current-head Codex comments, local validation, and targeted branch fixes.
+- Merged the final tracked open PRs with merge commits: codex-sessions #2, docmgr #38, font-util #1, go-go-mcp #82, refactorio #1, smailnail #4, bobatea #97, oak #47, openai-mock-server #2, vault-envrc-generator #9, and jesus #7.
+- Verified post-merge main rollout workflows for the merged repositories; unrelated secret scanning and image publish failures remain separate from Go/lint/security rollout verification.
+- Directly repaired smailnail main after merge with commits 1016b63 and c756253, then verified the main golang-pipeline succeeded.
+- Updated `sources/05-rollout-progress.sqlite`; `sources/06-open-prs.yaml` now contains no PR entries.
+
+## 2026-05-29 16:30 UTC — Added status and release-order report
+
+- Added `analysis/02-current-status-release-order-and-rollout-lessons.md`, an evidence-based report using the diary, SQLite tracker, ggg readiness logs, and changelog.
+- Documented the current tracker status, the dependency-aware release/bump order, logcopter implications, and the major rollout issues encountered.
+- Linked the report from `index.md` for ticket discoverability.
+
+## 2026-05-29 18:10 UTC — Added normalized internal dependency tables
+
+- Extended `sources/05-rollout-progress.sqlite` with normalized Go-Go-Golems dependency data for release-order and bump planning.
+- Added tables populated from local `go.mod` files: `internal_modules`, `internal_dependency_edges`, `release_order_layers`, and `dependency_bump_candidates`.
+- Created INFRA-005 to design dashboard improvements that expose these tables as release train, bump candidate, evidence, and health-check views.
+
+## 2026-05-29 18:40 UTC — Added derived issue/fix log tables
+
+- Extended `sources/05-rollout-progress.sqlite` with `repo_issue_log` and `repo_issue_steps` so repository detail pages can show grouped issues, fixes, validations, and source event references.
+- Populated the derived issue log from existing tracker `events` and `validations`: 342 issue rows and 808 issue timeline steps.

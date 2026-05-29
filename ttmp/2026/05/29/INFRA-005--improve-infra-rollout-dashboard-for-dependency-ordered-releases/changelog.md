@@ -1,0 +1,22 @@
+# Changelog
+
+## 2026-05-29
+
+- Initial workspace created
+
+
+## 2026-05-29 18:10 UTC — Initialized dependency-aware dashboard improvement ticket
+
+- Created INFRA-005 for dashboard improvements driven by INFRA-004 rollout operations.
+- Added `scripts/01-populate-internal-dependencies.py` and populated the INFRA-004 SQLite DB with normalized internal module/dependency data.
+- Added derived tables: `internal_modules`, `internal_dependency_edges`, `release_order_layers`, and `dependency_bump_candidates`.
+- Added analysis of dashboard improvement candidates and a design guide for dependency-aware release/bump workflows.
+- Exported CSV/text snapshots of the new dependency tables under `sources/`.
+
+## 2026-05-29 18:40 UTC — Added structured repository issue/fix history tables
+
+- Added `scripts/02-populate-repo-issue-log.py` to derive grouped repository issue records and issue timelines from tracker `events` and `validations`.
+- Extended the INFRA-004 SQLite DB with `repo_issue_log` and `repo_issue_steps`.
+- Populated 342 issue-log rows and 808 issue timeline steps.
+- Exported issue-log snapshots under `sources/07-repo-issue-log.csv`, `sources/08-repo-issue-steps.csv`, `sources/09-issue-log-summary.txt`, and `sources/10-sample-repo-issue-details.txt`.
+- Updated the dashboard analysis and design guide to include issue/fix history on repository detail pages.
