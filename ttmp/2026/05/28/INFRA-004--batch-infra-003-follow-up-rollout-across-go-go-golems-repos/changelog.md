@@ -165,3 +165,9 @@ Step 14: switched the active P1 loop to `ggg` readiness, merged fourteen `ggg`-r
 
 - Extended `sources/05-rollout-progress.sqlite` with `repo_health_checks` for lightweight logcopter and Glazed lint dashboard health panels.
 - Populated 623 health-check rows from local repository files.
+
+## 2026-05-29 18:35 UTC — Released oak after bobatea/glazed API bump
+
+- Migrated `oak` command loading/runtime code from old Glazed `layers`/`parameters` APIs to current `schema`/`fields`/`values` APIs.
+- Updated `cmd/oak-repl` to the current bobatea REPL streaming/event-bus API.
+- Pushed `oak` main commits `d7a45ae` and `fb1251d`, verified rollout-relevant CI gates, and released `oak v0.5.3`.
