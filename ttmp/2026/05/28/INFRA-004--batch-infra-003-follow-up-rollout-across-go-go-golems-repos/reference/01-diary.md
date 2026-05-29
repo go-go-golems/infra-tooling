@@ -1516,3 +1516,125 @@ By the end of this step, every tracked open PR from the Step 14 handoff had eith
   - `1016b6329309ee72bad17bd842539289fe50f34a` — fixed malformed `push.yml` test step.
   - `c756253204ca3f6a689f64d294273e28351599cd` — fixed main glazed-lint gate with sqlite tags and scoped allow paths.
 - Final tracker summary after this step showed no `pr_open` rows; newly merged/verified rows were set to `main_actions_verified`.
+
+## Step 16: Started the Dependency-Ordered Release Train
+
+I started the practical release train by tagging the Layer 1 repositories that unblock Layer 2 dependents. This was intentionally limited to low-complexity release mechanics: compute the next patch version, create GitHub releases at the verified `main` SHA, and update the SQLite tracker. No repository code was changed in this step.
+
+I stopped short of doing downstream `go.mod` bumps in this first step. Those bumps can reveal real dependency, API, or test failures; per the operator instruction, any significant development work or tricky feedback-driven issue should be escalated rather than solved blindly.
+
+### Prompt Context
+
+**User prompt (verbatim):** "do the release train, keep a diary, etc..."
+
+**User prompt (verbatim):** "if there is significant development work / a tricky issue to be addressed because of feedback or so, stop and let me know, so we can pull in someone that is more knowledgable. You are good at lower-complexity tasks like just bumping and polling and merging and tagging and parsing errors."
+
+**User prompt (verbatim):** "continue"
+
+**Assistant interpretation:** Begin the dependency-ordered release train, document each step, and restrict autonomous work to straightforward tagging, polling, bumping, and parsing. Stop if releases/bump validation expose non-trivial development problems.
+
+**Inferred user intent:** Publish the already-merged rollout work in dependency order while preserving an audit trail and avoiding unreviewed complex fixes.
+
+**Commit (code):** N/A — release-only tracker update in this repository; external GitHub releases were created.
+
+### What I did
+
+- Queried the release-order view with:
+
+```bash
+python ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/scripts/02-rollout-tracker.py deps-release-order
+```
+
+- Chose the Layer 1 repositories that directly unblock Layer 2 dependents:
+  - `bobatea`
+  - `go-emrichen`
+  - `go-go-mcp`
+  - `go-go-os-backend`
+  - `parka`
+  - `plz-confirm`
+  - `sessionstream`
+  - `uhoh`
+- Verified that each repository's latest tag was behind current `main`.
+- Created GitHub releases at current `main`:
+  - `bobatea` `v0.1.6` — https://github.com/go-go-golems/bobatea/releases/tag/v0.1.6
+  - `go-emrichen` `v0.0.11` — https://github.com/go-go-golems/go-emrichen/releases/tag/v0.0.11
+  - `go-go-mcp` `v0.0.19` — https://github.com/go-go-golems/go-go-mcp/releases/tag/v0.0.19
+  - `go-go-os-backend` `v0.0.6` — https://github.com/go-go-golems/go-go-os-backend/releases/tag/v0.0.6
+  - `parka` `v0.6.3` — https://github.com/go-go-golems/parka/releases/tag/v0.6.3
+  - `plz-confirm` `v0.0.5` — https://github.com/go-go-golems/plz-confirm/releases/tag/v0.0.5
+  - `sessionstream` `v0.0.6` — https://github.com/go-go-golems/sessionstream/releases/tag/v0.0.6
+  - `uhoh` `v0.0.9` — https://github.com/go-go-golems/uhoh/releases/tag/v0.0.9
+- Updated `sources/05-rollout-progress.sqlite` rows to `state='released'`, recorded tags, release URLs, `action_status='release_created'`, and inserted `release_created` events.
+- Saved a local TSV evidence file at `sources/release-train-20260529-layer1a/releases.tsv`.
+
+### Why
+
+- These Layer 1 repositories are upstreams for the Layer 2 bump queue.
+- Tagging them first gives downstream repositories stable module versions for `GOWORK=off go get`.
+- Starting with the unblocking subset reduces risk and provides a clear checkpoint before changing downstream `go.mod` files.
+
+### What worked
+
+- All eight `gh release create ... --target <main-sha> --generate-notes` commands succeeded.
+- The SQLite `repos` rows now show the new tags and release URLs.
+- `release_created` events were inserted after correcting the event table column names.
+
+### What didn't work
+
+- My first event insert used the wrong column names:
+
+```text
+Error: in prepare, table events has no column named event_type
+```
+
+- The actual schema is:
+
+```sql
+CREATE TABLE events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  repo TEXT REFERENCES repos(repo) ON DELETE CASCADE,
+  kind TEXT NOT NULL,
+  message TEXT NOT NULL,
+  url TEXT,
+  created_at TEXT NOT NULL
+);
+```
+
+- I corrected the insert to use `kind`, `message`, and `url`.
+
+### What I learned
+
+- Some repositories had tags newer than GitHub releases, so `gh release list` alone is not enough to determine the next tag. I used the Git tags API as the source for version selection.
+- The tracker's `events` schema is intentionally simple and uses `kind`, not `event_type`.
+
+### What was tricky to build
+
+- The only subtle point was tag selection. I avoided reusing release-list output because it can omit tags that exist without corresponding releases. The safer mechanical rule is: list Git tags, parse semver tags, increment the highest patch version, and create the release at current `main`.
+
+### What warrants a second pair of eyes
+
+- Before proceeding far into Layer 2, review whether downstream repositories should receive dependency-bump commits on `main` directly or via PRs. The release train report suggested bumping before tagging, but the operational preference for direct bumps vs PRs was not explicitly fixed.
+
+### What should be done in the future
+
+- Continue with Layer 2 bump candidates now that the upstream tags exist.
+- Stop and escalate if a downstream bump exposes API breakage, non-obvious test failures, or feedback that requires design judgment.
+
+### Code review instructions
+
+- Inspect the created releases listed above.
+- Inspect tracker state with:
+
+```bash
+sqlite3 ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/05-rollout-progress.sqlite \
+  "select repo,state,tag,release_url from repos where repo in ('bobatea','go-emrichen','go-go-mcp','go-go-os-backend','parka','plz-confirm','sessionstream','uhoh') order by repo;"
+```
+
+### Technical details
+
+- Evidence file: `sources/release-train-20260529-layer1a/releases.tsv`.
+- Release creation command shape:
+
+```bash
+gh release create "$next" -R "go-go-golems/$repo" --target "$main_sha" --title "$next" --generate-notes
+```
