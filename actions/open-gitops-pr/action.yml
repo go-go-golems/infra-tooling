@@ -2,10 +2,10 @@ name: open-gitops-pr
 description: Patch GitOps deployment manifests to a new immutable image and optionally open pull requests.
 inputs:
   config:
-    description: Path to deploy/gitops-targets.json inside the checked-out caller repository. Targets may set patch_strategy=static-publisher-job for one-shot static site publisher Jobs.
+    description: Path to deploy/gitops-targets.json inside the checked-out caller repository. Targets may set patch_strategy=static-publisher-job for one-shot static site publisher Jobs, or images=[...] for multi-container rollouts.
     required: true
   image:
-    description: Fully qualified immutable image reference to patch into the target manifest.
+    description: Fully qualified immutable image reference to patch into the target manifest. Multi-image targets reuse this tag for entries that set image_name.
     required: true
   target:
     description: Optional single target name from the config file.

@@ -18,6 +18,7 @@ from gitops_pr_action.open_gitops_pr import (  # noqa: E402
     load_targets,
     patch_manifest_image,
     patch_static_publisher_job,
+    patch_target_manifest,
     process_target,
     select_targets,
 )
@@ -51,6 +52,72 @@ class GitopsPrActionTests(unittest.TestCase):
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "duplicate target name"):
+                load_targets(config_path)
+
+    def test_load_targets_accepts_multi_image_target(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            config_path = Path(tmp_dir) / "gitops-targets.json"
+            config_path.write_text(
+                """
+{
+  "targets": [
+    {
+      "name": "docs-yolo-prod",
+      "gitops_repo": "wesen/2026-03-27--hetzner-k3s",
+      "gitops_branch": "main",
+      "manifest_path": "gitops/kustomize/docs-yolo/deployment.yaml",
+      "images": [
+        {
+          "container_name": "docs-browser",
+          "image_name": "ghcr.io/go-go-golems/glazed"
+        },
+        {
+          "container_name": "docs-registry",
+          "image_name": "ghcr.io/go-go-golems/glazed"
+        },
+        {
+          "container_name": "docs-ssr",
+          "image_name": "ghcr.io/go-go-golems/glazed-ssr"
+        }
+      ]
+    }
+  ]
+}
+""".strip(),
+                encoding="utf-8",
+            )
+
+            targets = load_targets(config_path)
+
+            self.assertEqual(targets[0]["name"], "docs-yolo-prod")
+            self.assertEqual(len(targets[0]["images"]), 3)
+            self.assertEqual(targets[0]["images"][2]["image_name"], "ghcr.io/go-go-golems/glazed-ssr")
+            self.assertEqual(targets[0]["images"][2]["patch_strategy"], "container-image")
+
+    def test_load_targets_rejects_container_name_and_images_together(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            config_path = Path(tmp_dir) / "gitops-targets.json"
+            config_path.write_text(
+                """
+{
+  "targets": [
+    {
+      "name": "bad",
+      "gitops_repo": "wesen/repo",
+      "gitops_branch": "main",
+      "manifest_path": "gitops/app.yaml",
+      "container_name": "app",
+      "images": [
+        { "container_name": "app" }
+      ]
+    }
+  ]
+}
+""".strip(),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "either container_name or images"):
                 load_targets(config_path)
 
     def test_select_targets_returns_named_target(self) -> None:
@@ -141,6 +208,60 @@ spec:
             )
             self.assertIn("ghcr.io/wesen/sidecar:old", updated)
             self.assertIn("ghcr.io/wesen/demo:sha-1234567", updated)
+
+    def test_patch_target_manifest_updates_multi_image_target(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            manifest_path = Path(tmp_dir) / "deployment.yaml"
+            manifest_path.write_text(
+                """
+spec:
+  template:
+    spec:
+      containers:
+        - name: docs-browser
+          image: ghcr.io/go-go-golems/glazed:sha-old111
+        - name: docs-registry
+          image: ghcr.io/go-go-golems/glazed:sha-old111
+        - name: docs-ssr
+          image: ghcr.io/go-go-golems/glazed-ssr:sha-old111
+""".lstrip(),
+                encoding="utf-8",
+            )
+
+            changed, original, updated = patch_target_manifest(
+                manifest_path=manifest_path,
+                target={
+                    "name": "docs-yolo-prod",
+                    "gitops_repo": "wesen/2026-03-27--hetzner-k3s",
+                    "gitops_branch": "main",
+                    "manifest_path": "gitops/kustomize/docs-yolo/deployment.yaml",
+                    "patch_strategy": "container-image",
+                    "images": [
+                        {
+                            "container_name": "docs-browser",
+                            "image_name": "ghcr.io/go-go-golems/glazed",
+                            "patch_strategy": "container-image",
+                        },
+                        {
+                            "container_name": "docs-registry",
+                            "image_name": "ghcr.io/go-go-golems/glazed",
+                            "patch_strategy": "container-image",
+                        },
+                        {
+                            "container_name": "docs-ssr",
+                            "image_name": "ghcr.io/go-go-golems/glazed-ssr",
+                            "patch_strategy": "container-image",
+                        },
+                    ],
+                },
+                image="ghcr.io/go-go-golems/glazed:sha-1234567",
+            )
+
+            self.assertTrue(changed)
+            self.assertIn("ghcr.io/go-go-golems/glazed:sha-old111", original)
+            self.assertIn("image: ghcr.io/go-go-golems/glazed:sha-1234567", updated)
+            self.assertIn("image: ghcr.io/go-go-golems/glazed-ssr:sha-1234567", updated)
+            self.assertEqual(updated.count("sha-1234567"), 3)
 
     def test_patch_static_publisher_job_updates_image_and_release_tokens(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
