@@ -1950,3 +1950,98 @@ pkg/serve/server.go:207 - G706 log injection via taint analysis
 
 - No release was created for `zine-layout` in this step.
 - Tracker row was updated to `action_status='dependency_scanning_failed_after_bump'`.
+
+## Step 20: Released Jesus and Smailnail After the Go-Go-MCP Bump
+
+After pausing `zine-layout`, I continued with other Layer 2 repositories that had already-tagged upstreams and looked mechanical. Both `jesus` and `smailnail` depend on `go-go-mcp`; `go-go-mcp v0.0.19` was created in Layer 1a, so each repository could be bumped, validated, pushed, and released without waiting for the `zine-layout` security decision.
+
+Both releases followed the normal release-train pattern. The only notable wrinkle was `smailnail` validation: its tests and lint need the sqlite build tag, so the CI-version golangci-lint command also had to run with `GOFLAGS='-tags=sqlite_fts5'`.
+
+### Prompt Context
+
+**User prompt (verbatim):** "continue with others for now"
+
+**Assistant interpretation:** Skip the currently blocked `zine-layout` release and continue processing other dependency-ordered repositories whose bumps remain mechanical.
+
+**Inferred user intent:** Keep the release train moving without getting stuck on broad security cleanup in one repository.
+
+**Commit (code):** `64d32b1b6ba6622820b72110b7ae5d2021bc754a` — "Bump go-go-mcp to v0.0.19"
+
+**Commit (code):** `a747e7793d0fdb1af4f976ab4f3ada566d9546e4` — "Bump go-go-mcp to v0.0.19"
+
+### What I did
+
+- In `/home/manuel/code/wesen/go-go-golems/jesus`:
+  - bumped `github.com/go-go-golems/go-go-mcp` from `v0.0.17` to `v0.0.19`,
+  - accepted transitive bumps selected by `go mod tidy` including `geppetto v0.10.17` and OpenTelemetry `v1.42.0`,
+  - ran local logcopter, glazed-lint, tests, and CI-pinned golangci-lint,
+  - pushed commit `64d32b1b6ba6622820b72110b7ae5d2021bc754a`,
+  - verified GitHub `golang-pipeline`, `golangci-lint`, `Dependency Scanning`, and `CodeQL Analysis` succeeded,
+  - created `jesus v0.0.1`: https://github.com/go-go-golems/jesus/releases/tag/v0.0.1.
+- In `/home/manuel/code/wesen/go-go-golems/smailnail`:
+  - bumped `github.com/go-go-golems/go-go-mcp` from `v0.0.18` to `v0.0.19`,
+  - ran local logcopter, glazed-lint, tests with `-tags sqlite_fts5`, and CI-pinned golangci-lint with `GOFLAGS='-tags=sqlite_fts5'`,
+  - pushed commit `a747e7793d0fdb1af4f976ab4f3ada566d9546e4`,
+  - verified GitHub `golang-pipeline`, `golangci-lint`, `Dependency Scanning`, and `CodeQL Analysis` succeeded,
+  - created `smailnail v0.0.1`: https://github.com/go-go-golems/smailnail/releases/tag/v0.0.1.
+- Updated `sources/05-rollout-progress.sqlite` for both repositories and appended evidence to `sources/release-train-20260529-layer2/releases.tsv`.
+
+### Why
+
+- `jesus` and `smailnail` were independent of the blocked `zine-layout` path.
+- Both depend on `go-go-mcp`, which already had a fresh Layer 1 tag.
+- Continuing with these repositories keeps the release train moving while preserving the `zine-layout` blocker for separate security triage.
+
+### What worked
+
+- `jesus` passed local checks and all rollout-relevant GitHub checks.
+- `smailnail` passed local checks once the sqlite build tag was applied consistently.
+- Both repositories released successfully at initial `v0.0.1` tags because neither had existing semver tags.
+
+### What didn't work
+
+- Running CI-pinned golangci-lint for `smailnail` without sqlite tags failed with:
+
+```text
+pkg/annotate/repository_test.go:9:2: could not import github.com/go-go-golems/smailnail/pkg/mirror (-: # github.com/go-go-golems/smailnail/pkg/mirror
+pkg/mirror/require_fts5_build_tag.go:5:9: undefined: requires_sqlite_fts5_build_tag) (typecheck)
+```
+
+- Re-running with the expected build tag fixed it:
+
+```bash
+GOWORK=off GOFLAGS='-tags=sqlite_fts5' go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run --timeout=5m
+```
+
+- Secret scanning and `smailnail` image publishing still failed, consistent with earlier INFRA-004 unrelated gates.
+
+### What I learned
+
+- `jesus` now pulls `go-go-mcp v0.0.19` through a newer transitive graph, including `geppetto v0.10.17`, but validation remained clean.
+- `smailnail` must be validated with sqlite tags not just for tests but also for golangci-lint typechecking.
+
+### What was tricky to build
+
+- This was mostly mechanical. The only sharp edge was remembering that `smailnail` carries a build-tag sentinel and fails typechecking without `sqlite_fts5`.
+
+### What warrants a second pair of eyes
+
+- Review the `jesus` transitive dependency bumps, especially `geppetto`, if the release train needs stricter control over indirect first-party version movement.
+- Decide separately whether recurring secret-scanning/image-publishing failures should become their own operations ticket.
+
+### What should be done in the future
+
+- Continue with other Layer 2 repositories whose upstream tags now exist, such as `scraper`, `sqleton`, `escuse-me`, `go-go-agent`, or `go-go-app-inventory`.
+- Keep `zine-layout` blocked until its gosec findings are triaged.
+
+### Code review instructions
+
+- Review `jesus/go.mod` and `jesus/go.sum` for the `go-go-mcp v0.0.19` bump.
+- Review `smailnail/go.mod` and `smailnail/go.sum` for the `go-go-mcp v0.0.19` bump.
+- Confirm releases:
+  - https://github.com/go-go-golems/jesus/releases/tag/v0.0.1
+  - https://github.com/go-go-golems/smailnail/releases/tag/v0.0.1
+
+### Technical details
+
+- Release evidence file: `sources/release-train-20260529-layer2/releases.tsv`.

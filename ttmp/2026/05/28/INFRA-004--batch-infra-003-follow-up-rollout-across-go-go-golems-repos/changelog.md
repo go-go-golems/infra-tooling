@@ -183,3 +183,8 @@ Step 14: switched the active P1 loop to `ggg` readiness, merged fourteen `ggg`-r
 - Bumped `zine-layout` to `go-emrichen v0.0.11` and pushed commit `a8b2cba` after local logcopter, glazed-lint, tests, and CI-pinned golangci-lint passed.
 - Did not create a release because GitHub dependency scanning failed in gosec with 39 legacy findings unrelated to the dependency bump.
 - Recorded the blocker in the SQLite tracker as `dependency_scanning_failed_after_bump`.
+
+## 2026-05-29 19:15 UTC — Released jesus and smailnail after go-go-mcp bump
+
+- Bumped `jesus` to `go-go-mcp v0.0.19`, validated local gates, pushed `64d32b1`, verified rollout-relevant main checks, and released `jesus v0.0.1`.
+- Bumped `smailnail` to `go-go-mcp v0.0.19`, validated local gates with sqlite tags, pushed `a747e77`, verified rollout-relevant main checks, and released `smailnail v0.0.1`.
