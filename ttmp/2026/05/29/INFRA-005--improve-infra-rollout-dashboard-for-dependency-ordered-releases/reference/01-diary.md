@@ -267,7 +267,7 @@ The scanner reads local repository files and stores derived checks in SQLite. Th
 
 **Inferred user intent:** Keep turning the INFRA-005 design into working, reviewable dashboard functionality while preserving a clear implementation trail.
 
-**Commit (code):** pending at diary write time — planned commit message: "Add rollout health dashboard panels"
+**Commit (code):** `43fc7bfc87d801bbe36467bf651157428165ae6e` — "Add rollout health dashboard panels"
 
 ### What I did
 
@@ -360,7 +360,7 @@ These pages matter because they keep unresolved work visible without mixing it i
 
 **Inferred user intent:** Complete the first useful set of dashboard pages before moving on to later refinements or tests.
 
-**Commit (code):** pending at diary write time — planned commit message: "Add issue and backlog dashboard pages"
+**Commit (code):** `db9060c1069e415a296b6fe581e40384f61bc63b` — "Add issue and backlog dashboard pages"
 
 ### What I did
 
