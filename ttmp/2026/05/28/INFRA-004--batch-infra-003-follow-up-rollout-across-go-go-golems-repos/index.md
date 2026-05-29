@@ -28,6 +28,7 @@ WhenToUse: ""
 
 ## Key Links
 
+- **Release train handoff (2026-05-29)**: [reference/04-release-train-handoff-2026-05-29.md](./reference/04-release-train-handoff-2026-05-29.md)
 - **Current status and release plan**: [analysis/02-current-status-release-order-and-rollout-lessons.md](./analysis/02-current-status-release-order-and-rollout-lessons.md)
 - **Implementation guide**: [analysis/01-rollout-analysis-and-implementation-guide.md](./analysis/01-rollout-analysis-and-implementation-guide.md)
 - **Diary**: [reference/01-diary.md](./reference/01-diary.md)

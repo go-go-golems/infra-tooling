@@ -188,3 +188,8 @@ Step 14: switched the active P1 loop to `ggg` readiness, merged fourteen `ggg`-r
 
 - Bumped `jesus` to `go-go-mcp v0.0.19`, validated local gates, pushed `64d32b1`, verified rollout-relevant main checks, and released `jesus v0.0.1`.
 - Bumped `smailnail` to `go-go-mcp v0.0.19`, validated local gates with sqlite tags, pushed `a747e77`, verified rollout-relevant main checks, and released `smailnail v0.0.1`.
+
+## 2026-05-29 19:30 UTC — Added end-of-day release train handoff
+
+- Added `reference/04-release-train-handoff-2026-05-29.md` with current release-train state, released tags, zine-layout blocker details, resume commands, validation loops, stop conditions, and recommended next candidates.
+- Linked the handoff from the INFRA-004 ticket index.
