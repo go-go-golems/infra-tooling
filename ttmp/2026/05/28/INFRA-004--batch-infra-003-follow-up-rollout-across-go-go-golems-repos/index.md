@@ -28,6 +28,9 @@ WhenToUse: ""
 
 ## Key Links
 
+- **Current status and release plan**: [analysis/02-current-status-release-order-and-rollout-lessons.md](./analysis/02-current-status-release-order-and-rollout-lessons.md)
+- **Implementation guide**: [analysis/01-rollout-analysis-and-implementation-guide.md](./analysis/01-rollout-analysis-and-implementation-guide.md)
+- **Diary**: [reference/01-diary.md](./reference/01-diary.md)
 - **Related Files**: See frontmatter RelatedFiles field
 - **External Sources**: See frontmatter ExternalSources field
 

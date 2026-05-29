@@ -1,2 +1,20 @@
 __pycache__/
 *.pyc
+
+# INFRA-004 ad-hoc rollout evidence snapshots (kept in local ticket workspace, not Git)
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/06-open-prs.yaml
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/07-ggg-batch-ready-*.json
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/07-ggg-batch-ready-*.json.exit
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/08-waiting-codex-prs.yaml
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/09-ggg-codex-trigger-*.json
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/10-fixed-codex-feedback-prs.yaml
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/11-ggg-codex-trigger-after-fix-*.json
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/12-waiting-codex-after-fixes-prs.yaml
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/13-ggg-codex-trigger-waiting-*.json
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/14-fixed-followup-codex-prs.yaml
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/15-ggg-codex-trigger-followup-*.json
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/[0-9][0-9]-ggg-*/
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/failed-logs-*/
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/ggg-codex-feedback-*/
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/ggg-readiness-*/
+ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/report-snapshots/
