@@ -22,8 +22,7 @@ RelatedFiles:
   - Path: /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/06-open-prs.yaml
     Note: Tracker-derived ggg PR manifest; final state contains no open PR entries.
 ExternalSources:
-  - URL: https://github.com/go-go-golems/logcopter/releases/tag/v0.1.0
-    Note: Logcopter release consumed by rollout repositories.
+  - https://github.com/go-go-golems/logcopter/releases/tag/v0.1.0
 Summary: Final INFRA-004 status report with dependency-aware release order, logcopter implications, and the main issues encountered during the rollout.
 LastUpdated: 2026-05-29T16:30:00-04:00
 WhatFor: Use this report to decide the next release train, dependency bump order, and follow-up cleanup tickets after the INFRA-004 rollout.
