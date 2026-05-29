@@ -36,3 +36,9 @@
 - Added dashboard route `/health` and health-check sections on `/repo?repo=<name>` pages.
 - Added tracker CLI commands `health-refresh` and `health-list`.
 - Exported health snapshots under `sources/11-repo-health-checks.csv`, `sources/12-health-summary.txt`, and `sources/13-health-warnings-sample.txt`.
+
+## 2026-05-29 20:05 UTC — Added issue classification and blocked backlog pages
+
+- Added `/issues` dashboard page to browse grouped issue/fix classifications from `repo_issue_log`, with status/category filters.
+- Added `/blocked` dashboard page for blocked, skipped, planned, and local-validation rows with notes, open issue counts, health finding counts, and suggested decisions.
+- Linked both pages from the dashboard navigation and overview card.

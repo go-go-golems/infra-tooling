@@ -314,6 +314,8 @@ def html_page(db: Path, title: str, body: str) -> str:
       <a href='/release-train'>Release train</a>
       <a href='/bumps'>Bump queue</a>
       <a href='/health'>Health</a>
+      <a href='/issues'>Issues</a>
+      <a href='/blocked'>Blocked/skipped</a>
     </div>
     """
     return f"""<!doctype html>
@@ -437,6 +439,61 @@ def html_health(db: Path, category: str | None = None, status: str | None = None
     <table><thead><tr><th>Repo</th><th>Category</th><th>Check</th><th>Status</th><th>Summary</th><th>Details</th><th>File</th></tr></thead><tbody>{''.join(trs)}</tbody></table>
     """
     return html_page(db, "Repository health checks", body)
+
+
+def html_issues(db: Path, category: str | None = None, status: str | None = None) -> str:
+    con = connect(db)
+    if not table_exists(con, "repo_issue_log"):
+        con.close()
+        return html_page(db, "Issue classifications", "<div class='card red'>Issue log is not populated yet. Run issue-refresh.</div>")
+    where, vals = [], []
+    if category:
+        where.append("category=?"); vals.append(category)
+    if status:
+        where.append("status=?"); vals.append(status)
+    rows = con.execute("SELECT * FROM repo_issue_log" + (" WHERE " + " AND ".join(where) if where else "") + " ORDER BY CASE status WHEN 'blocked' THEN 0 WHEN 'observed' THEN 1 WHEN 'warning' THEN 2 ELSE 3 END, category, repo", vals).fetchall()
+    summary = con.execute("SELECT category,status,count(*) c FROM repo_issue_log GROUP BY category,status ORDER BY category,status").fetchall()
+    con.close()
+    esc = lambda x: html.escape(str(x or ""))
+    filters = " ".join(["<a href='/issues'>all</a>", "<a href='/issues?status=observed'>observed</a>", "<a href='/issues?status=fixed'>fixed</a>", "<a href='/issues?category=workflow_yaml'>workflow_yaml</a>", "<a href='/issues?category=glazed_lint'>glazed_lint</a>", "<a href='/issues?category=logcopter_generation'>logcopter</a>", "<a href='/issues?category=govulncheck'>govulncheck</a>", "<a href='/issues?category=gosec'>gosec</a>"])
+    cards = "".join(f"<div>{esc(r['category'])} / {esc(r['status'])}: <b>{r['c']}</b></div>" for r in summary)
+    trs = []
+    for r in rows:
+        cls = 'green' if r['status']=='fixed' else 'red' if r['status']=='blocked' else 'orange'
+        trs.append(f"<tr><td><a href='/repo?repo={esc(r['repo'])}'><code>{esc(r['repo'])}</code></a></td><td>{esc(r['category'])}</td><td>{badge(r['status'], cls)}</td><td>{esc(r['severity'])}</td><td>{esc(r['title'])}</td><td>{esc(r['evidence_summary'])}</td><td>{esc(r['fix_summary'])}</td></tr>")
+    body = f"""
+    <div class='grid'><div class='card'><b>Filters</b><br>{filters}</div><div class='card'><b>Summary</b><br>{cards}</div></div>
+    <table><thead><tr><th>Repo</th><th>Category</th><th>Status</th><th>Severity</th><th>Title</th><th>Evidence</th><th>Fix</th></tr></thead><tbody>{''.join(trs)}</tbody></table>
+    """
+    return html_page(db, "Issue classifications", body)
+
+
+def html_blocked(db: Path) -> str:
+    con = connect(db)
+    rows = con.execute(
+        """
+        SELECT r.*,
+               (SELECT count(*) FROM repo_issue_log i WHERE i.repo=r.repo AND i.status!='fixed') unresolved_issues,
+               (SELECT count(*) FROM repo_health_checks h WHERE h.repo=r.repo AND h.status IN ('fail','warn')) health_findings
+        FROM repos r
+        WHERE r.state IN ('blocked','skipped','planned','local_validation')
+        ORDER BY CASE r.state WHEN 'blocked' THEN 0 WHEN 'local_validation' THEN 1 WHEN 'planned' THEN 2 ELSE 3 END, r.batch_id, r.repo
+        """
+    ).fetchall()
+    con.close()
+    esc = lambda x: html.escape(str(x or ""))
+    trs = []
+    for r in rows:
+        if r['state'] == 'blocked': decision = 'Resolve ownership/module/archive blocker before rollout.'
+        elif r['state'] == 'skipped': decision = 'Manual decision: resume, keep skipped, or remove from scope.'
+        elif r['state'] == 'planned': decision = 'Plan API-intent/xgoja work before rollout/release.'
+        else: decision = 'Promote or close out local validation state.'
+        trs.append(f"<tr><td>{esc(r['batch_id'])}</td><td><a href='/repo?repo={esc(r['repo'])}'><code>{esc(r['repo'])}</code></a></td><td>{badge(r['state'], 'red' if r['state']=='blocked' else 'orange' if r['state'] in {'planned','local_validation'} else 'gray')}</td><td>{esc(r['notes'])}</td><td>{r['unresolved_issues']}</td><td>{r['health_findings']}</td><td>{esc(decision)}</td></tr>")
+    body = f"""
+    <div class='card'><b>Blocked/skipped backlog</b><br><span class='muted'>Rows that should not disappear from the release train view. They need an explicit decision.</span></div>
+    <table><thead><tr><th>Batch</th><th>Repo</th><th>State</th><th>Notes</th><th>Open issue groups</th><th>Health findings</th><th>Suggested decision</th></tr></thead><tbody>{''.join(trs)}</tbody></table>
+    """
+    return html_page(db, "Blocked and skipped backlog", body)
 
 def html_repo_detail(db: Path, repo: str | None) -> str:
     esc = lambda x: html.escape(str(x or ""))
@@ -646,7 +703,7 @@ code {{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }}
 <div class='grid'>
 <div class='card'><b>States</b><br>{''.join(f"<div>{esc(s['state'])}: <b>{s['c']}</b></div>" for s in states)}</div>
 <div class='card'><b>Batches</b><br>{''.join(f"<div><a href='/?batch={esc(b['batch_id'])}'>{esc(b['batch_id'])}</a>: {esc(b['batch_name'])} <b>{b['c']}</b></div>" for b in batches)}<div><a href='/'>all</a></div></div>
-<div class='card'><b>Views</b><br><a href='/release-train'>Release train</a><br><a href='/bumps'>Bump queue</a><br><a href='/health'>Health</a><br><code>./scripts/02-rollout-tracker.py deps-release-order</code></div>
+<div class='card'><b>Views</b><br><a href='/release-train'>Release train</a><br><a href='/bumps'>Bump queue</a><br><a href='/health'>Health</a><br><a href='/issues'>Issues</a><br><a href='/blocked'>Blocked/skipped</a><br><code>./scripts/02-rollout-tracker.py deps-release-order</code></div>
 </div>
 <table><thead><tr><th>Batch</th><th>Repo</th><th>State</th><th>Tracks</th><th>PR</th><th>Merge SHA</th><th>Tag</th><th>Actions</th><th>Notes</th></tr></thead><tbody>{''.join(rows)}</tbody></table>
 <h2>Recent events</h2><table><thead><tr><th>Time</th><th>Repo</th><th>Kind</th><th>Message</th><th>URL</th></tr></thead><tbody>{''.join(f"<tr><td>{esc(e['created_at'])}</td><td>{esc(e['repo'])}</td><td>{esc(e['kind'])}</td><td>{esc(e['message'])}</td><td>{('<a href='+esc(e['url'])+'>link</a>') if e['url'] else ''}</td></tr>" for e in events)}</tbody></table>
@@ -667,6 +724,10 @@ def dashboard(args: argparse.Namespace) -> None:
                 body_text = html_repo_detail(db, qs.get("repo", [None])[0])
             elif parsed.path == "/health":
                 body_text = html_health(db, qs.get("category", [None])[0], qs.get("status", [None])[0])
+            elif parsed.path == "/issues":
+                body_text = html_issues(db, qs.get("category", [None])[0], qs.get("status", [None])[0])
+            elif parsed.path == "/blocked":
+                body_text = html_blocked(db)
             else:
                 batch = qs.get("batch", [None])[0]
                 body_text = html_dashboard(db, batch)

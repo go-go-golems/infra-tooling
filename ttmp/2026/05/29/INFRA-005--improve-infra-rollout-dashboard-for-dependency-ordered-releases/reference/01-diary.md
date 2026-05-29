@@ -345,3 +345,81 @@ ttmp/2026/05/29/INFRA-005--improve-infra-rollout-dashboard-for-dependency-ordere
   - `/health?status=warn`
   - `/health?category=logcopter`
   - `/repo?repo=vault-envrc-generator`
+
+## Step 4: Add Issue Classification and Blocked Backlog Pages
+
+This step finished the first pass of the dashboard views promised by the INFRA-005 task list. The dashboard can now show issue classifications across repositories and a dedicated backlog for rows that are blocked, skipped, planned, or stuck in local validation.
+
+These pages matter because they keep unresolved work visible without mixing it into the release train. Release pages should focus on what can move forward; backlog pages should explain what needs a separate decision.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 2)
+
+**Assistant interpretation:** Continue implementing the next dashboard task, committing and updating the diary after the step.
+
+**Inferred user intent:** Complete the first useful set of dashboard pages before moving on to later refinements or tests.
+
+**Commit (code):** pending at diary write time — planned commit message: "Add issue and backlog dashboard pages"
+
+### What I did
+
+- Added `/issues`, a dashboard page backed by `repo_issue_log`.
+- Added filters for issue status and category.
+- Added `/blocked`, a dashboard page for `blocked`, `skipped`, `planned`, and `local_validation` rows.
+- Included issue counts and health-finding counts in the blocked/skipped backlog.
+- Linked `/issues` and `/blocked` from dashboard navigation and the overview card.
+- Smoke-tested `html_issues` and `html_blocked` render functions against the populated DB.
+
+### Why
+
+- The release train page intentionally hides blocked/skipped work so release candidates remain clear. That unresolved work still needs a dedicated page.
+- Issue classifications provide a cross-repository view of recurring rollout problems, such as workflow YAML, Glazed lint, logcopter generation, govulncheck, and gosec.
+
+### What worked
+
+- `/issues` renders grouped issue/fix rows and supports query filters such as `?status=observed` or `?category=workflow_yaml`.
+- `/blocked` renders the backlog with notes and suggested decision text.
+- Both render functions produced non-empty HTML in local smoke tests.
+
+### What didn't work
+
+- N/A. This was a straightforward read-only dashboard extension.
+
+### What I learned
+
+- The dashboard needs separate pages for forward progress and unresolved backlog. Combining them would make the release train page harder to use.
+- The derived issue and health tables compose well: blocked rows can show both unresolved issue-group counts and health-finding counts.
+
+### What was tricky to build
+
+- The main decision was what to include in the backlog. I included `blocked`, `skipped`, `planned`, and `local_validation`, because all four states represent work that should not appear as normal release candidates.
+
+### What warrants a second pair of eyes
+
+- Review the suggested decision text on `/blocked`; it is heuristic and may need ticket-specific wording.
+- Review whether `/issues` should hide `fixed` by default or continue showing all categories by default.
+
+### What should be done in the future
+
+- Add fixture tests for the new render helpers.
+- Consider adding counts from GitHub Actions or ggg snapshots once those are imported into SQLite.
+
+### Code review instructions
+
+- Review `scripts/02-rollout-tracker.py` functions `html_issues` and `html_blocked`.
+- Validate with:
+
+```bash
+python -m py_compile ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/scripts/02-rollout-tracker.py
+```
+
+- Open:
+  - `http://127.0.0.1:8765/issues`
+  - `http://127.0.0.1:8765/issues?category=workflow_yaml`
+  - `http://127.0.0.1:8765/blocked`
+
+### Technical details
+
+- `/issues` reads `repo_issue_log`.
+- `/blocked` reads `repos`, plus correlated counts from `repo_issue_log` and `repo_health_checks`.

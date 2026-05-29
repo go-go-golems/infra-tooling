@@ -8,7 +8,7 @@
 - [x] Add tracker CLI commands for dependency scanning, dependency edges, release order, and bump candidates
 - [x] Add repository detail pages with dependencies, dependents, events, validations, and evidence links
 - [x] Add logcopter and glazed-lint health panels
-- [ ] Add blocked/skipped backlog and failure-classification views
+- [x] Add blocked/skipped backlog and failure-classification views
 - [x] Add repository issue-log tables to repo detail pages with category/status filters
 - [x] Add issue-log refresh command and preserve source event/validation references
 - [x] Render release train and bump candidate pages from the normalized dependency tables
