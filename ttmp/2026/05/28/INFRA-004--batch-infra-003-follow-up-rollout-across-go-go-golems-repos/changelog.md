@@ -93,3 +93,12 @@ Opened logcopter baseline PRs for all 15 remaining non-xgoja planned repos (boba
 
 - /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/reference/01-diary.md — Step 10: Batch PR opening
 - /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/sources/05-rollout-progress.sqlite — Updated tracker with 25 open PRs
+
+## 2026-05-29
+
+Added glazed-lint Makefile targets to 31 repos and publish-docs release job to 10 repos. Pushed to 24 existing logcopter baseline PR branches. Opened 7 new PRs for already-released repos (sanitize, go-go-app-inventory, cliopatra, oak, openai-mock-server, parka, sqleton).
+
+### Related Files
+
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/reference/01-diary.md — Step 11: glazed-lint + publish-docs
+- /home/manuel/workspaces/2026-05-24/add-js-providers/infra-tooling/ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/scripts/04-add-glazed-lint-docsctl.py — Script for adding glazed-lint + docsctl

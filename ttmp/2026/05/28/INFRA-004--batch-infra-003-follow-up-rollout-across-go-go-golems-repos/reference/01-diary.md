@@ -955,3 +955,85 @@ python3 scripts/02-rollout-tracker.py list --state pr_open
 - **4 deferred (xgoja):** go-go-goja, go-minitrace, pinocchio, workspace-manager
 - **Total PRs now open:** 25 (8 from previous waves + 15 new + 2 B1)
 - **Total released:** 22
+
+## Step 11: Added glazed-lint + publish-docs to all repos
+
+I added glazed-lint Makefile targets and publish-docs release workflow jobs to all 31 repos that depend on Glazed and didn't already have them. For repos with open logcopter PRs, I pushed to the existing branch. For already-released repos, I opened new PRs.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok, go through all docsctl and glazed lint targets, and do these changes. If they need both, do both. then either push to the current PR or open a new one."
+
+**Assistant interpretation:** Add glazed-lint Makefile targets + CI wiring and publish-docs release job to every repo that depends on Glazed, pushing to existing PR branches where they exist or opening new PRs for merged repos.
+
+**Inferred user intent:** Complete the glazed-lint and docsctl tracks of INFRA-004 alongside the logcopter baselines, so all three work tracks are done in one pass.
+
+**Commit (code):** 24 commits on existing PR branches + 7 new PRs for already-released repos.
+
+### What I did
+
+- **Added glazed-lint Makefile targets** to 31 repos that depend on `github.com/go-go-golems/glazed`:
+  - `glazed-lint-build`: Builds the glazed-lint analyzer from the Glazed version in go.mod
+  - `glazed-lint`: Runs the analyzer via `go vet -vettool`
+- **Wired glazed-lint into push.yml CI** for repos with CI workflows:
+  - Added `make glazed-lint` step after test/logcopter-check steps
+- **Added publish-docs release job** to 10 repos with goreleaser-merge workflows:
+  - Disabled by default (`if: ${{ false && startsWith(...) }}`)
+  - Uses the `infra-tooling` reusable workflow `publish-docsctl.yml@main`
+  - Includes correct package name, cmd binary path, and vault role naming
+- **Pushed to 24 existing PR branches** (logcopter baseline PRs)
+- **Opened 7 new PRs** for already-released repos: sanitize #3, go-go-app-inventory #16, cliopatra #18, oak #47, openai-mock-server #2, parka #193, sqleton #266
+- **Skipped** dmeta and esper (already had glazed-lint from INFRA-002)
+
+### Why
+
+- Glazed CLI policy linting ensures consistent CLI patterns across all repos (no raw flags, proper `RunIntoGlazeProcessor` usage, etc.)
+- The publish-docs job is disabled by default but ready to enable once Vault roles are created — this is the template pattern from go-template.
+- Doing both tracks in the same PR reduces total PR count and review overhead.
+
+### What worked
+
+- All 24 existing PR branches accepted the additional commit cleanly.
+- The publish-docs job template from go-template works well — just needs package name and cmd binary path.
+- Repos without goreleaser-merge (escuse-me, go-emrichen, etc.) correctly skipped the publish-docs step.
+
+### What didn't work
+
+- The bash function approach doesn't persist between tool calls — had to inline the full logic.
+- Some repos (dmeta, esper) already had glazed-lint from the earlier INFRA-002 rollout — correctly skipped.
+- The Python script approach (04-add-glazed-lint-docsctl.py) had edge cases with YAML parsing — switched to inline bash+python for reliability.
+
+### What I learned
+
+- Almost every go-go-golems repo depends on Glazed (49 out of 70), but only 13 had glazed-lint before this step.
+- The publish-docs job requires a `goreleaser-merge` job in the release workflow — repos using simpler release workflows can't use it without restructuring.
+- The vault role naming convention is `docsctl-<package-name>-publisher`.
+
+### What was tricky to build
+
+- The publish-docs YAML insertion requires careful escaping of `${{ }}` in Python strings.
+- Determining the correct cmd binary name for each repo requires walking the `cmd/` directory and matching against the module path.
+
+### What warrants a second pair of eyes
+
+- Verify the cmd binary names are correct for publish-docs (especially repos with multiple cmd binaries like `sessionstream` which has `sessionstream-systemlab`).
+- Verify that repos without goreleaser-merge actually shouldn't have publish-docs (some might need workflow restructuring first).
+
+### What should be done in the future
+
+- Enable publish-docs for repos once Vault roles are created in Terraform.
+- Run `make glazed-lint` locally on each repo and triage findings.
+- Consider adding `make glazed-lint` to the lint.yml workflow as well (currently only in push.yml).
+
+### Code review instructions
+
+- Check Makefile additions for correct glazed version.
+- Check push.yml for correct step ordering.
+- Check release workflow for correct package name and cmd binary.
+
+### Technical details
+
+- **24 repos pushed to existing PRs** with glazed-lint + publish-docs additions.
+- **7 new PRs opened**: sanitize #3, go-go-app-inventory #16, cliopatra #18, oak #47, openai-mock-server #2, parka #193, sqleton #266.
+- **publish-docs added to 10 repos**: go-go-os-backend, almanach, codex-sessions, docmgr, font-util, prescribe, tactician, web-agent-example, smailnail, refactorio.
+- **glazed-lint added to 31 repos** total.
