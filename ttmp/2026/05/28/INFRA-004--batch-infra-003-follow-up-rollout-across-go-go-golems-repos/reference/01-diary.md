@@ -1853,3 +1853,100 @@ GOWORK=off go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
 ### Technical details
 
 - Release evidence file: `sources/release-train-20260529-layer2/releases.tsv`.
+
+## Step 19: Tried Zine-Layout, Then Paused on Dependency Scanning
+
+I attempted the next low-complexity Layer 2 bump, `zine-layout` from `go-emrichen v0.0.10` to `v0.0.11`. The local release-train checks all passed, and I pushed the bump to `main`.
+
+I did not create a release. GitHub dependency scanning failed with a broad set of gosec findings that are not caused by the `go-emrichen` patch bump. This is exactly the kind of broader security cleanup that should not be handled as blind release-train mechanics.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 18)
+
+**Assistant interpretation:** Continue the release train by processing another downstream bump, but stop if the validation failure is not simple release mechanics.
+
+**Inferred user intent:** Keep the release train moving, while preserving the rule that broad/tricky failures should be escalated instead of hidden or papered over.
+
+**Commit (code):** `a8b2cbaca50e55b92644cfea8f374e0fa28f79b0` — "Bump go-emrichen to v0.0.11"
+
+### What I did
+
+- Updated `/home/manuel/code/wesen/go-go-golems/zine-layout` from `github.com/go-go-golems/go-emrichen v0.0.10` to `v0.0.11`.
+- Ran local validation:
+
+```bash
+GOWORK=off go get github.com/go-go-golems/go-emrichen@v0.0.11
+GOWORK=off go mod tidy
+make logcopter-check
+make glazed-lint
+GOWORK=off go test ./...
+GOWORK=off go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2 run --timeout=5m
+```
+
+- Committed and pushed `zine-layout` commit `a8b2cbaca50e55b92644cfea8f374e0fa28f79b0`.
+- Watched GitHub Actions:
+  - `golang-pipeline`: success
+  - `golangci-lint`: success
+  - `Secret Scanning`: failure, recurring unrelated gate
+  - `Dependency Scanning`: failure in gosec
+- Updated the SQLite tracker with `action_status='dependency_scanning_failed_after_bump'` and a `release_train_blocked` event.
+
+### Why
+
+- `zine-layout` depends on `go-emrichen`, and `go-emrichen v0.0.11` was created in Layer 1a.
+- Releasing `zine-layout` before consuming the new upstream tag would not be dependency-converged.
+
+### What worked
+
+- The module bump was mechanically clean: only `go.mod` and `go.sum` changed.
+- Local logcopter, glazed-lint, tests, and CI-pinned golangci-lint passed.
+- GitHub `golang-pipeline` and `golangci-lint` passed.
+
+### What didn't work
+
+- GitHub dependency scanning failed in gosec with 39 findings. Representative findings included:
+
+```text
+pkg/pagelayout/renderer/renderer.go:269 - G115 integer overflow conversion int -> uint8
+pkg/pagelayout/renderer/renderer.go:275 - G115 integer overflow conversion int -> uint8
+pkg/zinelayout/image.go:62 - G115 integer overflow conversion int -> int32
+pkg/repo/sqlite/sqlite.go:16 - G404 weak random number generator
+pkg/serve/types.go:157 - G703 path traversal via taint analysis
+pkg/serve/projects_routes.go:250 - G120 unbounded form parsing
+pkg/serve/server.go:56-59 - G112 missing ReadHeaderTimeout
+cmd/zine-layout/cmds/api/projects-list.go:37 - G107 variable URL in http.Get
+pkg/presets/presets.go:77 - G302 file permissions should be 0600 or less
+pkg/serve/server.go:207 - G706 log injection via taint analysis
+```
+
+- Dependency scanning run: https://github.com/go-go-golems/zine-layout/actions/runs/26655226837
+
+### What I learned
+
+- `zine-layout` still has a broad legacy gosec backlog on `main` after the dependency bump.
+- The backlog is unrelated to the `go-emrichen` patch bump and should not be handled by a release-train operator as a drive-by suppression or broad allowlist.
+
+### What was tricky to build
+
+- The tricky part is not the bump; it is deciding release safety. Since dependency scanning is one of the rollout-relevant security gates and failed with many findings, I stopped before creating a release.
+
+### What warrants a second pair of eyes
+
+- Decide whether to fix the gosec findings properly, scope justified suppressions, or mark the zine-layout release as intentionally blocked.
+- Review whether `zine-layout` should have been considered `main_actions_verified` if dependency scanning can fail this broadly on the next push.
+
+### What should be done in the future
+
+- Do not release `zine-layout` until the dependency-scanning decision is made.
+- Continue with another Layer 2 repository whose validation remains mechanical, or pause the train for security cleanup prioritization.
+
+### Code review instructions
+
+- Review `/home/manuel/code/wesen/go-go-golems/zine-layout/go.mod` and `go.sum` for the `go-emrichen v0.0.11` bump.
+- Review dependency scanning failure: https://github.com/go-go-golems/zine-layout/actions/runs/26655226837
+
+### Technical details
+
+- No release was created for `zine-layout` in this step.
+- Tracker row was updated to `action_status='dependency_scanning_failed_after_bump'`.

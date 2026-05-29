@@ -177,3 +177,9 @@ Step 14: switched the active P1 loop to `ggg` readiness, merged fourteen `ggg`-r
 - Bumped `refactorio` from `oak v0.5.2` to `oak v0.5.3`.
 - Validated logcopter, glazed-lint, tests, and CI-pinned golangci-lint locally.
 - Pushed `refactorio` commit `3e9142b`, verified rollout-relevant main checks, and released `refactorio v0.0.1`.
+
+## 2026-05-29 18:58 UTC — Paused zine-layout release after dependency scanning failure
+
+- Bumped `zine-layout` to `go-emrichen v0.0.11` and pushed commit `a8b2cba` after local logcopter, glazed-lint, tests, and CI-pinned golangci-lint passed.
+- Did not create a release because GitHub dependency scanning failed in gosec with 39 legacy findings unrelated to the dependency bump.
+- Recorded the blocker in the SQLite tracker as `dependency_scanning_failed_after_bump`.
