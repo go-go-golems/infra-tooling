@@ -160,3 +160,8 @@ Step 14: switched the active P1 loop to `ggg` readiness, merged fourteen `ggg`-r
 
 - Extended `sources/05-rollout-progress.sqlite` with `repo_issue_log` and `repo_issue_steps` so repository detail pages can show grouped issues, fixes, validations, and source event references.
 - Populated the derived issue log from existing tracker `events` and `validations`: 342 issue rows and 808 issue timeline steps.
+
+## 2026-05-29 19:45 UTC — Added derived health-check table
+
+- Extended `sources/05-rollout-progress.sqlite` with `repo_health_checks` for lightweight logcopter and Glazed lint dashboard health panels.
+- Populated 623 health-check rows from local repository files.

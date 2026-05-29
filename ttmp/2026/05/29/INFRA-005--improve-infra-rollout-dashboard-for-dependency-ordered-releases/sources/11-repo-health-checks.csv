@@ -1,0 +1,624 @@
+id,repo,category,check_key,status,summary,details,file_path,scanned_at
+629,ai-in-action-app,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./cmd/... ./internal/...",/home/manuel/code/wesen/go-go-golems/ai-in-action-app/Makefile,2026-05-29T17:58:59+00:00
+626,ai-in-action-app,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/ai-in-action-app/logcopter_generate.go,2026-05-29T17:58:59+00:00
+628,ai-in-action-app,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/ai-in-action-app/Makefile,2026-05-29T17:58:59+00:00
+627,ai-in-action-app,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/ai-in-action-app/Makefile,2026-05-29T17:58:59+00:00
+624,ai-in-action-app,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/ai-in-action-app/go.mod,2026-05-29T17:58:59+00:00
+625,ai-in-action-app,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/ai-in-action-app/go.mod,2026-05-29T17:58:59+00:00
+639,almanach,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/almanach/Makefile,2026-05-29T17:58:59+00:00
+638,almanach,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/almanach/Makefile,2026-05-29T17:58:59+00:00
+636,almanach,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/almanach/Makefile,2026-05-29T17:58:59+00:00
+640,almanach,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/almanach/Makefile,2026-05-29T17:58:59+00:00
+637,almanach,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/almanach/Makefile,2026-05-29T17:58:59+00:00
+635,almanach,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/almanach/Makefile,2026-05-29T17:58:59+00:00
+632,almanach,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/almanach/logcopter_generate.go,2026-05-29T17:58:59+00:00
+634,almanach,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/almanach/Makefile,2026-05-29T17:58:59+00:00
+633,almanach,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/almanach/Makefile,2026-05-29T17:58:59+00:00
+630,almanach,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/almanach/go.mod,2026-05-29T17:58:59+00:00
+631,almanach,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/almanach/go.mod,2026-05-29T17:58:59+00:00
+643,barbar,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/barbar/logcopter_generate.go,2026-05-29T17:58:59+00:00
+645,barbar,logcopter,make_check_target,fail,"Makefile logcopter-check target missing","",/home/manuel/code/wesen/go-go-golems/barbar/Makefile,2026-05-29T17:58:59+00:00
+644,barbar,logcopter,make_generate_target,warn,"Makefile logcopter-generate target missing","",/home/manuel/code/wesen/go-go-golems/barbar/Makefile,2026-05-29T17:58:59+00:00
+641,barbar,logcopter,require_version,fail,"logcopter require missing","",/home/manuel/code/wesen/go-go-golems/barbar/go.mod,2026-05-29T17:58:59+00:00
+642,barbar,logcopter,tool_directive,warn,"logcopter tool directive missing","",/home/manuel/code/wesen/go-go-golems/barbar/go.mod,2026-05-29T17:58:59+00:00
+654,biberon,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/biberon/Makefile,2026-05-29T17:58:59+00:00
+653,biberon,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/biberon/Makefile,2026-05-29T17:58:59+00:00
+651,biberon,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/biberon/Makefile,2026-05-29T17:58:59+00:00
+655,biberon,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/biberon/Makefile,2026-05-29T17:58:59+00:00
+652,biberon,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/biberon/Makefile,2026-05-29T17:58:59+00:00
+648,biberon,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/biberon/logcopter_generate.go,2026-05-29T17:58:59+00:00
+650,biberon,logcopter,make_check_target,fail,"Makefile logcopter-check target missing","",/home/manuel/code/wesen/go-go-golems/biberon/Makefile,2026-05-29T17:58:59+00:00
+649,biberon,logcopter,make_generate_target,warn,"Makefile logcopter-generate target missing","",/home/manuel/code/wesen/go-go-golems/biberon/Makefile,2026-05-29T17:58:59+00:00
+646,biberon,logcopter,require_version,fail,"logcopter require missing","",/home/manuel/code/wesen/go-go-golems/biberon/go.mod,2026-05-29T17:58:59+00:00
+647,biberon,logcopter,tool_directive,warn,"logcopter tool directive missing","",/home/manuel/code/wesen/go-go-golems/biberon/go.mod,2026-05-29T17:58:59+00:00
+661,bobatea,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/bobatea/Makefile,2026-05-29T17:58:59+00:00
+658,bobatea,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/bobatea/logcopter_generate.go,2026-05-29T17:58:59+00:00
+660,bobatea,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/bobatea/Makefile,2026-05-29T17:58:59+00:00
+659,bobatea,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/bobatea/Makefile,2026-05-29T17:58:59+00:00
+656,bobatea,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/bobatea/go.mod,2026-05-29T17:58:59+00:00
+657,bobatea,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/bobatea/go.mod,2026-05-29T17:58:59+00:00
+664,bubble-table,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/bubble-table/logcopter_generate.go,2026-05-29T17:58:59+00:00
+666,bubble-table,logcopter,make_check_target,fail,"Makefile logcopter-check target missing","",/home/manuel/code/wesen/go-go-golems/bubble-table/Makefile,2026-05-29T17:58:59+00:00
+665,bubble-table,logcopter,make_generate_target,warn,"Makefile logcopter-generate target missing","",/home/manuel/code/wesen/go-go-golems/bubble-table/Makefile,2026-05-29T17:58:59+00:00
+662,bubble-table,logcopter,require_version,fail,"logcopter require missing","",/home/manuel/code/wesen/go-go-golems/bubble-table/go.mod,2026-05-29T17:58:59+00:00
+663,bubble-table,logcopter,tool_directive,warn,"logcopter tool directive missing","",/home/manuel/code/wesen/go-go-golems/bubble-table/go.mod,2026-05-29T17:58:59+00:00
+675,bucheron,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/bucheron/Makefile,2026-05-29T17:58:59+00:00
+674,bucheron,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/bucheron/Makefile,2026-05-29T17:58:59+00:00
+672,bucheron,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/bucheron/Makefile,2026-05-29T17:58:59+00:00
+676,bucheron,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/bucheron/Makefile,2026-05-29T17:58:59+00:00
+673,bucheron,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/bucheron/Makefile,2026-05-29T17:58:59+00:00
+669,bucheron,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/bucheron/logcopter_generate.go,2026-05-29T17:58:59+00:00
+671,bucheron,logcopter,make_check_target,fail,"Makefile logcopter-check target missing","",/home/manuel/code/wesen/go-go-golems/bucheron/Makefile,2026-05-29T17:58:59+00:00
+670,bucheron,logcopter,make_generate_target,warn,"Makefile logcopter-generate target missing","",/home/manuel/code/wesen/go-go-golems/bucheron/Makefile,2026-05-29T17:58:59+00:00
+667,bucheron,logcopter,require_version,fail,"logcopter require missing","",/home/manuel/code/wesen/go-go-golems/bucheron/go.mod,2026-05-29T17:58:59+00:00
+668,bucheron,logcopter,tool_directive,warn,"logcopter tool directive missing","",/home/manuel/code/wesen/go-go-golems/bucheron/go.mod,2026-05-29T17:58:59+00:00
+686,cliopatra,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/cliopatra/Makefile,2026-05-29T17:58:59+00:00
+685,cliopatra,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/cliopatra/Makefile,2026-05-29T17:58:59+00:00
+683,cliopatra,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/cliopatra/Makefile,2026-05-29T17:58:59+00:00
+687,cliopatra,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/cliopatra/Makefile,2026-05-29T17:58:59+00:00
+684,cliopatra,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/cliopatra/Makefile,2026-05-29T17:58:59+00:00
+682,cliopatra,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/cliopatra/Makefile,2026-05-29T17:58:59+00:00
+679,cliopatra,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/cliopatra/logcopter_generate.go,2026-05-29T17:58:59+00:00
+681,cliopatra,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/cliopatra/Makefile,2026-05-29T17:58:59+00:00
+680,cliopatra,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/cliopatra/Makefile,2026-05-29T17:58:59+00:00
+677,cliopatra,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/cliopatra/go.mod,2026-05-29T17:58:59+00:00
+678,cliopatra,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/cliopatra/go.mod,2026-05-29T17:58:59+00:00
+697,codex-sessions,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/codex-sessions/Makefile,2026-05-29T17:58:59+00:00
+696,codex-sessions,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/codex-sessions/Makefile,2026-05-29T17:58:59+00:00
+694,codex-sessions,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/codex-sessions/Makefile,2026-05-29T17:58:59+00:00
+698,codex-sessions,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/codex-sessions/Makefile,2026-05-29T17:58:59+00:00
+695,codex-sessions,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/codex-sessions/Makefile,2026-05-29T17:58:59+00:00
+693,codex-sessions,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/codex-sessions/Makefile,2026-05-29T17:58:59+00:00
+690,codex-sessions,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/codex-sessions/logcopter_generate.go,2026-05-29T17:58:59+00:00
+692,codex-sessions,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/codex-sessions/Makefile,2026-05-29T17:58:59+00:00
+691,codex-sessions,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/codex-sessions/Makefile,2026-05-29T17:58:59+00:00
+688,codex-sessions,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/codex-sessions/go.mod,2026-05-29T17:58:59+00:00
+689,codex-sessions,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/codex-sessions/go.mod,2026-05-29T17:58:59+00:00
+707,common-sense,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/common-sense/Makefile,2026-05-29T17:58:59+00:00
+706,common-sense,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/common-sense/Makefile,2026-05-29T17:58:59+00:00
+704,common-sense,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/common-sense/Makefile,2026-05-29T17:58:59+00:00
+708,common-sense,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/common-sense/Makefile,2026-05-29T17:58:59+00:00
+705,common-sense,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/common-sense/Makefile,2026-05-29T17:58:59+00:00
+701,common-sense,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/common-sense/logcopter_generate.go,2026-05-29T17:58:59+00:00
+703,common-sense,logcopter,make_check_target,fail,"Makefile logcopter-check target missing","",/home/manuel/code/wesen/go-go-golems/common-sense/Makefile,2026-05-29T17:58:59+00:00
+702,common-sense,logcopter,make_generate_target,warn,"Makefile logcopter-generate target missing","",/home/manuel/code/wesen/go-go-golems/common-sense/Makefile,2026-05-29T17:58:59+00:00
+699,common-sense,logcopter,require_version,fail,"logcopter require missing","",/home/manuel/code/wesen/go-go-golems/common-sense/go.mod,2026-05-29T17:58:59+00:00
+700,common-sense,logcopter,tool_directive,warn,"logcopter tool directive missing","",/home/manuel/code/wesen/go-go-golems/common-sense/go.mod,2026-05-29T17:58:59+00:00
+718,cozodb-goja,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/cozodb-goja/Makefile,2026-05-29T17:58:59+00:00
+717,cozodb-goja,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/cozodb-goja/Makefile,2026-05-29T17:58:59+00:00
+715,cozodb-goja,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/cozodb-goja/Makefile,2026-05-29T17:58:59+00:00
+719,cozodb-goja,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/cozodb-goja/Makefile,2026-05-29T17:58:59+00:00
+716,cozodb-goja,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/cozodb-goja/Makefile,2026-05-29T17:58:59+00:00
+714,cozodb-goja,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/cozodb-goja/Makefile,2026-05-29T17:58:59+00:00
+711,cozodb-goja,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/cozodb-goja/logcopter_generate.go,2026-05-29T17:58:59+00:00
+713,cozodb-goja,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/cozodb-goja/Makefile,2026-05-29T17:58:59+00:00
+712,cozodb-goja,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/cozodb-goja/Makefile,2026-05-29T17:58:59+00:00
+709,cozodb-goja,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/cozodb-goja/go.mod,2026-05-29T17:58:59+00:00
+710,cozodb-goja,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/cozodb-goja/go.mod,2026-05-29T17:58:59+00:00
+729,devctl,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/devctl/Makefile,2026-05-29T17:58:59+00:00
+728,devctl,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/devctl/Makefile,2026-05-29T17:58:59+00:00
+726,devctl,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/devctl/Makefile,2026-05-29T17:58:59+00:00
+730,devctl,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/devctl/Makefile,2026-05-29T17:58:59+00:00
+727,devctl,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/devctl/Makefile,2026-05-29T17:58:59+00:00
+725,devctl,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/devctl/Makefile,2026-05-29T17:58:59+00:00
+722,devctl,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/devctl/logcopter_generate.go,2026-05-29T17:58:59+00:00
+724,devctl,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/devctl/Makefile,2026-05-29T17:58:59+00:00
+723,devctl,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/devctl/Makefile,2026-05-29T17:58:59+00:00
+720,devctl,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/devctl/go.mod,2026-05-29T17:58:59+00:00
+721,devctl,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/devctl/go.mod,2026-05-29T17:58:59+00:00
+740,dmeta,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/dmeta/Makefile,2026-05-29T17:58:59+00:00
+739,dmeta,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/dmeta/Makefile,2026-05-29T17:58:59+00:00
+737,dmeta,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/dmeta/Makefile,2026-05-29T17:58:59+00:00
+741,dmeta,glazed_lint,package_patterns,pass,"glazed-lint package patterns found",./pkg/...,/home/manuel/code/wesen/go-go-golems/dmeta/Makefile,2026-05-29T17:58:59+00:00
+738,dmeta,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to main","",/home/manuel/code/wesen/go-go-golems/dmeta/Makefile,2026-05-29T17:58:59+00:00
+736,dmeta,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/dmeta/Makefile,2026-05-29T17:58:59+00:00
+733,dmeta,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/dmeta/logcopter_generate.go,2026-05-29T17:58:59+00:00
+735,dmeta,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/dmeta/Makefile,2026-05-29T17:58:59+00:00
+734,dmeta,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/dmeta/Makefile,2026-05-29T17:58:59+00:00
+731,dmeta,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/dmeta/go.mod,2026-05-29T17:58:59+00:00
+732,dmeta,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/dmeta/go.mod,2026-05-29T17:58:59+00:00
+751,docmgr,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/docmgr/Makefile,2026-05-29T17:58:59+00:00
+750,docmgr,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/docmgr/Makefile,2026-05-29T17:58:59+00:00
+748,docmgr,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/docmgr/Makefile,2026-05-29T17:58:59+00:00
+752,docmgr,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/docmgr/Makefile,2026-05-29T17:58:59+00:00
+749,docmgr,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/docmgr/Makefile,2026-05-29T17:58:59+00:00
+747,docmgr,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/docmgr/Makefile,2026-05-29T17:58:59+00:00
+744,docmgr,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/docmgr/logcopter_generate.go,2026-05-29T17:58:59+00:00
+746,docmgr,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/docmgr/Makefile,2026-05-29T17:58:59+00:00
+745,docmgr,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/docmgr/Makefile,2026-05-29T17:58:59+00:00
+742,docmgr,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/docmgr/go.mod,2026-05-29T17:58:59+00:00
+743,docmgr,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/docmgr/go.mod,2026-05-29T17:58:59+00:00
+761,ecrivain,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/ecrivain/Makefile,2026-05-29T17:58:59+00:00
+760,ecrivain,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/ecrivain/Makefile,2026-05-29T17:58:59+00:00
+758,ecrivain,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/ecrivain/Makefile,2026-05-29T17:58:59+00:00
+762,ecrivain,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/ecrivain/Makefile,2026-05-29T17:58:59+00:00
+759,ecrivain,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/ecrivain/Makefile,2026-05-29T17:58:59+00:00
+755,ecrivain,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/ecrivain/logcopter_generate.go,2026-05-29T17:58:59+00:00
+757,ecrivain,logcopter,make_check_target,fail,"Makefile logcopter-check target missing","",/home/manuel/code/wesen/go-go-golems/ecrivain/Makefile,2026-05-29T17:58:59+00:00
+756,ecrivain,logcopter,make_generate_target,warn,"Makefile logcopter-generate target missing","",/home/manuel/code/wesen/go-go-golems/ecrivain/Makefile,2026-05-29T17:58:59+00:00
+753,ecrivain,logcopter,require_version,fail,"logcopter require missing","",/home/manuel/code/wesen/go-go-golems/ecrivain/go.mod,2026-05-29T17:58:59+00:00
+754,ecrivain,logcopter,tool_directive,warn,"logcopter tool directive missing","",/home/manuel/code/wesen/go-go-golems/ecrivain/go.mod,2026-05-29T17:58:59+00:00
+772,escuse-me,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/escuse-me/Makefile,2026-05-29T17:58:59+00:00
+771,escuse-me,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/escuse-me/Makefile,2026-05-29T17:58:59+00:00
+769,escuse-me,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/escuse-me/Makefile,2026-05-29T17:58:59+00:00
+773,escuse-me,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/escuse-me/Makefile,2026-05-29T17:58:59+00:00
+770,escuse-me,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/escuse-me/Makefile,2026-05-29T17:58:59+00:00
+768,escuse-me,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/escuse-me/Makefile,2026-05-29T17:58:59+00:00
+765,escuse-me,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/escuse-me/logcopter_generate.go,2026-05-29T17:58:59+00:00
+767,escuse-me,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/escuse-me/Makefile,2026-05-29T17:58:59+00:00
+766,escuse-me,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/escuse-me/Makefile,2026-05-29T17:58:59+00:00
+763,escuse-me,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/escuse-me/go.mod,2026-05-29T17:58:59+00:00
+764,escuse-me,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/escuse-me/go.mod,2026-05-29T17:58:59+00:00
+783,esper,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/esper/Makefile,2026-05-29T17:58:59+00:00
+782,esper,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/esper/Makefile,2026-05-29T17:58:59+00:00
+780,esper,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/esper/Makefile,2026-05-29T17:58:59+00:00
+784,esper,glazed_lint,package_patterns,pass,"glazed-lint package patterns found",./pkg/...,/home/manuel/code/wesen/go-go-golems/esper/Makefile,2026-05-29T17:58:59+00:00
+781,esper,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to main","",/home/manuel/code/wesen/go-go-golems/esper/Makefile,2026-05-29T17:58:59+00:00
+779,esper,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/esper/Makefile,2026-05-29T17:58:59+00:00
+776,esper,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/esper/logcopter_generate.go,2026-05-29T17:58:59+00:00
+778,esper,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/esper/Makefile,2026-05-29T17:58:59+00:00
+777,esper,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/esper/Makefile,2026-05-29T17:58:59+00:00
+774,esper,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/esper/go.mod,2026-05-29T17:58:59+00:00
+775,esper,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/esper/go.mod,2026-05-29T17:58:59+00:00
+794,font-util,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/font-util/Makefile,2026-05-29T17:58:59+00:00
+793,font-util,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/font-util/Makefile,2026-05-29T17:58:59+00:00
+791,font-util,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/font-util/Makefile,2026-05-29T17:58:59+00:00
+795,font-util,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/font-util/Makefile,2026-05-29T17:58:59+00:00
+792,font-util,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/font-util/Makefile,2026-05-29T17:58:59+00:00
+790,font-util,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/font-util/Makefile,2026-05-29T17:58:59+00:00
+787,font-util,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/font-util/logcopter_generate.go,2026-05-29T17:58:59+00:00
+789,font-util,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/font-util/Makefile,2026-05-29T17:58:59+00:00
+788,font-util,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/font-util/Makefile,2026-05-29T17:58:59+00:00
+785,font-util,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/font-util/go.mod,2026-05-29T17:58:59+00:00
+786,font-util,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/font-util/go.mod,2026-05-29T17:58:59+00:00
+805,form-generator,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/form-generator/Makefile,2026-05-29T17:58:59+00:00
+804,form-generator,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/form-generator/Makefile,2026-05-29T17:58:59+00:00
+802,form-generator,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/form-generator/Makefile,2026-05-29T17:58:59+00:00
+806,form-generator,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/form-generator/Makefile,2026-05-29T17:58:59+00:00
+803,form-generator,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/form-generator/Makefile,2026-05-29T17:58:59+00:00
+801,form-generator,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/form-generator/Makefile,2026-05-29T17:58:59+00:00
+798,form-generator,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/form-generator/logcopter_generate.go,2026-05-29T17:58:59+00:00
+800,form-generator,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/form-generator/Makefile,2026-05-29T17:58:59+00:00
+799,form-generator,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/form-generator/Makefile,2026-05-29T17:58:59+00:00
+796,form-generator,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/form-generator/go.mod,2026-05-29T17:58:59+00:00
+797,form-generator,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/form-generator/go.mod,2026-05-29T17:58:59+00:00
+816,gitcommit,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/gitcommit/Makefile,2026-05-29T17:58:59+00:00
+815,gitcommit,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/gitcommit/Makefile,2026-05-29T17:58:59+00:00
+813,gitcommit,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/gitcommit/Makefile,2026-05-29T17:58:59+00:00
+817,gitcommit,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/gitcommit/Makefile,2026-05-29T17:58:59+00:00
+814,gitcommit,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/gitcommit/Makefile,2026-05-29T17:58:59+00:00
+812,gitcommit,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/gitcommit/Makefile,2026-05-29T17:58:59+00:00
+809,gitcommit,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/gitcommit/logcopter_generate.go,2026-05-29T17:58:59+00:00
+811,gitcommit,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/gitcommit/Makefile,2026-05-29T17:58:59+00:00
+810,gitcommit,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/gitcommit/Makefile,2026-05-29T17:58:59+00:00
+807,gitcommit,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/gitcommit/go.mod,2026-05-29T17:58:59+00:00
+808,gitcommit,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/gitcommit/go.mod,2026-05-29T17:58:59+00:00
+827,go-emrichen,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/go-emrichen/Makefile,2026-05-29T17:58:59+00:00
+826,go-emrichen,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/go-emrichen/Makefile,2026-05-29T17:58:59+00:00
+824,go-emrichen,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/go-emrichen/Makefile,2026-05-29T17:58:59+00:00
+828,go-emrichen,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/go-emrichen/Makefile,2026-05-29T17:58:59+00:00
+825,go-emrichen,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/go-emrichen/Makefile,2026-05-29T17:58:59+00:00
+823,go-emrichen,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/go-emrichen/Makefile,2026-05-29T17:58:59+00:00
+820,go-emrichen,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/go-emrichen/logcopter_generate.go,2026-05-29T17:58:59+00:00
+822,go-emrichen,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/go-emrichen/Makefile,2026-05-29T17:58:59+00:00
+821,go-emrichen,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/go-emrichen/Makefile,2026-05-29T17:58:59+00:00
+818,go-emrichen,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/go-emrichen/go.mod,2026-05-29T17:58:59+00:00
+819,go-emrichen,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/go-emrichen/go.mod,2026-05-29T17:58:59+00:00
+838,go-go-agent,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/go-go-agent/Makefile,2026-05-29T17:58:59+00:00
+837,go-go-agent,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/go-go-agent/Makefile,2026-05-29T17:58:59+00:00
+835,go-go-agent,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/go-go-agent/Makefile,2026-05-29T17:58:59+00:00
+839,go-go-agent,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/go-go-agent/Makefile,2026-05-29T17:58:59+00:00
+836,go-go-agent,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/go-go-agent/Makefile,2026-05-29T17:58:59+00:00
+834,go-go-agent,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/go-go-agent/Makefile,2026-05-29T17:58:59+00:00
+831,go-go-agent,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/go-go-agent/logcopter_generate.go,2026-05-29T17:58:59+00:00
+833,go-go-agent,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/go-go-agent/Makefile,2026-05-29T17:58:59+00:00
+832,go-go-agent,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/go-go-agent/Makefile,2026-05-29T17:58:59+00:00
+829,go-go-agent,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/go-go-agent/go.mod,2026-05-29T17:58:59+00:00
+830,go-go-agent,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/go-go-agent/go.mod,2026-05-29T17:58:59+00:00
+845,go-go-agent-action,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./internal/... ./cmd/...",/home/manuel/code/wesen/go-go-golems/go-go-agent-action/Makefile,2026-05-29T17:58:59+00:00
+842,go-go-agent-action,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/go-go-agent-action/logcopter_generate.go,2026-05-29T17:58:59+00:00
+844,go-go-agent-action,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/go-go-agent-action/Makefile,2026-05-29T17:58:59+00:00
+843,go-go-agent-action,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/go-go-agent-action/Makefile,2026-05-29T17:58:59+00:00
+840,go-go-agent-action,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/go-go-agent-action/go.mod,2026-05-29T17:58:59+00:00
+841,go-go-agent-action,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/go-go-agent-action/go.mod,2026-05-29T17:58:59+00:00
+851,go-go-app-arc-agi,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./pkg/... ./cmd/...",/home/manuel/code/wesen/go-go-golems/go-go-app-arc-agi/Makefile,2026-05-29T17:58:59+00:00
+848,go-go-app-arc-agi,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/go-go-app-arc-agi/logcopter_generate.go,2026-05-29T17:58:59+00:00
+850,go-go-app-arc-agi,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/go-go-app-arc-agi/Makefile,2026-05-29T17:58:59+00:00
+849,go-go-app-arc-agi,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/go-go-app-arc-agi/Makefile,2026-05-29T17:58:59+00:00
+846,go-go-app-arc-agi,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/go-go-app-arc-agi/go.mod,2026-05-29T17:58:59+00:00
+847,go-go-app-arc-agi,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/go-go-app-arc-agi/go.mod,2026-05-29T17:58:59+00:00
+861,go-go-app-inventory,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/go-go-app-inventory/Makefile,2026-05-29T17:58:59+00:00
+860,go-go-app-inventory,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/go-go-app-inventory/Makefile,2026-05-29T17:58:59+00:00
+858,go-go-app-inventory,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/go-go-app-inventory/Makefile,2026-05-29T17:58:59+00:00
+862,go-go-app-inventory,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/go-go-app-inventory/Makefile,2026-05-29T17:58:59+00:00
+859,go-go-app-inventory,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/go-go-app-inventory/Makefile,2026-05-29T17:58:59+00:00
+857,go-go-app-inventory,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/go-go-app-inventory/Makefile,2026-05-29T17:58:59+00:00
+854,go-go-app-inventory,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/go-go-app-inventory/logcopter_generate.go,2026-05-29T17:58:59+00:00
+856,go-go-app-inventory,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/go-go-app-inventory/Makefile,2026-05-29T17:58:59+00:00
+855,go-go-app-inventory,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/go-go-app-inventory/Makefile,2026-05-29T17:58:59+00:00
+852,go-go-app-inventory,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/go-go-app-inventory/go.mod,2026-05-29T17:58:59+00:00
+853,go-go-app-inventory,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/go-go-app-inventory/go.mod,2026-05-29T17:58:59+00:00
+868,go-go-app-sqlite,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/go-go-app-sqlite/Makefile,2026-05-29T17:58:59+00:00
+865,go-go-app-sqlite,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/go-go-app-sqlite/logcopter_generate.go,2026-05-29T17:58:59+00:00
+867,go-go-app-sqlite,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/go-go-app-sqlite/Makefile,2026-05-29T17:58:59+00:00
+866,go-go-app-sqlite,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/go-go-app-sqlite/Makefile,2026-05-29T17:58:59+00:00
+863,go-go-app-sqlite,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/go-go-app-sqlite/go.mod,2026-05-29T17:58:59+00:00
+864,go-go-app-sqlite,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/go-go-app-sqlite/go.mod,2026-05-29T17:58:59+00:00
+878,go-go-gepa,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/go-go-gepa/Makefile,2026-05-29T17:58:59+00:00
+877,go-go-gepa,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/go-go-gepa/Makefile,2026-05-29T17:58:59+00:00
+875,go-go-gepa,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/go-go-gepa/Makefile,2026-05-29T17:58:59+00:00
+879,go-go-gepa,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/go-go-gepa/Makefile,2026-05-29T17:58:59+00:00
+876,go-go-gepa,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/go-go-gepa/Makefile,2026-05-29T17:58:59+00:00
+874,go-go-gepa,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/go-go-gepa/Makefile,2026-05-29T17:58:59+00:00
+871,go-go-gepa,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/go-go-gepa/logcopter_generate.go,2026-05-29T17:58:59+00:00
+873,go-go-gepa,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/go-go-gepa/Makefile,2026-05-29T17:58:59+00:00
+872,go-go-gepa,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/go-go-gepa/Makefile,2026-05-29T17:58:59+00:00
+869,go-go-gepa,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/go-go-gepa/go.mod,2026-05-29T17:58:59+00:00
+870,go-go-gepa,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/go-go-gepa/go.mod,2026-05-29T17:58:59+00:00
+885,go-go-host,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./cmd/... ./internal/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/go-go-host/Makefile,2026-05-29T17:58:59+00:00
+882,go-go-host,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/go-go-host/logcopter_generate.go,2026-05-29T17:58:59+00:00
+884,go-go-host,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/go-go-host/Makefile,2026-05-29T17:58:59+00:00
+883,go-go-host,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/go-go-host/Makefile,2026-05-29T17:58:59+00:00
+880,go-go-host,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/go-go-host/go.mod,2026-05-29T17:58:59+00:00
+881,go-go-host,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/go-go-host/go.mod,2026-05-29T17:58:59+00:00
+895,go-go-mcp,glazed_lint,allow_paths,warn,"GLAZED_LINT_ALLOW_PATHS exists without nearby comment","cmd/apps/scholarly/cmd/,cmd/go-go-mcp/cmds/,pkg/embeddable/",/home/manuel/code/wesen/go-go-golems/go-go-mcp/Makefile,2026-05-29T17:58:59+00:00
+894,go-go-mcp,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/go-go-mcp/Makefile,2026-05-29T17:58:59+00:00
+892,go-go-mcp,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/go-go-mcp/Makefile,2026-05-29T17:58:59+00:00
+896,go-go-mcp,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/go-go-mcp/Makefile,2026-05-29T17:58:59+00:00
+893,go-go-mcp,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/go-go-mcp/Makefile,2026-05-29T17:58:59+00:00
+891,go-go-mcp,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/go-go-mcp/Makefile,2026-05-29T17:58:59+00:00
+888,go-go-mcp,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/go-go-mcp/logcopter_generate.go,2026-05-29T17:58:59+00:00
+890,go-go-mcp,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/go-go-mcp/Makefile,2026-05-29T17:58:59+00:00
+889,go-go-mcp,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/go-go-mcp/Makefile,2026-05-29T17:58:59+00:00
+886,go-go-mcp,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/go-go-mcp/go.mod,2026-05-29T17:58:59+00:00
+887,go-go-mcp,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/go-go-mcp/go.mod,2026-05-29T17:58:59+00:00
+902,go-go-os-backend,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/go-go-os-backend/Makefile,2026-05-29T17:58:59+00:00
+899,go-go-os-backend,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/go-go-os-backend/logcopter_generate.go,2026-05-29T17:58:59+00:00
+901,go-go-os-backend,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/go-go-os-backend/Makefile,2026-05-29T17:58:59+00:00
+900,go-go-os-backend,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/go-go-os-backend/Makefile,2026-05-29T17:58:59+00:00
+897,go-go-os-backend,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/go-go-os-backend/go.mod,2026-05-29T17:58:59+00:00
+898,go-go-os-backend,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/go-go-os-backend/go.mod,2026-05-29T17:58:59+00:00
+908,go-sqlite-regexp,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./extension",/home/manuel/code/wesen/go-go-golems/go-sqlite-regexp/Makefile,2026-05-29T17:58:59+00:00
+905,go-sqlite-regexp,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/go-sqlite-regexp/logcopter_generate.go,2026-05-29T17:58:59+00:00
+907,go-sqlite-regexp,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/go-sqlite-regexp/Makefile,2026-05-29T17:58:59+00:00
+906,go-sqlite-regexp,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/go-sqlite-regexp/Makefile,2026-05-29T17:58:59+00:00
+903,go-sqlite-regexp,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/go-sqlite-regexp/go.mod,2026-05-29T17:58:59+00:00
+904,go-sqlite-regexp,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/go-sqlite-regexp/go.mod,2026-05-29T17:58:59+00:00
+918,goja-github-actions,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/goja-github-actions/Makefile,2026-05-29T17:58:59+00:00
+917,goja-github-actions,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/goja-github-actions/Makefile,2026-05-29T17:58:59+00:00
+915,goja-github-actions,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/goja-github-actions/Makefile,2026-05-29T17:58:59+00:00
+919,goja-github-actions,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/goja-github-actions/Makefile,2026-05-29T17:58:59+00:00
+916,goja-github-actions,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/goja-github-actions/Makefile,2026-05-29T17:58:59+00:00
+914,goja-github-actions,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/goja-github-actions/Makefile,2026-05-29T17:58:59+00:00
+911,goja-github-actions,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/goja-github-actions/logcopter_generate.go,2026-05-29T17:58:59+00:00
+913,goja-github-actions,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/goja-github-actions/Makefile,2026-05-29T17:58:59+00:00
+912,goja-github-actions,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/goja-github-actions/Makefile,2026-05-29T17:58:59+00:00
+909,goja-github-actions,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/goja-github-actions/go.mod,2026-05-29T17:58:59+00:00
+910,goja-github-actions,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/goja-github-actions/go.mod,2026-05-29T17:58:59+00:00
+929,harkonnen,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/harkonnen/Makefile,2026-05-29T17:58:59+00:00
+928,harkonnen,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/harkonnen/Makefile,2026-05-29T17:58:59+00:00
+926,harkonnen,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/harkonnen/Makefile,2026-05-29T17:58:59+00:00
+930,harkonnen,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/harkonnen/Makefile,2026-05-29T17:58:59+00:00
+927,harkonnen,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/harkonnen/Makefile,2026-05-29T17:58:59+00:00
+925,harkonnen,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/harkonnen/Makefile,2026-05-29T17:58:59+00:00
+922,harkonnen,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/harkonnen/logcopter_generate.go,2026-05-29T17:58:59+00:00
+924,harkonnen,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/harkonnen/Makefile,2026-05-29T17:58:59+00:00
+923,harkonnen,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/harkonnen/Makefile,2026-05-29T17:58:59+00:00
+920,harkonnen,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/harkonnen/go.mod,2026-05-29T17:58:59+00:00
+921,harkonnen,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/harkonnen/go.mod,2026-05-29T17:58:59+00:00
+939,infra-tooling,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/infra-tooling/Makefile,2026-05-29T17:58:59+00:00
+938,infra-tooling,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/infra-tooling/Makefile,2026-05-29T17:58:59+00:00
+936,infra-tooling,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/infra-tooling/Makefile,2026-05-29T17:58:59+00:00
+940,infra-tooling,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/infra-tooling/Makefile,2026-05-29T17:58:59+00:00
+937,infra-tooling,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/infra-tooling/Makefile,2026-05-29T17:58:59+00:00
+933,infra-tooling,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/infra-tooling/logcopter_generate.go,2026-05-29T17:58:59+00:00
+935,infra-tooling,logcopter,make_check_target,fail,"Makefile logcopter-check target missing","",/home/manuel/code/wesen/go-go-golems/infra-tooling/Makefile,2026-05-29T17:58:59+00:00
+934,infra-tooling,logcopter,make_generate_target,warn,"Makefile logcopter-generate target missing","",/home/manuel/code/wesen/go-go-golems/infra-tooling/Makefile,2026-05-29T17:58:59+00:00
+931,infra-tooling,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/infra-tooling/go.mod,2026-05-29T17:58:59+00:00
+932,infra-tooling,logcopter,tool_directive,warn,"logcopter tool directive missing","",/home/manuel/code/wesen/go-go-golems/infra-tooling/go.mod,2026-05-29T17:58:59+00:00
+950,jesus,glazed_lint,allow_paths,pass,"GLAZED_LINT_ALLOW_PATHS is documented","pkg/repl/,pkg/mcp/",/home/manuel/code/wesen/go-go-golems/jesus/Makefile,2026-05-29T17:58:59+00:00
+949,jesus,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/jesus/Makefile,2026-05-29T17:58:59+00:00
+947,jesus,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/jesus/Makefile,2026-05-29T17:58:59+00:00
+951,jesus,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/jesus/Makefile,2026-05-29T17:58:59+00:00
+948,jesus,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/jesus/Makefile,2026-05-29T17:58:59+00:00
+946,jesus,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/jesus/Makefile,2026-05-29T17:58:59+00:00
+943,jesus,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/jesus/logcopter_generate.go,2026-05-29T17:58:59+00:00
+945,jesus,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/jesus/Makefile,2026-05-29T17:58:59+00:00
+944,jesus,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/jesus/Makefile,2026-05-29T17:58:59+00:00
+941,jesus,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/jesus/go.mod,2026-05-29T17:58:59+00:00
+942,jesus,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/jesus/go.mod,2026-05-29T17:58:59+00:00
+961,js-analyzer,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/js-analyzer/Makefile,2026-05-29T17:58:59+00:00
+960,js-analyzer,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/js-analyzer/Makefile,2026-05-29T17:58:59+00:00
+958,js-analyzer,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/js-analyzer/Makefile,2026-05-29T17:58:59+00:00
+962,js-analyzer,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/js-analyzer/Makefile,2026-05-29T17:58:59+00:00
+959,js-analyzer,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/js-analyzer/Makefile,2026-05-29T17:58:59+00:00
+957,js-analyzer,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/js-analyzer/Makefile,2026-05-29T17:58:59+00:00
+954,js-analyzer,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/js-analyzer/logcopter_generate.go,2026-05-29T17:58:59+00:00
+956,js-analyzer,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/js-analyzer/Makefile,2026-05-29T17:58:59+00:00
+955,js-analyzer,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/js-analyzer/Makefile,2026-05-29T17:58:59+00:00
+952,js-analyzer,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/js-analyzer/go.mod,2026-05-29T17:58:59+00:00
+953,js-analyzer,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/js-analyzer/go.mod,2026-05-29T17:58:59+00:00
+965,logcopter,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/logcopter/logcopter_generate.go,2026-05-29T17:58:59+00:00
+967,logcopter,logcopter,make_check_target,fail,"Makefile logcopter-check target missing","",/home/manuel/code/wesen/go-go-golems/logcopter/Makefile,2026-05-29T17:58:59+00:00
+966,logcopter,logcopter,make_generate_target,warn,"Makefile logcopter-generate target missing","",/home/manuel/code/wesen/go-go-golems/logcopter/Makefile,2026-05-29T17:58:59+00:00
+963,logcopter,logcopter,require_version,pass,"logcopter require found: go","",/home/manuel/code/wesen/go-go-golems/logcopter/go.mod,2026-05-29T17:58:59+00:00
+964,logcopter,logcopter,tool_directive,warn,"logcopter tool directive missing","",/home/manuel/code/wesen/go-go-golems/logcopter/go.mod,2026-05-29T17:58:59+00:00
+977,markdown-quizz,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/markdown-quizz/Makefile,2026-05-29T17:58:59+00:00
+976,markdown-quizz,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/markdown-quizz/Makefile,2026-05-29T17:58:59+00:00
+974,markdown-quizz,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/markdown-quizz/Makefile,2026-05-29T17:58:59+00:00
+978,markdown-quizz,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/markdown-quizz/Makefile,2026-05-29T17:58:59+00:00
+975,markdown-quizz,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/markdown-quizz/Makefile,2026-05-29T17:58:59+00:00
+973,markdown-quizz,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/markdown-quizz/Makefile,2026-05-29T17:58:59+00:00
+970,markdown-quizz,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/markdown-quizz/logcopter_generate.go,2026-05-29T17:58:59+00:00
+972,markdown-quizz,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/markdown-quizz/Makefile,2026-05-29T17:58:59+00:00
+971,markdown-quizz,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/markdown-quizz/Makefile,2026-05-29T17:58:59+00:00
+968,markdown-quizz,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/markdown-quizz/go.mod,2026-05-29T17:58:59+00:00
+969,markdown-quizz,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/markdown-quizz/go.mod,2026-05-29T17:58:59+00:00
+988,mastoid,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/mastoid/Makefile,2026-05-29T17:58:59+00:00
+987,mastoid,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/mastoid/Makefile,2026-05-29T17:58:59+00:00
+985,mastoid,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/mastoid/Makefile,2026-05-29T17:58:59+00:00
+989,mastoid,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/mastoid/Makefile,2026-05-29T17:58:59+00:00
+986,mastoid,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/mastoid/Makefile,2026-05-29T17:58:59+00:00
+984,mastoid,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/mastoid/Makefile,2026-05-29T17:58:59+00:00
+981,mastoid,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/mastoid/logcopter_generate.go,2026-05-29T17:58:59+00:00
+983,mastoid,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/mastoid/Makefile,2026-05-29T17:58:59+00:00
+982,mastoid,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/mastoid/Makefile,2026-05-29T17:58:59+00:00
+979,mastoid,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/mastoid/go.mod,2026-05-29T17:58:59+00:00
+980,mastoid,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/mastoid/go.mod,2026-05-29T17:58:59+00:00
+999,oak,glazed_lint,allow_paths,pass,"GLAZED_LINT_ALLOW_PATHS is documented",cmd/oak/commands/,/home/manuel/code/wesen/go-go-golems/oak/Makefile,2026-05-29T17:58:59+00:00
+998,oak,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/oak/Makefile,2026-05-29T17:58:59+00:00
+996,oak,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/oak/Makefile,2026-05-29T17:58:59+00:00
+1000,oak,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/oak/Makefile,2026-05-29T17:58:59+00:00
+997,oak,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/oak/Makefile,2026-05-29T17:58:59+00:00
+995,oak,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/oak/Makefile,2026-05-29T17:58:59+00:00
+992,oak,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/oak/logcopter_generate.go,2026-05-29T17:58:59+00:00
+994,oak,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/oak/Makefile,2026-05-29T17:58:59+00:00
+993,oak,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/oak/Makefile,2026-05-29T17:58:59+00:00
+990,oak,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/oak/go.mod,2026-05-29T17:58:59+00:00
+991,oak,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/oak/go.mod,2026-05-29T17:58:59+00:00
+1006,oak-git-db,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./pkg/... ./cmd/...",/home/manuel/code/wesen/go-go-golems/oak-git-db/Makefile,2026-05-29T17:58:59+00:00
+1003,oak-git-db,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/oak-git-db/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1005,oak-git-db,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/oak-git-db/Makefile,2026-05-29T17:58:59+00:00
+1004,oak-git-db,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/oak-git-db/Makefile,2026-05-29T17:58:59+00:00
+1001,oak-git-db,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/oak-git-db/go.mod,2026-05-29T17:58:59+00:00
+1002,oak-git-db,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/oak-git-db/go.mod,2026-05-29T17:58:59+00:00
+1016,openai-app-server,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/openai-app-server/Makefile,2026-05-29T17:58:59+00:00
+1015,openai-app-server,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/openai-app-server/Makefile,2026-05-29T17:58:59+00:00
+1013,openai-app-server,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/openai-app-server/Makefile,2026-05-29T17:58:59+00:00
+1017,openai-app-server,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/openai-app-server/Makefile,2026-05-29T17:58:59+00:00
+1014,openai-app-server,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/openai-app-server/Makefile,2026-05-29T17:58:59+00:00
+1012,openai-app-server,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/openai-app-server/Makefile,2026-05-29T17:58:59+00:00
+1009,openai-app-server,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/openai-app-server/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1011,openai-app-server,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/openai-app-server/Makefile,2026-05-29T17:58:59+00:00
+1010,openai-app-server,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/openai-app-server/Makefile,2026-05-29T17:58:59+00:00
+1007,openai-app-server,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/openai-app-server/go.mod,2026-05-29T17:58:59+00:00
+1008,openai-app-server,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/openai-app-server/go.mod,2026-05-29T17:58:59+00:00
+1027,openai-mock-server,glazed_lint,allow_paths,pass,"GLAZED_LINT_ALLOW_PATHS is documented",pkg/server/config/,/home/manuel/code/wesen/go-go-golems/openai-mock-server/Makefile,2026-05-29T17:58:59+00:00
+1026,openai-mock-server,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/openai-mock-server/Makefile,2026-05-29T17:58:59+00:00
+1024,openai-mock-server,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/openai-mock-server/Makefile,2026-05-29T17:58:59+00:00
+1028,openai-mock-server,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/openai-mock-server/Makefile,2026-05-29T17:58:59+00:00
+1025,openai-mock-server,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.4","",/home/manuel/code/wesen/go-go-golems/openai-mock-server/Makefile,2026-05-29T17:58:59+00:00
+1023,openai-mock-server,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/openai-mock-server/Makefile,2026-05-29T17:58:59+00:00
+1020,openai-mock-server,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/openai-mock-server/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1022,openai-mock-server,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/openai-mock-server/Makefile,2026-05-29T17:58:59+00:00
+1021,openai-mock-server,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/openai-mock-server/Makefile,2026-05-29T17:58:59+00:00
+1018,openai-mock-server,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/openai-mock-server/go.mod,2026-05-29T17:58:59+00:00
+1019,openai-mock-server,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/openai-mock-server/go.mod,2026-05-29T17:58:59+00:00
+1038,parka,glazed_lint,allow_paths,pass,"GLAZED_LINT_ALLOW_PATHS is documented","cmd/parka/cmds/serve.go,pkg/handlers/config/",/home/manuel/code/wesen/go-go-golems/parka/Makefile,2026-05-29T17:58:59+00:00
+1037,parka,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/parka/Makefile,2026-05-29T17:58:59+00:00
+1035,parka,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/parka/Makefile,2026-05-29T17:58:59+00:00
+1039,parka,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/parka/Makefile,2026-05-29T17:58:59+00:00
+1036,parka,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/parka/Makefile,2026-05-29T17:58:59+00:00
+1034,parka,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/parka/Makefile,2026-05-29T17:58:59+00:00
+1031,parka,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/parka/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1033,parka,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/parka/Makefile,2026-05-29T17:58:59+00:00
+1032,parka,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/parka/Makefile,2026-05-29T17:58:59+00:00
+1029,parka,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/parka/go.mod,2026-05-29T17:58:59+00:00
+1030,parka,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/parka/go.mod,2026-05-29T17:58:59+00:00
+1048,plunger,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/plunger/Makefile,2026-05-29T17:58:59+00:00
+1047,plunger,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/plunger/Makefile,2026-05-29T17:58:59+00:00
+1045,plunger,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/plunger/Makefile,2026-05-29T17:58:59+00:00
+1049,plunger,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/plunger/Makefile,2026-05-29T17:58:59+00:00
+1046,plunger,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/plunger/Makefile,2026-05-29T17:58:59+00:00
+1042,plunger,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/plunger/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1044,plunger,logcopter,make_check_target,fail,"Makefile logcopter-check target missing","",/home/manuel/code/wesen/go-go-golems/plunger/Makefile,2026-05-29T17:58:59+00:00
+1043,plunger,logcopter,make_generate_target,warn,"Makefile logcopter-generate target missing","",/home/manuel/code/wesen/go-go-golems/plunger/Makefile,2026-05-29T17:58:59+00:00
+1040,plunger,logcopter,require_version,fail,"logcopter require missing","",/home/manuel/code/wesen/go-go-golems/plunger/go.mod,2026-05-29T17:58:59+00:00
+1041,plunger,logcopter,tool_directive,warn,"logcopter tool directive missing","",/home/manuel/code/wesen/go-go-golems/plunger/go.mod,2026-05-29T17:58:59+00:00
+1059,plz-confirm,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/plz-confirm/Makefile,2026-05-29T17:58:59+00:00
+1058,plz-confirm,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/plz-confirm/Makefile,2026-05-29T17:58:59+00:00
+1056,plz-confirm,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/plz-confirm/Makefile,2026-05-29T17:58:59+00:00
+1060,plz-confirm,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/plz-confirm/Makefile,2026-05-29T17:58:59+00:00
+1057,plz-confirm,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/plz-confirm/Makefile,2026-05-29T17:58:59+00:00
+1055,plz-confirm,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/plz-confirm/Makefile,2026-05-29T17:58:59+00:00
+1052,plz-confirm,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/plz-confirm/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1054,plz-confirm,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/plz-confirm/Makefile,2026-05-29T17:58:59+00:00
+1053,plz-confirm,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/plz-confirm/Makefile,2026-05-29T17:58:59+00:00
+1050,plz-confirm,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/plz-confirm/go.mod,2026-05-29T17:58:59+00:00
+1051,plz-confirm,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/plz-confirm/go.mod,2026-05-29T17:58:59+00:00
+1070,prescribe,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/prescribe/Makefile,2026-05-29T17:58:59+00:00
+1069,prescribe,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/prescribe/Makefile,2026-05-29T17:58:59+00:00
+1067,prescribe,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/prescribe/Makefile,2026-05-29T17:58:59+00:00
+1071,prescribe,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/prescribe/Makefile,2026-05-29T17:58:59+00:00
+1068,prescribe,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/prescribe/Makefile,2026-05-29T17:58:59+00:00
+1066,prescribe,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/prescribe/Makefile,2026-05-29T17:58:59+00:00
+1063,prescribe,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/prescribe/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1065,prescribe,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/prescribe/Makefile,2026-05-29T17:58:59+00:00
+1064,prescribe,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/prescribe/Makefile,2026-05-29T17:58:59+00:00
+1061,prescribe,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/prescribe/go.mod,2026-05-29T17:58:59+00:00
+1062,prescribe,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/prescribe/go.mod,2026-05-29T17:58:59+00:00
+1081,prompto,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/prompto/Makefile,2026-05-29T17:58:59+00:00
+1080,prompto,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/prompto/Makefile,2026-05-29T17:58:59+00:00
+1078,prompto,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/prompto/Makefile,2026-05-29T17:58:59+00:00
+1082,prompto,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/prompto/Makefile,2026-05-29T17:58:59+00:00
+1079,prompto,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.0.5","",/home/manuel/code/wesen/go-go-golems/prompto/Makefile,2026-05-29T17:58:59+00:00
+1077,prompto,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/prompto/Makefile,2026-05-29T17:58:59+00:00
+1074,prompto,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/prompto/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1076,prompto,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/prompto/Makefile,2026-05-29T17:58:59+00:00
+1075,prompto,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/prompto/Makefile,2026-05-29T17:58:59+00:00
+1072,prompto,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/prompto/go.mod,2026-05-29T17:58:59+00:00
+1073,prompto,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/prompto/go.mod,2026-05-29T17:58:59+00:00
+1085,raza,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/raza/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1087,raza,logcopter,make_check_target,fail,"Makefile logcopter-check target missing","",/home/manuel/code/wesen/go-go-golems/raza/Makefile,2026-05-29T17:58:59+00:00
+1086,raza,logcopter,make_generate_target,warn,"Makefile logcopter-generate target missing","",/home/manuel/code/wesen/go-go-golems/raza/Makefile,2026-05-29T17:58:59+00:00
+1083,raza,logcopter,require_version,fail,"logcopter require missing","",/home/manuel/code/wesen/go-go-golems/raza/go.mod,2026-05-29T17:58:59+00:00
+1084,raza,logcopter,tool_directive,warn,"logcopter tool directive missing","",/home/manuel/code/wesen/go-go-golems/raza/go.mod,2026-05-29T17:58:59+00:00
+1097,refactorio,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/refactorio/Makefile,2026-05-29T17:58:59+00:00
+1096,refactorio,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/refactorio/Makefile,2026-05-29T17:58:59+00:00
+1094,refactorio,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/refactorio/Makefile,2026-05-29T17:58:59+00:00
+1098,refactorio,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/refactorio/Makefile,2026-05-29T17:58:59+00:00
+1095,refactorio,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/refactorio/Makefile,2026-05-29T17:58:59+00:00
+1093,refactorio,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/refactorio/Makefile,2026-05-29T17:58:59+00:00
+1090,refactorio,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/refactorio/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1092,refactorio,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/refactorio/Makefile,2026-05-29T17:58:59+00:00
+1091,refactorio,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/refactorio/Makefile,2026-05-29T17:58:59+00:00
+1088,refactorio,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/refactorio/go.mod,2026-05-29T17:58:59+00:00
+1089,refactorio,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/refactorio/go.mod,2026-05-29T17:58:59+00:00
+1108,remarquee,glazed_lint,allow_paths,pass,"GLAZED_LINT_ALLOW_PATHS is documented","cmd/build-remarquee-ui-web/,cmd/remarquee/cmds/device/,cmd/remarquee/cmds/rmdsl/,cmd/remarquee/cmds/cloud/,cmd/remarquee/cmds/upload/,cmd/remarquee/cmds/rmdoc/,cmd/remarquee-ui/",/home/manuel/code/wesen/go-go-golems/remarquee/Makefile,2026-05-29T17:58:59+00:00
+1107,remarquee,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/remarquee/Makefile,2026-05-29T17:58:59+00:00
+1105,remarquee,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/remarquee/Makefile,2026-05-29T17:58:59+00:00
+1109,remarquee,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/remarquee/Makefile,2026-05-29T17:58:59+00:00
+1106,remarquee,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/remarquee/Makefile,2026-05-29T17:58:59+00:00
+1104,remarquee,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/remarquee/Makefile,2026-05-29T17:58:59+00:00
+1101,remarquee,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/remarquee/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1103,remarquee,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/remarquee/Makefile,2026-05-29T17:58:59+00:00
+1102,remarquee,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/remarquee/Makefile,2026-05-29T17:58:59+00:00
+1099,remarquee,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/remarquee/go.mod,2026-05-29T17:58:59+00:00
+1100,remarquee,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/remarquee/go.mod,2026-05-29T17:58:59+00:00
+1115,salad,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./cmd/... ./internal/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/salad/Makefile,2026-05-29T17:58:59+00:00
+1112,salad,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/salad/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1114,salad,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/salad/Makefile,2026-05-29T17:58:59+00:00
+1113,salad,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/salad/Makefile,2026-05-29T17:58:59+00:00
+1110,salad,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/salad/go.mod,2026-05-29T17:58:59+00:00
+1111,salad,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/salad/go.mod,2026-05-29T17:58:59+00:00
+1125,sanitize,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/sanitize/Makefile,2026-05-29T17:58:59+00:00
+1124,sanitize,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/sanitize/Makefile,2026-05-29T17:58:59+00:00
+1122,sanitize,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/sanitize/Makefile,2026-05-29T17:58:59+00:00
+1126,sanitize,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/... ./internal/cli",/home/manuel/code/wesen/go-go-golems/sanitize/Makefile,2026-05-29T17:58:59+00:00
+1123,sanitize,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/sanitize/Makefile,2026-05-29T17:58:59+00:00
+1121,sanitize,logcopter,generate_check_package_match,warn,"logcopter generate/check package lists differ","generate=./...; check=./cmd/... ./internal/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/sanitize/Makefile,2026-05-29T17:58:59+00:00
+1118,sanitize,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/sanitize/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1120,sanitize,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/sanitize/Makefile,2026-05-29T17:58:59+00:00
+1119,sanitize,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/sanitize/Makefile,2026-05-29T17:58:59+00:00
+1116,sanitize,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/sanitize/go.mod,2026-05-29T17:58:59+00:00
+1117,sanitize,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/sanitize/go.mod,2026-05-29T17:58:59+00:00
+1136,scraper,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/scraper/Makefile,2026-05-29T17:58:59+00:00
+1135,scraper,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/scraper/Makefile,2026-05-29T17:58:59+00:00
+1133,scraper,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/scraper/Makefile,2026-05-29T17:58:59+00:00
+1137,scraper,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/scraper/Makefile,2026-05-29T17:58:59+00:00
+1134,scraper,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/scraper/Makefile,2026-05-29T17:58:59+00:00
+1132,scraper,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/scraper/Makefile,2026-05-29T17:58:59+00:00
+1129,scraper,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/scraper/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1131,scraper,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/scraper/Makefile,2026-05-29T17:58:59+00:00
+1130,scraper,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/scraper/Makefile,2026-05-29T17:58:59+00:00
+1127,scraper,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/scraper/go.mod,2026-05-29T17:58:59+00:00
+1128,scraper,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/scraper/go.mod,2026-05-29T17:58:59+00:00
+1147,sessionstream,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/sessionstream/Makefile,2026-05-29T17:58:59+00:00
+1146,sessionstream,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/sessionstream/Makefile,2026-05-29T17:58:59+00:00
+1144,sessionstream,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/sessionstream/Makefile,2026-05-29T17:58:59+00:00
+1148,sessionstream,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/sessionstream/Makefile,2026-05-29T17:58:59+00:00
+1145,sessionstream,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.2.7","",/home/manuel/code/wesen/go-go-golems/sessionstream/Makefile,2026-05-29T17:58:59+00:00
+1143,sessionstream,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/sessionstream/Makefile,2026-05-29T17:58:59+00:00
+1140,sessionstream,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/sessionstream/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1142,sessionstream,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/sessionstream/Makefile,2026-05-29T17:58:59+00:00
+1141,sessionstream,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/sessionstream/Makefile,2026-05-29T17:58:59+00:00
+1138,sessionstream,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/sessionstream/go.mod,2026-05-29T17:58:59+00:00
+1139,sessionstream,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/sessionstream/go.mod,2026-05-29T17:58:59+00:00
+1158,smailnail,glazed_lint,allow_paths,pass,"GLAZED_LINT_ALLOW_PATHS is documented","cmd/build-web/,cmd/imap-tests/,pkg/mcp/imapjs/",/home/manuel/code/wesen/go-go-golems/smailnail/Makefile,2026-05-29T17:58:59+00:00
+1157,smailnail,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/smailnail/Makefile,2026-05-29T17:58:59+00:00
+1155,smailnail,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/smailnail/Makefile,2026-05-29T17:58:59+00:00
+1159,smailnail,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/smailnail/Makefile,2026-05-29T17:58:59+00:00
+1156,smailnail,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/smailnail/Makefile,2026-05-29T17:58:59+00:00
+1154,smailnail,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/smailnail/Makefile,2026-05-29T17:58:59+00:00
+1151,smailnail,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/smailnail/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1153,smailnail,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/smailnail/Makefile,2026-05-29T17:58:59+00:00
+1152,smailnail,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/smailnail/Makefile,2026-05-29T17:58:59+00:00
+1149,smailnail,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/smailnail/go.mod,2026-05-29T17:58:59+00:00
+1150,smailnail,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/smailnail/go.mod,2026-05-29T17:58:59+00:00
+1169,sqleton,glazed_lint,allow_paths,pass,"GLAZED_LINT_ALLOW_PATHS is documented","cmd/sqleton/cmds/,cmd/sqleton/main.go",/home/manuel/code/wesen/go-go-golems/sqleton/Makefile,2026-05-29T17:58:59+00:00
+1168,sqleton,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/sqleton/Makefile,2026-05-29T17:58:59+00:00
+1166,sqleton,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/sqleton/Makefile,2026-05-29T17:58:59+00:00
+1170,sqleton,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/sqleton/Makefile,2026-05-29T17:58:59+00:00
+1167,sqleton,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/sqleton/Makefile,2026-05-29T17:58:59+00:00
+1165,sqleton,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/sqleton/Makefile,2026-05-29T17:58:59+00:00
+1162,sqleton,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/sqleton/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1164,sqleton,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/sqleton/Makefile,2026-05-29T17:58:59+00:00
+1163,sqleton,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/sqleton/Makefile,2026-05-29T17:58:59+00:00
+1160,sqleton,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/sqleton/go.mod,2026-05-29T17:58:59+00:00
+1161,sqleton,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/sqleton/go.mod,2026-05-29T17:58:59+00:00
+1180,tactician,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/tactician/Makefile,2026-05-29T17:58:59+00:00
+1179,tactician,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/tactician/Makefile,2026-05-29T17:58:59+00:00
+1177,tactician,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/tactician/Makefile,2026-05-29T17:58:59+00:00
+1181,tactician,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/tactician/Makefile,2026-05-29T17:58:59+00:00
+1178,tactician,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/tactician/Makefile,2026-05-29T17:58:59+00:00
+1176,tactician,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/tactician/Makefile,2026-05-29T17:58:59+00:00
+1173,tactician,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/tactician/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1175,tactician,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/tactician/Makefile,2026-05-29T17:58:59+00:00
+1174,tactician,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/tactician/Makefile,2026-05-29T17:58:59+00:00
+1171,tactician,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/tactician/go.mod,2026-05-29T17:58:59+00:00
+1172,tactician,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/tactician/go.mod,2026-05-29T17:58:59+00:00
+1184,terraform-provider-stytch-b2b,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/terraform-provider-stytch-b2b/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1186,terraform-provider-stytch-b2b,logcopter,make_check_target,fail,"Makefile logcopter-check target missing","",/home/manuel/code/wesen/go-go-golems/terraform-provider-stytch-b2b/Makefile,2026-05-29T17:58:59+00:00
+1185,terraform-provider-stytch-b2b,logcopter,make_generate_target,warn,"Makefile logcopter-generate target missing","",/home/manuel/code/wesen/go-go-golems/terraform-provider-stytch-b2b/Makefile,2026-05-29T17:58:59+00:00
+1182,terraform-provider-stytch-b2b,logcopter,require_version,fail,"logcopter require missing","",/home/manuel/code/wesen/go-go-golems/terraform-provider-stytch-b2b/go.mod,2026-05-29T17:58:59+00:00
+1183,terraform-provider-stytch-b2b,logcopter,tool_directive,warn,"logcopter tool directive missing","",/home/manuel/code/wesen/go-go-golems/terraform-provider-stytch-b2b/go.mod,2026-05-29T17:58:59+00:00
+1196,uhoh,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/uhoh/Makefile,2026-05-29T17:58:59+00:00
+1195,uhoh,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/uhoh/Makefile,2026-05-29T17:58:59+00:00
+1193,uhoh,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/uhoh/Makefile,2026-05-29T17:58:59+00:00
+1197,uhoh,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/uhoh/Makefile,2026-05-29T17:58:59+00:00
+1194,uhoh,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/uhoh/Makefile,2026-05-29T17:58:59+00:00
+1192,uhoh,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/uhoh/Makefile,2026-05-29T17:58:59+00:00
+1189,uhoh,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/uhoh/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1191,uhoh,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/uhoh/Makefile,2026-05-29T17:58:59+00:00
+1190,uhoh,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/uhoh/Makefile,2026-05-29T17:58:59+00:00
+1187,uhoh,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/uhoh/go.mod,2026-05-29T17:58:59+00:00
+1188,uhoh,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/uhoh/go.mod,2026-05-29T17:58:59+00:00
+1207,vault-envrc-generator,glazed_lint,allow_paths,pass,"GLAZED_LINT_ALLOW_PATHS is documented","pkg/vault/,pkg/analyze/",/home/manuel/code/wesen/go-go-golems/vault-envrc-generator/Makefile,2026-05-29T17:58:59+00:00
+1206,vault-envrc-generator,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/vault-envrc-generator/Makefile,2026-05-29T17:58:59+00:00
+1204,vault-envrc-generator,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/vault-envrc-generator/Makefile,2026-05-29T17:58:59+00:00
+1208,vault-envrc-generator,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./cmds/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/vault-envrc-generator/Makefile,2026-05-29T17:58:59+00:00
+1205,vault-envrc-generator,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/vault-envrc-generator/Makefile,2026-05-29T17:58:59+00:00
+1203,vault-envrc-generator,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./cmds/... ./pkg/...; check=./cmd/... ./cmds/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/vault-envrc-generator/Makefile,2026-05-29T17:58:59+00:00
+1200,vault-envrc-generator,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/vault-envrc-generator/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1202,vault-envrc-generator,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/vault-envrc-generator/Makefile,2026-05-29T17:58:59+00:00
+1201,vault-envrc-generator,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/vault-envrc-generator/Makefile,2026-05-29T17:58:59+00:00
+1198,vault-envrc-generator,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/vault-envrc-generator/go.mod,2026-05-29T17:58:59+00:00
+1199,vault-envrc-generator,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/vault-envrc-generator/go.mod,2026-05-29T17:58:59+00:00
+1218,vm-system,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/vm-system/Makefile,2026-05-29T17:58:59+00:00
+1217,vm-system,glazed_lint,analyzer_package,warn,"glazed-lint analyzer package not found","",/home/manuel/code/wesen/go-go-golems/vm-system/Makefile,2026-05-29T17:58:59+00:00
+1215,vm-system,glazed_lint,make_target,fail,"Makefile glazed-lint target missing","",/home/manuel/code/wesen/go-go-golems/vm-system/Makefile,2026-05-29T17:58:59+00:00
+1219,vm-system,glazed_lint,package_patterns,warn,"glazed-lint package patterns not detected","",/home/manuel/code/wesen/go-go-golems/vm-system/Makefile,2026-05-29T17:58:59+00:00
+1216,vm-system,glazed_lint,version_pin,warn,"GLAZED_VERSION not found","",/home/manuel/code/wesen/go-go-golems/vm-system/Makefile,2026-05-29T17:58:59+00:00
+1214,vm-system,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./internal/... ./pkg/...; check=./cmd/... ./internal/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/vm-system/Makefile,2026-05-29T17:58:59+00:00
+1211,vm-system,logcopter,generate_file,pass,"logcopter_generate.go present","",/home/manuel/code/wesen/go-go-golems/vm-system/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1213,vm-system,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/vm-system/Makefile,2026-05-29T17:58:59+00:00
+1212,vm-system,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/vm-system/Makefile,2026-05-29T17:58:59+00:00
+1209,vm-system,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/vm-system/go.mod,2026-05-29T17:58:59+00:00
+1210,vm-system,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/vm-system/go.mod,2026-05-29T17:58:59+00:00
+1222,voyage,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/voyage/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1224,voyage,logcopter,make_check_target,fail,"Makefile logcopter-check target missing","",/home/manuel/code/wesen/go-go-golems/voyage/Makefile,2026-05-29T17:58:59+00:00
+1223,voyage,logcopter,make_generate_target,warn,"Makefile logcopter-generate target missing","",/home/manuel/code/wesen/go-go-golems/voyage/Makefile,2026-05-29T17:58:59+00:00
+1220,voyage,logcopter,require_version,fail,"logcopter require missing","",/home/manuel/code/wesen/go-go-golems/voyage/go.mod,2026-05-29T17:58:59+00:00
+1221,voyage,logcopter,tool_directive,warn,"logcopter tool directive missing","",/home/manuel/code/wesen/go-go-golems/voyage/go.mod,2026-05-29T17:58:59+00:00
+1234,web-agent-example,glazed_lint,allow_paths,skip,"No GLAZED_LINT_ALLOW_PATHS configured","",/home/manuel/code/wesen/go-go-golems/web-agent-example/Makefile,2026-05-29T17:58:59+00:00
+1233,web-agent-example,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/web-agent-example/Makefile,2026-05-29T17:58:59+00:00
+1231,web-agent-example,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/web-agent-example/Makefile,2026-05-29T17:58:59+00:00
+1235,web-agent-example,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/web-agent-example/Makefile,2026-05-29T17:58:59+00:00
+1232,web-agent-example,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/web-agent-example/Makefile,2026-05-29T17:58:59+00:00
+1230,web-agent-example,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/web-agent-example/Makefile,2026-05-29T17:58:59+00:00
+1227,web-agent-example,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/web-agent-example/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1229,web-agent-example,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/web-agent-example/Makefile,2026-05-29T17:58:59+00:00
+1228,web-agent-example,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/web-agent-example/Makefile,2026-05-29T17:58:59+00:00
+1225,web-agent-example,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/web-agent-example/go.mod,2026-05-29T17:58:59+00:00
+1226,web-agent-example,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/web-agent-example/go.mod,2026-05-29T17:58:59+00:00
+1245,zine-layout,glazed_lint,allow_paths,pass,"GLAZED_LINT_ALLOW_PATHS is documented",cmd/build-web/,/home/manuel/code/wesen/go-go-golems/zine-layout/Makefile,2026-05-29T17:58:59+00:00
+1244,zine-layout,glazed_lint,analyzer_package,pass,"glazed-lint analyzer package configured","",/home/manuel/code/wesen/go-go-golems/zine-layout/Makefile,2026-05-29T17:58:59+00:00
+1242,zine-layout,glazed_lint,make_target,pass,"Makefile glazed-lint target present","",/home/manuel/code/wesen/go-go-golems/zine-layout/Makefile,2026-05-29T17:58:59+00:00
+1246,zine-layout,glazed_lint,package_patterns,pass,"glazed-lint package patterns found","./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/zine-layout/Makefile,2026-05-29T17:58:59+00:00
+1243,zine-layout,glazed_lint,version_pin,pass,"GLAZED_VERSION pinned to v1.3.6","",/home/manuel/code/wesen/go-go-golems/zine-layout/Makefile,2026-05-29T17:58:59+00:00
+1241,zine-layout,logcopter,generate_check_package_match,pass,"logcopter generate/check package lists match","generate=./cmd/... ./pkg/...; check=./cmd/... ./pkg/...",/home/manuel/code/wesen/go-go-golems/zine-layout/Makefile,2026-05-29T17:58:59+00:00
+1238,zine-layout,logcopter,generate_file,warn,"logcopter_generate.go missing","",/home/manuel/code/wesen/go-go-golems/zine-layout/logcopter_generate.go,2026-05-29T17:58:59+00:00
+1240,zine-layout,logcopter,make_check_target,pass,"Makefile logcopter-check target present","",/home/manuel/code/wesen/go-go-golems/zine-layout/Makefile,2026-05-29T17:58:59+00:00
+1239,zine-layout,logcopter,make_generate_target,pass,"Makefile logcopter-generate target present","",/home/manuel/code/wesen/go-go-golems/zine-layout/Makefile,2026-05-29T17:58:59+00:00
+1236,zine-layout,logcopter,require_version,pass,"logcopter require found: v0.1.0","",/home/manuel/code/wesen/go-go-golems/zine-layout/go.mod,2026-05-29T17:58:59+00:00
+1237,zine-layout,logcopter,tool_directive,pass,"logcopter tool directive present","",/home/manuel/code/wesen/go-go-golems/zine-layout/go.mod,2026-05-29T17:58:59+00:00

@@ -40,6 +40,7 @@ DEFAULT_BATCHES = TICKET_DIR / "sources" / "01-rollout-batches.json"
 INFRA005_DIR = TICKET_DIR.parent.parent / "29" / "INFRA-005--improve-infra-rollout-dashboard-for-dependency-ordered-releases"
 DEFAULT_DEP_SCAN_SCRIPT = INFRA005_DIR / "scripts" / "01-populate-internal-dependencies.py"
 DEFAULT_ISSUE_SCAN_SCRIPT = INFRA005_DIR / "scripts" / "02-populate-repo-issue-log.py"
+DEFAULT_HEALTH_SCAN_SCRIPT = INFRA005_DIR / "scripts" / "03-populate-repo-health.py"
 
 STATES = [
     "planned",
@@ -312,6 +313,7 @@ def html_page(db: Path, title: str, body: str) -> str:
       <a href='/'>Overview</a>
       <a href='/release-train'>Release train</a>
       <a href='/bumps'>Bump queue</a>
+      <a href='/health'>Health</a>
     </div>
     """
     return f"""<!doctype html>
@@ -402,6 +404,40 @@ def html_bumps(db: Path) -> str:
     return html_page(db, "Dependency bump queue", "".join(sections) if sections else "<div class='card green'>No bump candidates.</div>")
 
 
+
+def html_health(db: Path, category: str | None = None, status: str | None = None) -> str:
+    con = connect(db)
+    if not table_exists(con, "repo_health_checks"):
+        con.close()
+        return html_page(db, "Repository health", "<div class='card red'>Health table is not populated yet. Run health-refresh.</div>")
+    where, vals = [], []
+    if category:
+        where.append("category=?"); vals.append(category)
+    if status:
+        where.append("status=?"); vals.append(status)
+    sql = "SELECT * FROM repo_health_checks" + (" WHERE " + " AND ".join(where) if where else "") + " ORDER BY CASE status WHEN 'fail' THEN 0 WHEN 'warn' THEN 1 WHEN 'skip' THEN 2 ELSE 3 END, category, repo, check_key"
+    rows = con.execute(sql, vals).fetchall()
+    summary = con.execute("SELECT category,status,count(*) c FROM repo_health_checks GROUP BY category,status ORDER BY category,status").fetchall()
+    con.close()
+    esc = lambda x: html.escape(str(x or ""))
+    filters = " ".join([
+        "<a href='/health'>all</a>",
+        "<a href='/health?status=fail'>fail</a>",
+        "<a href='/health?status=warn'>warn</a>",
+        "<a href='/health?category=logcopter'>logcopter</a>",
+        "<a href='/health?category=glazed_lint'>glazed_lint</a>",
+    ])
+    cards = "".join(f"<div>{esc(r['category'])} / {esc(r['status'])}: <b>{r['c']}</b></div>" for r in summary)
+    trs = []
+    for r in rows:
+        cls = 'red' if r['status']=='fail' else 'orange' if r['status']=='warn' else 'gray' if r['status']=='skip' else 'green'
+        trs.append(f"<tr><td><a href='/repo?repo={esc(r['repo'])}'><code>{esc(r['repo'])}</code></a></td><td>{esc(r['category'])}</td><td>{esc(r['check_key'])}</td><td>{badge(r['status'], cls)}</td><td>{esc(r['summary'])}</td><td>{esc(r['details'])}</td><td><code>{esc(r['file_path'])}</code></td></tr>")
+    body = f"""
+    <div class='grid'><div class='card'><b>Filters</b><br>{filters}</div><div class='card'><b>Summary</b><br>{cards}</div></div>
+    <table><thead><tr><th>Repo</th><th>Category</th><th>Check</th><th>Status</th><th>Summary</th><th>Details</th><th>File</th></tr></thead><tbody>{''.join(trs)}</tbody></table>
+    """
+    return html_page(db, "Repository health checks", body)
+
 def html_repo_detail(db: Path, repo: str | None) -> str:
     esc = lambda x: html.escape(str(x or ""))
     if not repo:
@@ -415,6 +451,7 @@ def html_repo_detail(db: Path, repo: str | None) -> str:
     dependents = con.execute("SELECT * FROM internal_dependency_edges WHERE dependency_repo=? ORDER BY indirect, repo", (repo,)).fetchall() if table_exists(con, "internal_dependency_edges") else []
     bumps = con.execute("SELECT * FROM dependency_bump_candidates WHERE repo=? OR dependency_repo=? ORDER BY dependency_repo, repo", (repo, repo)).fetchall() if table_exists(con, "dependency_bump_candidates") else []
     issues = con.execute("SELECT * FROM repo_issue_log WHERE repo=? ORDER BY CASE status WHEN 'blocked' THEN 0 WHEN 'observed' THEN 1 WHEN 'warning' THEN 2 ELSE 3 END, category", (repo,)).fetchall() if table_exists(con, "repo_issue_log") else []
+    health = con.execute("SELECT * FROM repo_health_checks WHERE repo=? ORDER BY CASE status WHEN 'fail' THEN 0 WHEN 'warn' THEN 1 WHEN 'skip' THEN 2 ELSE 3 END, category, check_key", (repo,)).fetchall() if table_exists(con, "repo_health_checks") else []
     issue_steps = {}
     if issues and table_exists(con, "repo_issue_steps"):
         for issue in issues:
@@ -440,10 +477,12 @@ def html_repo_detail(db: Path, repo: str | None) -> str:
         more = f"<li class='muted'>... {len(steps)-12} more steps</li>" if len(steps) > 12 else ""
         issue_cards.append(f"<div class='card'><h3>{esc(issue['title'])} {badge(issue['status'], 'green' if issue['status']=='fixed' else 'red' if issue['status']=='blocked' else 'orange')}</h3><p><b>Category:</b> <code>{esc(issue['category'])}</code> <b>Severity:</b> {esc(issue['severity'])}</p><p><b>Evidence:</b> {esc(issue['evidence_summary'])}</p><p><b>Root cause:</b> {esc(issue['root_cause'])}</p><p><b>Fix:</b> {esc(issue['fix_summary'])}</p><p><b>Validation:</b> {esc(issue['validation_summary'])}</p><ol>{step_items}{more}</ol></div>")
     bump_rows = "".join(f"<tr><td>{esc(b['dependency_repo'])}</td><td>{esc(b['repo'])}</td><td>{esc(b['current_required_version'])}</td><td>{esc(b['available_tag'])}</td><td>{esc(b['priority'])}</td><td>{esc(b['reason'])}</td></tr>" for b in bumps)
+    health_rows = "".join(f"<tr><td>{esc(h['category'])}</td><td>{esc(h['check_key'])}</td><td>{badge(h['status'], 'red' if h['status']=='fail' else 'orange' if h['status']=='warn' else 'gray' if h['status']=='skip' else 'green')}</td><td>{esc(h['summary'])}</td><td>{esc(h['details'])}</td><td><code>{esc(h['file_path'])}</code></td></tr>" for h in health)
     val_rows = "".join(f"<tr><td>{esc(v['created_at'])}</td><td>{esc(v['status'])}</td><td><code>{esc(v['command'])}</code></td><td>{esc(v['note'])}</td></tr>" for v in validations)
     event_rows = "".join(f"<tr><td>{esc(e['created_at'])}</td><td>{esc(e['kind'])}</td><td>{esc(e['message'])}</td><td>{('<a href='+esc(e['url'])+'>link</a>') if e['url'] else ''}</td></tr>" for e in events)
     body = summary + f"""
     <h2>Issue / fix history</h2>{''.join(issue_cards) if issue_cards else '<div class="card gray">No derived issue history. Run issue refresh.</div>'}
+    <h2>Health checks</h2><table><thead><tr><th>Category</th><th>Check</th><th>Status</th><th>Summary</th><th>Details</th><th>File</th></tr></thead><tbody>{health_rows}</tbody></table>
     <h2>Internal dependencies</h2><table><thead><tr><th>Dependency</th><th>Required</th><th>Edge</th><th>Replace</th><th>State</th><th>Latest tag</th></tr></thead><tbody>{dep_rows}</tbody></table>
     <h2>Internal dependents</h2><table><thead><tr><th>Consumer</th><th>Required</th><th>Edge</th><th>Replace</th></tr></thead><tbody>{dependent_rows}</tbody></table>
     <h2>Bump candidates touching this repo</h2><table><thead><tr><th>Dependency</th><th>Consumer</th><th>Current</th><th>Available</th><th>Priority</th><th>Reason</th></tr></thead><tbody>{bump_rows}</tbody></table>
@@ -543,6 +582,28 @@ def issue_list_cmd(args: argparse.Namespace) -> None:
     con.close()
 
 
+
+def health_list_cmd(args: argparse.Namespace) -> None:
+    con = connect(args.db)
+    if not table_exists(con, "repo_health_checks"):
+        raise SystemExit("repo_health_checks table missing; run health-refresh first")
+    where, vals = [], []
+    if args.repo:
+        where.append("repo=?"); vals.append(args.repo)
+    if args.category:
+        where.append("category=?"); vals.append(args.category)
+    if args.status:
+        where.append("status=?"); vals.append(args.status)
+    sql = "SELECT * FROM repo_health_checks" + (" WHERE " + " AND ".join(where) if where else "") + " ORDER BY repo, category, check_key"
+    rows = con.execute(sql, vals).fetchall()
+    if args.json:
+        print(json.dumps([dict(r) for r in rows], indent=2))
+    else:
+        print("repo\tcategory\tcheck\tstatus\tsummary\tdetails")
+        for r in rows:
+            print(f"{r['repo']}\t{r['category']}\t{r['check_key']}\t{r['status']}\t{r['summary']}\t{r['details']}")
+    con.close()
+
 def run_refresh_script(script: Path, db: Path) -> None:
     if not script.exists():
         raise SystemExit(f"refresh script not found: {script}")
@@ -585,7 +646,7 @@ code {{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }}
 <div class='grid'>
 <div class='card'><b>States</b><br>{''.join(f"<div>{esc(s['state'])}: <b>{s['c']}</b></div>" for s in states)}</div>
 <div class='card'><b>Batches</b><br>{''.join(f"<div><a href='/?batch={esc(b['batch_id'])}'>{esc(b['batch_id'])}</a>: {esc(b['batch_name'])} <b>{b['c']}</b></div>" for b in batches)}<div><a href='/'>all</a></div></div>
-<div class='card'><b>Views</b><br><a href='/release-train'>Release train</a><br><a href='/bumps'>Bump queue</a><br><code>./scripts/02-rollout-tracker.py deps-release-order</code></div>
+<div class='card'><b>Views</b><br><a href='/release-train'>Release train</a><br><a href='/bumps'>Bump queue</a><br><a href='/health'>Health</a><br><code>./scripts/02-rollout-tracker.py deps-release-order</code></div>
 </div>
 <table><thead><tr><th>Batch</th><th>Repo</th><th>State</th><th>Tracks</th><th>PR</th><th>Merge SHA</th><th>Tag</th><th>Actions</th><th>Notes</th></tr></thead><tbody>{''.join(rows)}</tbody></table>
 <h2>Recent events</h2><table><thead><tr><th>Time</th><th>Repo</th><th>Kind</th><th>Message</th><th>URL</th></tr></thead><tbody>{''.join(f"<tr><td>{esc(e['created_at'])}</td><td>{esc(e['repo'])}</td><td>{esc(e['kind'])}</td><td>{esc(e['message'])}</td><td>{('<a href='+esc(e['url'])+'>link</a>') if e['url'] else ''}</td></tr>" for e in events)}</tbody></table>
@@ -604,6 +665,8 @@ def dashboard(args: argparse.Namespace) -> None:
                 body_text = html_bumps(db)
             elif parsed.path == "/repo":
                 body_text = html_repo_detail(db, qs.get("repo", [None])[0])
+            elif parsed.path == "/health":
+                body_text = html_health(db, qs.get("category", [None])[0], qs.get("status", [None])[0])
             else:
                 batch = qs.get("batch", [None])[0]
                 body_text = html_dashboard(db, batch)
@@ -688,6 +751,10 @@ def main() -> None:
     s.add_argument("--script", type=Path, default=DEFAULT_ISSUE_SCAN_SCRIPT)
     s.set_defaults(func=lambda a: run_refresh_script(a.script, a.db))
 
+    s = sub.add_parser("health-refresh")
+    s.add_argument("--script", type=Path, default=DEFAULT_HEALTH_SCAN_SCRIPT)
+    s.set_defaults(func=lambda a: run_refresh_script(a.script, a.db))
+
     s = sub.add_parser("deps-modules")
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=deps_modules_cmd)
@@ -715,6 +782,13 @@ def main() -> None:
     s.add_argument("--status")
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=issue_list_cmd)
+
+    s = sub.add_parser("health-list")
+    s.add_argument("--repo")
+    s.add_argument("--category")
+    s.add_argument("--status")
+    s.add_argument("--json", action="store_true")
+    s.set_defaults(func=health_list_cmd)
 
     s = sub.add_parser("dashboard")
     s.add_argument("--port", type=int, default=8765)

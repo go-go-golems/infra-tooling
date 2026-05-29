@@ -252,3 +252,96 @@ python ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go
   - `http://127.0.0.1:8765/repo?repo=smailnail`
 - The dependency refresh command invokes the INFRA-005 dependency scanner by default.
 - The issue refresh command invokes the INFRA-005 issue-log scanner by default.
+
+## Step 3: Add Logcopter and Glazed Health Panels
+
+This step added a lightweight health scanner and dashboard views for the two rollout-specific policy areas that repeatedly caused issues: logcopter generation/checking and Glazed CLI linting. The purpose is not to replace CI. The purpose is to give the operator a fast, per-repository summary of likely configuration drift before running release or bump work.
+
+The scanner reads local repository files and stores derived checks in SQLite. The dashboard can now render a global health page and include health checks on each repository detail page.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 2)
+
+**Assistant interpretation:** Continue implementing the dashboard tasks one by one, with commits and diary updates at sensible boundaries.
+
+**Inferred user intent:** Keep turning the INFRA-005 design into working, reviewable dashboard functionality while preserving a clear implementation trail.
+
+**Commit (code):** pending at diary write time — planned commit message: "Add rollout health dashboard panels"
+
+### What I did
+
+- Added `scripts/03-populate-repo-health.py`.
+- Added `repo_health_checks` to the INFRA-004 SQLite DB.
+- Populated 623 health-check rows.
+- Added `health-refresh` and `health-list` CLI commands to `scripts/02-rollout-tracker.py`.
+- Added dashboard route `/health` with filters for status and category.
+- Added health-check rows to `/repo?repo=<name>` pages.
+- Exported health snapshots under INFRA-005 `sources/`.
+
+### Why
+
+- Logcopter and Glazed lint issues were two of the most common rollout-specific failure classes.
+- Repository detail pages should show not only what failed historically, but also whether current local configuration has obvious drift.
+- A lightweight scanner provides fast signals without running expensive CI-equivalent commands for every repository.
+
+### What worked
+
+- `health-list --repo vault-envrc-generator --status warn` showed the expected warning about missing top-level `logcopter_generate.go`.
+- The `/health` renderer and filtered health renderer produced non-empty HTML.
+- The repository detail renderer for `vault-envrc-generator` includes health-check rows.
+- The scanner summarized health state by category/status:
+  - `glazed_lint`: 17 fail, 137 pass, 39 skip, 52 warn
+  - `logcopter`: 22 fail, 287 pass, 69 warn
+
+### What didn't work
+
+- The first scanner version failed to detect Makefile targets with prerequisites, such as `glazed-lint: glazed-lint-build`. I fixed `extract_target_line` so it accepts both exact `target:` and `target: prerequisites` forms.
+
+### What I learned
+
+- Static health checks are useful but should be presented as inspection signals. A warning can mean “this repo uses a Makefile-only generation pattern” rather than “CI is broken”.
+- Health checks need to be category-specific and file-linked so reviewers can quickly inspect the exact Makefile or `go.mod` source.
+
+### What was tricky to build
+
+- The scanner needed to avoid claiming too much. It does not run `make logcopter-check` or `make glazed-lint`; it records whether expected targets, versions, tool directives, package patterns, and allow-path comments exist. That keeps the scan cheap and safe.
+- Makefile parsing is intentionally shallow. It is good enough for dashboard signals, but it should not be treated as a full Make parser.
+
+### What warrants a second pair of eyes
+
+- Review the fail/warn thresholds. Some skipped or blocked repositories may appear as health failures because they still have rollout flags in the tracker but intentionally lack generated targets.
+- Review whether missing `logcopter_generate.go` should be a warning when Makefile generation targets exist.
+- Review whether `GLAZED_LINT_ALLOW_PATHS` comment detection should be stricter or looser.
+
+### What should be done in the future
+
+- Add a blocked/skipped backlog page that explains intentional health failures separately from actionable failures.
+- Add small fixture tests for `extract_target_line`, logcopter package comparison, and Glazed allow-path detection.
+- Add filters on repo detail pages to hide `pass` checks when a repo has many rows.
+
+### Code review instructions
+
+- Start with `scripts/03-populate-repo-health.py` for scanner behavior.
+- Then review `scripts/02-rollout-tracker.py` changes around `html_health`, `health_list_cmd`, `health-refresh`, and repo detail health rendering.
+- Validate with:
+
+```bash
+python -m py_compile ttmp/2026/05/29/INFRA-005--improve-infra-rollout-dashboard-for-dependency-ordered-releases/scripts/03-populate-repo-health.py
+python -m py_compile ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/scripts/02-rollout-tracker.py
+python ttmp/2026/05/28/INFRA-004--batch-infra-003-follow-up-rollout-across-go-go-golems-repos/scripts/02-rollout-tracker.py health-list --repo vault-envrc-generator --status warn
+```
+
+### Technical details
+
+- Health scan command:
+
+```bash
+ttmp/2026/05/29/INFRA-005--improve-infra-rollout-dashboard-for-dependency-ordered-releases/scripts/03-populate-repo-health.py
+```
+
+- Dashboard routes:
+  - `/health`
+  - `/health?status=warn`
+  - `/health?category=logcopter`
+  - `/repo?repo=vault-envrc-generator`

@@ -28,3 +28,11 @@
 - Repository detail pages now render tracker state, dependencies, dependents, bump candidates, grouped issue/fix history, issue timelines, validations, and raw events.
 - Validated CLI queries and HTML render functions against the populated INFRA-004 SQLite DB.
 - Code commit: `0973b71b5807b87140be0719795e104fc4a01b00`.
+
+## 2026-05-29 19:45 UTC — Added logcopter and Glazed health panels
+
+- Added `scripts/03-populate-repo-health.py` to derive lightweight logcopter and Glazed lint health checks from local repository files.
+- Extended the INFRA-004 SQLite DB with `repo_health_checks` and populated 623 health-check rows.
+- Added dashboard route `/health` and health-check sections on `/repo?repo=<name>` pages.
+- Added tracker CLI commands `health-refresh` and `health-list`.
+- Exported health snapshots under `sources/11-repo-health-checks.csv`, `sources/12-health-summary.txt`, and `sources/13-health-warnings-sample.txt`.
