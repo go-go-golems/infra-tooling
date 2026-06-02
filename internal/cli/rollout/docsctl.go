@@ -134,7 +134,7 @@ func docsctlInventory(workspace string, include, exclude, packages, commands []s
 			if override, ok := packageOverrides[repo]; ok {
 				packageName = override
 			}
-			workflow := detectReleaseWorkflow(repoPath)
+			workflow := detectDocsWorkflow(repoPath)
 			candidates = append(candidates, docsctlCandidate{Repo: repo, Path: repoPath, PackageName: packageName, CmdDir: cmdDir, Workflow: workflow, ExportCommand: fmt.Sprintf("GOWORK=off go run %s help export --format sqlite --output-path .docsctl/help.sqlite", cmdDir), SQLitePath: ".docsctl/help.sqlite", VaultRole: "docsctl-" + packageName + "-publisher"})
 		}
 	}
@@ -242,8 +242,13 @@ func writeDocsctlPlan(plan docsctlPlan, output string) error {
 	return err
 }
 
-func detectReleaseWorkflow(repoPath string) string {
-	for _, name := range []string{".github/workflows/release.yaml", ".github/workflows/release.yml"} {
+func detectDocsWorkflow(repoPath string) string {
+	for _, name := range []string{
+		".github/workflows/publish-docs.yaml",
+		".github/workflows/publish-docs.yml",
+		".github/workflows/release.yaml",
+		".github/workflows/release.yml",
+	} {
 		if _, err := os.Stat(filepath.Join(repoPath, name)); err == nil {
 			return name
 		}

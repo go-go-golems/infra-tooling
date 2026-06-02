@@ -187,7 +187,7 @@ If the command does not support `help export`, first update that package to use 
 
 Prefer a separate tag-triggered docs workflow when docs export is independent of release artifact creation. This lets docs publishing run in parallel with GoReleaser, keeps release workflow permissions narrow, and avoids delaying docs upload on binary packaging when the docs are generated directly from source.
 
-Create `.github/workflows/publish-docs.yaml`:
+Create `.github/workflows/publish-docs.yaml` from `templates/github/publish-docsctl.template.yml`:
 
 ```yaml
 name: Publish docs

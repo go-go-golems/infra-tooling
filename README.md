@@ -85,6 +85,7 @@ For go-go-golems package publishing and dependency release trains, start with:
 - `docs/go-go-golems/playbooks/logcopter-package-rollout-playbook.md`
 - `docs/go-go-golems/playbooks/pr-readiness-check-scripts.md`
 - `docs/go-go-golems/glazed-linting-rollout-playbook.md`
+- `templates/github/publish-docsctl.template.yml` for separate tag-triggered docsctl publishing
 - installed `ggg` binary (`ggg pr ready`, `ggg batch ready`, `ggg pr codex-trigger`, `ggg release tag-patch`)
 - `examples/go-go-golems/Makefile.bump-go-go-golems.snippet.mk`
 

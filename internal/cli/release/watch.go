@@ -58,7 +58,7 @@ func newWatchCommand() *cobra.Command {
 	s := &watchSettings{Workflow: "release.yaml", Interval: 30 * time.Second, Timeout: 30 * time.Minute, StartTimeout: 2 * time.Minute, Output: "table", BaseURL: "https://docs.yolo.scapegoat.dev"}
 	cmd := &cobra.Command{
 		Use:   "watch",
-		Short: "Watch a tag-triggered release workflow and optionally verify docs",
+		Short: "Watch a tag-triggered workflow and optionally verify docs",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			res := watchRelease(cmd.Context(), s)
 			if err := writeWatchResult(res, s.Output); err != nil {
@@ -71,7 +71,7 @@ func newWatchCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVar(&s.Repo, "repo", "", "GitHub repository owner/name")
-	cmd.Flags().StringVar(&s.Workflow, "workflow", s.Workflow, "Release workflow file name")
+	cmd.Flags().StringVar(&s.Workflow, "workflow", s.Workflow, "Workflow file name, for example release.yaml or publish-docs.yaml")
 	cmd.Flags().StringVar(&s.Tag, "tag", "", "Tag/head branch to watch")
 	cmd.Flags().DurationVar(&s.Interval, "interval", s.Interval, "Polling interval")
 	cmd.Flags().DurationVar(&s.Timeout, "timeout", s.Timeout, "Overall timeout")
@@ -150,7 +150,7 @@ func waitForReleaseRun(ctx context.Context, s *watchSettings) (releaseRun, error
 		case <-ctx.Done():
 			return releaseRun{}, ctx.Err()
 		case <-startCtx.Done():
-			return releaseRun{}, fmt.Errorf("no release workflow run found for %s on %s within %s; the workflow may be manual-only or missing a tag trigger", s.Tag, s.Workflow, startTimeout)
+			return releaseRun{}, fmt.Errorf("no workflow run found for %s on %s within %s; the workflow may be manual-only or missing a tag trigger", s.Tag, s.Workflow, startTimeout)
 		case <-time.After(s.Interval):
 		}
 	}

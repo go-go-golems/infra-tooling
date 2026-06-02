@@ -143,23 +143,37 @@ func checkGenerateFrontendPreflight(repo, goreleaserPath string, add func(string
 }
 
 func checkDocsctlWorkflowPreflight(repo string, add func(string, string, string, string, string)) {
-	workflow := firstExisting(repo, ".github/workflows/release.yaml", ".github/workflows/release.yml")
-	if workflow == "" {
-		return
-	}
-	b, _ := os.ReadFile(workflow)
-	body := string(b)
-	if !strings.Contains(body, "publish-docs") || !strings.Contains(body, "publish-docsctl.yml") {
-		return
-	}
-	if strings.Contains(body, "id-token: write") && !regexp.MustCompile(`(?s)publish-docs:\s.*?permissions:\s.*?id-token:\s*write`).MatchString(body) {
-		add("warning", "oidc_not_job_scoped", "Release workflow has id-token: write but not clearly scoped to publish-docs job", workflow, "Keep id-token: write on the publish-docs job, not workflow-wide.")
-	}
-	for _, key := range []string{"package_name", "package_version", "export_command", "vault_role", "vault_token_role"} {
-		if !strings.Contains(body, key+":") {
-			add("error", "docsctl_missing_"+strings.ReplaceAll(key, "_", "_"), "publish-docs job is missing `"+key+"`", workflow, "Complete the reusable docsctl workflow inputs before tagging.")
+	for _, workflow := range docsctlWorkflowFiles(repo) {
+		b, _ := os.ReadFile(workflow)
+		body := string(b)
+		if !strings.Contains(body, "publish-docsctl.yml") {
+			continue
+		}
+		if strings.Contains(body, "id-token: write") && !regexp.MustCompile(`(?s)publish-docs:\s.*?permissions:\s.*?id-token:\s*write`).MatchString(body) {
+			add("warning", "oidc_not_job_scoped", "Docs publishing workflow has id-token: write but not clearly scoped to publish-docs job", workflow, "Keep id-token: write on the publish-docs job, not workflow-wide.")
+		}
+		for _, key := range []string{"package_name", "package_version", "export_command", "vault_role", "vault_token_role"} {
+			if !strings.Contains(body, key+":") {
+				add("error", "docsctl_missing_"+strings.ReplaceAll(key, "_", "_"), "publish-docs job is missing `"+key+"`", workflow, "Complete the reusable docsctl workflow inputs before tagging.")
+			}
 		}
 	}
+}
+
+func docsctlWorkflowFiles(repo string) []string {
+	var paths []string
+	for _, name := range []string{
+		".github/workflows/publish-docs.yaml",
+		".github/workflows/publish-docs.yml",
+		".github/workflows/release.yaml",
+		".github/workflows/release.yml",
+	} {
+		path := filepath.Join(repo, name)
+		if _, err := os.Stat(path); err == nil {
+			paths = append(paths, path)
+		}
+	}
+	return paths
 }
 
 func findFrontendPackageDirs(repo string) []string {
