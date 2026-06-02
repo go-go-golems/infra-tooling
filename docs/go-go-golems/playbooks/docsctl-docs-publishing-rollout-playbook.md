@@ -28,27 +28,27 @@ ShowPerDefault: true
 SectionType: Tutorial
 ---
 
-This tutorial is the operational playbook for adding `docsctl` documentation publishing to an existing go-go-golems package. Use it when going through open-source repositories one by one and wiring their release workflow so every GitHub release tag publishes versioned Glazed help documentation to `docs.yolo.scapegoat.dev`.
+This tutorial is the operational playbook for adding `docsctl` documentation publishing to an existing go-go-golems package. Use it when going through open-source repositories one by one and wiring a tag-triggered docs workflow so every GitHub release tag publishes versioned Glazed help documentation to `docs.yolo.scapegoat.dev`.
 
-The target pattern is release-only and package-scoped. A repository publishes docs from its existing release workflow, the docs version is exactly the Git tag, GitHub Actions authenticates to Vault through OIDC, Vault mints a short-lived docs-registry publish JWT for that package, and `docsctl publish` uploads the generated SQLite help database to `https://docs-registry.yolo.scapegoat.dev`.
+The target pattern is release-only and package-scoped. A repository publishes docs from a tag-triggered docs workflow, or from its release workflow when docs must wait for artifacts. The docs version is exactly the Git tag, GitHub Actions authenticates to Vault through OIDC, Vault mints a short-lived docs-registry publish JWT for that package, and `docsctl publish` uploads the generated SQLite help database to `https://docs-registry.yolo.scapegoat.dev`.
 
 Docsctl rollout usually happens inside the broader release train. Before tagging a docs-enabled package, ensure the repository also has the generic `make bump-go-go-golems` target, run dependency bumps after upstream releases, run `make glazed-lint` when the repo depends on Glazed, and run `ggg release preflight --output json` before pushing the tag.
 
 ## Main-branch protection rule
 
-Never push docsctl, release workflow, Terraform/Vault, generated help, or release-train cleanup changes directly to `main`. Use a branch and pull request, then merge only after CI/readiness checks pass. Merge with a real merge commit (`gh pr merge --merge --delete-branch`), never with a squash merge, so release workflow and Vault/OIDC history remains auditable. Tags are the only release-train operation that should be pushed directly, and only after the source commit is already merged to `main`.
+Never push docsctl workflow, release workflow, Terraform/Vault, generated help, or release-train cleanup changes directly to `main`. Use a branch and pull request, then merge only after CI/readiness checks pass. Merge with a real merge commit (`gh pr merge --merge --delete-branch`), never with a squash merge, so workflow and Vault/OIDC history remains auditable. Tags are the only release-train operation that should be pushed directly, and only after the source commit is already merged to `main`.
 
 ## The target shape
 
 A completed repository has these properties:
 
 1. Its command can export Glazed help as SQLite in CI.
-2. Its release workflow grants `id-token: write` only to the `publish-docs` job.
-3. Its release workflow has a `publish-docs` job that calls the reusable workflow:
+2. It has either a separate `.github/workflows/publish-docs.yaml` tag workflow or a release-workflow `publish-docs` job that calls the reusable workflow:
    `go-go-golems/infra-tooling/.github/workflows/publish-docsctl.yml@main`.
+3. The docs publishing job grants `id-token: write` only to the `publish-docs` job.
 4. The publish job runs only for release tags, normally `refs/tags/v*`.
 5. The publish job passes `package_version: ${{ github.ref_name }}` so docs URLs match GitHub releases.
-6. Terraform/Vault contains a package-scoped GitHub Actions role and Vault Identity/OIDC token role named `docsctl-<package>-publisher`.
+6. Terraform/Vault contains a package-scoped GitHub Actions role and Vault Identity/OIDC token role named `docsctl-<package>-publisher`, with `workflow_ref` bound to the exact workflow path that calls the reusable workflow.
 7. The live docs API shows the package and version after release:
    `https://docs.yolo.scapegoat.dev/api/packages`.
 
@@ -97,7 +97,7 @@ Collect these facts for the repository:
 | Package name | Usually the docs URL/repo name, not necessarily the binary name | `pinocchio` |
 | GitHub repository | `gh repo view --json nameWithOwner` | `go-go-golems/pinocchio` |
 | Numeric repository ID | GitHub GraphQL `repository.databaseId` | `802670903` |
-| Release workflow path | Exact file name under `.github/workflows/` | `.github/workflows/release.yml` |
+| Docs workflow path | Exact file name under `.github/workflows/` that calls `publish-docsctl.yml` | `.github/workflows/publish-docs.yaml` |
 | Release tag pattern | Inspect workflow `on.push.tags` | `v*` |
 | Export command | Run command help locally | `GOWORK=off go run ./cmd/pinocchio help export --format sqlite --output-path .docsctl/help.sqlite` |
 | Go version source | Usually `go.mod` | `go.mod` |
@@ -122,7 +122,7 @@ Before editing Terraform or workflows, fill out this package identity checklist:
 | Public docs package name |  |
 | Exporting binary / command directory |  |
 | Export command |  |
-| Release workflow path |  |
+| Docs workflow path |  |
 | Numeric GitHub repository ID |  |
 | Vault auth role name | `docsctl-<package>-publisher` |
 | Vault token role name | `docsctl-<package>-publisher` |
@@ -183,57 +183,59 @@ docsctl validate \
 
 If the command does not support `help export`, first update that package to use the Glazed help command wiring. Do not add the publish workflow until export is reliable locally and in CI.
 
-## Step 2: add or enable the release workflow job
+## Step 2: add a docs publishing workflow
 
-Prefer publishing from the existing release workflow after release artifacts have been produced. In the go-template release workflow, the disabled template already has the intended shape:
+Prefer a separate tag-triggered docs workflow when docs export is independent of release artifact creation. This lets docs publishing run in parallel with GoReleaser, keeps release workflow permissions narrow, and avoids delaying docs upload on binary packaging when the docs are generated directly from source.
 
-```yaml
-# Disabled template for publishing Glazed help docs to docs.yolo.scapegoat.dev.
-publish-docs:
-  name: Publish docs
-  permissions:
-    contents: read
-    id-token: write
-  needs:
-    - goreleaser-merge
-  if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-  uses: go-go-golems/infra-tooling/.github/workflows/publish-docsctl.yml@main
-  with:
-    package_name: <package>
-    package_version: ${{ github.ref_name }}
-    export_command: GOWORK=off go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
-    sqlite_path: .docsctl/help.sqlite
-    docsctl_install_command: go install github.com/go-go-golems/glazed/cmd/docsctl@latest
-    vault_role: docsctl-<package>-publisher
-    vault_token_role: docsctl-<package>-publisher
-    registry_url: https://docs-registry.yolo.scapegoat.dev
-    verify_packages_url: https://docs.yolo.scapegoat.dev/api/packages
-    verify_publish: true
-```
-
-Scope OIDC permission to the docs publishing job. Do not add `id-token: write` at workflow root unless every release job truly needs OIDC. The caller workflow may keep its existing top-level release permissions, for example:
+Create `.github/workflows/publish-docs.yaml`:
 
 ```yaml
+name: Publish docs
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
 permissions:
-  contents: write
+  contents: read
+
+jobs:
+  publish-docs:
+    name: Publish docs
+    permissions:
+      contents: read
+      id-token: write
+    uses: go-go-golems/infra-tooling/.github/workflows/publish-docsctl.yml@main
+    with:
+      package_name: <package>
+      package_version: ${{ github.ref_name }}
+      export_command: GOWORK=off go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
+      sqlite_path: .docsctl/help.sqlite
+      docsctl_install_command: go install github.com/go-go-golems/glazed/cmd/docsctl@latest
+      vault_role: docsctl-<package>-publisher
+      vault_token_role: docsctl-<package>-publisher
+      registry_url: https://docs-registry.yolo.scapegoat.dev
+      verify_packages_url: https://docs.yolo.scapegoat.dev/api/packages
+      verify_publish: true
 ```
 
-The `publish-docs` job itself should request only what the reusable workflow needs:
+Scope OIDC permission to the docs publishing job. Do not add `id-token: write` at workflow root unless every job in that workflow truly needs OIDC. The workflow-level permission can stay at `contents: read`; the reusable-workflow caller job adds `id-token: write` only where Vault authentication is needed.
+
+Without job-level `id-token: write`, `hashicorp/vault-action` cannot request a GitHub OIDC token. With workflow-level `id-token: write`, unrelated jobs can mint OIDC tokens unnecessarily.
+
+For nested command modules, keep the reusable workflow's final `test -s .docsctl/help.sqlite` in the repository root by doing directory changes in a subshell:
 
 ```yaml
-publish-docs:
-  permissions:
-    contents: read
-    id-token: write
+export_command: mkdir -p .docsctl && (cd cmd/<package> && GOWORK=off go run . help export --format sqlite --output-path ../../.docsctl/help.sqlite)
 ```
 
-Without job-level `id-token: write`, `hashicorp/vault-action` cannot request a GitHub OIDC token. With workflow-level `id-token: write`, unrelated release jobs can mint OIDC tokens unnecessarily.
+## Step 3: decide whether docs must wait for release artifacts
 
-## Step 3: choose the right `needs:` dependency
+The separate workflow above is the default when the docs database is generated from source and does not depend on release assets. It may finish before GoReleaser; that is acceptable for packages where the Git tag itself is the release contract.
 
-The docs publish job should run after the release job that proves the tag is valid.
-
-Common choices:
+If docs must not publish unless binary/package creation succeeds, keep `publish-docs` inside the release workflow and add an explicit dependency:
 
 ```yaml
 needs:
@@ -247,7 +249,7 @@ needs:
   - release
 ```
 
-Avoid publishing docs before release artifacts are built. If docs publishing succeeds but the release fails, the docs site would advertise a version that is not actually released.
+When using this coupled mode, keep OIDC job-scoped and bind the Vault `workflow_ref` to the release workflow path instead of `.github/workflows/publish-docs.yaml`.
 
 ## Step 4: keep package version equal to the tag
 
@@ -306,7 +308,7 @@ When adding a new package, bind at least:
 
 - `repository_id` — numeric GitHub repo ID;
 - `repository` — owner/name, useful for logs and clarity;
-- `workflow_ref` — the package release workflow at tag refs;
+- `workflow_ref` — the package docs workflow at tag refs, or the release workflow if using coupled mode;
 - `job_workflow_ref` — the reusable workflow path/ref if the Vault role binds it;
 - `event_name` — normally `push` for tag pushes;
 - `ref` or equivalent ref claim — release tags only, normally `refs/tags/v*`.
@@ -326,7 +328,7 @@ The final plan should be clean.
 
 ## Step 6: open the package PR
 
-For each package repository, create a small PR that includes only the release workflow change and any help-export fixes required to make it work.
+For each package repository, create a small PR that includes only the docs workflow change and any help-export fixes required to make it work.
 
 Checklist before opening:
 
@@ -346,7 +348,7 @@ Do not commit `.docsctl/help.sqlite`. It is a generated release artifact.
 The PR description should include:
 
 - package name;
-- release workflow path;
+- docs workflow path;
 - export command;
 - Vault role name;
 - Terraform PR/commit that adds the role;
@@ -379,9 +381,9 @@ Use `--dry-run --yes --output json` first when you want to inspect the exact tag
 
 If releases are created by another release process, use that process instead of hand-pushing tags.
 
-## Step 8: watch the release workflow
+## Step 8: watch the tag workflows
 
-Use `ggg` when the repository follows the standard release workflow shape:
+Use `ggg` when the repository follows the standard release workflow shape. For repositories with a separate docs workflow, also watch the docs workflow directly with `gh run list --workflow publish-docs.yaml --limit 5` or the equivalent release helper once it supports separate docs workflows:
 
 ```bash
 ggg release watch \
@@ -492,25 +494,34 @@ Use this table for each repository:
 | Record GitHub numeric repository ID |  |  |
 | Prove local `help export --format sqlite` |  |  |
 | Validate SQLite with `docsctl validate --package <package> --version v0.0.0-local --file .docsctl/help.sqlite` |  |  |
-| Confirm exact release workflow filename (`release.yaml` vs `release.yml`) |  |  |
+| Choose docs workflow shape: separate `.github/workflows/publish-docs.yaml` or release-coupled job |  |  |
+| Confirm exact docs workflow filename for Vault `workflow_ref` |  |  |
 | Add Terraform Vault publisher role |  |  |
 | Apply Terraform and confirm clean plan |  |  |
 | Add job-level `id-token: write` to `publish-docs` only |  |  |
-| Add `publish-docs` job using reusable workflow |  |  |
+| Add workflow/job using reusable `publish-docsctl` workflow |  |  |
 | Merge package PR |  |  |
 | Create release tag |  |  |
-| Watch release workflow and `Publish docs` job |  |  |
+| Watch docs workflow and publish job |  |  |
 | Verify docs API package/version |  |  |
 | Open browser docs URL |  |  |
 | Record evidence in rollout notes |  |  |
 
 ## Minimal workflow patch template
 
-Use this as the starting patch for a repository that already has a release workflow and a `goreleaser-merge` job:
+Use this as the starting `.github/workflows/publish-docs.yaml` for a repository whose docs can be exported from source independently of release artifact creation:
 
 ```yaml
+name: Publish docs
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   publish-docs:
@@ -518,9 +529,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    needs:
-      - goreleaser-merge
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     uses: go-go-golems/infra-tooling/.github/workflows/publish-docsctl.yml@main
     with:
       package_name: <package>
@@ -535,7 +543,7 @@ jobs:
       verify_publish: true
 ```
 
-If the command path or binary name differs from the package name, change only `export_command`. Keep `package_name` equal to the docs package name users should see in URLs.
+If the command path or binary name differs from the package name, change only `export_command`. Keep `package_name` equal to the docs package name users should see in URLs. For nested command modules, use a subshell so the reusable workflow remains in the repository root for its `sqlite_path` check.
 
 ## Troubleshooting
 
@@ -552,9 +560,9 @@ Symptom: `hashicorp/vault-action` fails during JWT login.
 Likely causes:
 
 - Terraform role has the wrong numeric `repository_id`.
-- Workflow path in `workflow_ref` is wrong. `release.yaml` and `release.yml` are different strings in GitHub OIDC claims.
+- Workflow path in `workflow_ref` is wrong. `publish-docs.yaml`, `release.yaml`, and `release.yml` are different strings in GitHub OIDC claims.
 - The role expects a tag ref but the workflow ran on a branch or manual dispatch.
-- The release workflow calls the reusable workflow from a ref not allowed by `job_workflow_ref`.
+- The docs workflow calls the reusable workflow from a ref not allowed by `job_workflow_ref`.
 
 Fix: compare the decoded GitHub OIDC claims from the failing run with the Vault role bound claims. Do not paste raw JWTs into issues or docs.
 

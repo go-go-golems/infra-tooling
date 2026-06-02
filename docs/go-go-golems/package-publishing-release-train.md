@@ -265,7 +265,7 @@ gh api -X DELETE repos/go-go-golems/<repo>/git/refs/heads/<branch>
 Use these checks before declaring a repository release-train-ready:
 
 - **Logcopter:** release-train repos should have `logcopter_generate.go`, checked-in generated `**/logcopter.go`, a direct/tool dependency on published `github.com/go-go-golems/logcopter`, and `make logcopter-check`; run the non-mutating check before mutating `go generate ./...`.
-- **Docsctl:** release workflows should call `go-go-golems/infra-tooling/.github/workflows/publish-docsctl.yml@main`, keep `id-token: write` scoped to the publish job, and be verified with `ggg release watch --verify-docs` plus `ggg release verify-docs`.
+- **Docsctl:** tag-triggered docs workflows (or release workflows when docs must wait for artifacts) should call `go-go-golems/infra-tooling/.github/workflows/publish-docsctl.yml@main`, keep `id-token: write` scoped to the publish job, and be verified with `ggg release watch --verify-docs` plus `ggg release verify-docs`.
 - **xgoja:** JavaScript-provider or runtime repos must validate with `GOWORK=off` after upstream xgoja tags; check GoReleaser CGO settings when tree-sitter packages are present.
 - **Glazed linting:** run `make glazed-lint` after dependency bumps so downstream code is checked against the released Glazed analyzer; use reasoned `//glazedclilint:ignore ...` suppressions or exact allow paths rather than broad directory exclusions.
 - **Release preflight:** run `ggg release preflight --output json` before every tag and save the JSON when working from a ticket.
