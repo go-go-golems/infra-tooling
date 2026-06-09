@@ -19,6 +19,10 @@ on:
         required: false
         type: string
         default: go.mod
+      go_cache_dependency_path:
+        required: false
+        type: string
+        default: go.sum
       image_name:
         required: false
         type: string
@@ -130,6 +134,7 @@ jobs:
         with:
           go-version-file: ${{ inputs.go_version_file }}
           cache: true
+          cache-dependency-path: ${{ inputs.go_cache_dependency_path }}
 
       - name: Run tests
         shell: bash
