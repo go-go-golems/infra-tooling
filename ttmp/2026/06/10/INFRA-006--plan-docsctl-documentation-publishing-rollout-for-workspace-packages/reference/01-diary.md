@@ -683,3 +683,77 @@ However, GitHub showed that `docmgr` PR #41 had already been merged at commit `a
 ### Technical details
 - Follow-up PR: https://github.com/go-go-golems/docmgr/pull/42
 - Cherry-picked commit: `f029e9f Gate docs publishing to release tag pushes`.
+## Step 12: Analyze and fix logcopter PR CI failures
+
+The user asked me to inspect the failed GitHub Actions on `logcopter` PR #3 and fix them. I pulled the failing logs with `gh run view --log-failed` and found three failures: the main test job failed because the Cobra conversion no longer accepted legacy single-dash long flags, Dependency Review failed because adding Glazed introduced `github.com/buger/jsonparser v1.1.1` with a high-severity advisory, and govulncheck failed because the workflow used the `go 1.25.0` standard library with known vulnerabilities.
+
+I fixed the command compatibility issue by preserving the original stdlib `flag` execution path for normal generator invocations while using Cobra only for `help` and `completion` subcommands. This keeps existing commands such as `logcopter-gen -area-prefix ... -check ./...` working and still exposes `logcopter-gen help export` for docsctl. I also upgraded `github.com/buger/jsonparser` and bumped the Go directive to patched Go versions until local `govulncheck` passed.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Look at failed actions and analyze and fix them at  https://github.com/go-go-golems/logcopter/pull/3"
+
+**Assistant interpretation:** Use GitHub Actions logs for logcopter PR #3, identify concrete CI failures, patch the branch, push, and verify checks.
+
+**Inferred user intent:** Make PR #3 mergeable by resolving CI issues introduced by the docsctl/Glazed help changes.
+
+### What I did
+- Ran `gh -R go-go-golems/logcopter pr checks 3 --watch=false` to list failing jobs.
+- Downloaded failed logs for:
+  - test job `80629568462`;
+  - Go Vulnerability Check job `80629568445`;
+  - Dependency Review job `80629568449`.
+- Updated `cmd/logcopter-gen/main.go` so:
+  - normal generator runs use the original `flag.FlagSet` path;
+  - `help` and `completion` use Cobra/Glazed help wiring;
+  - docsctl can still run `logcopter-gen help export --format sqlite ...`.
+- Upgraded `github.com/buger/jsonparser` to `v1.2.0`.
+- Bumped `go.mod` from `go 1.25.0` to `go 1.25.9`, then to `go 1.25.11` after CI still found two fixed-in-1.25.11 standard-library vulnerabilities.
+- Pushed commits:
+  - `4286c3c Fix logcopter docs rollout CI failures`;
+  - `bc3e60b Use patched Go toolchain for vulnerability scan`.
+
+### Why
+- The CI test workflow still intentionally exercises the historical single-dash long flag style (`-area-prefix`, `-strip-prefix`, `-check`). Breaking that would be a compatibility regression unrelated to docs publishing.
+- Dependency Review blocks high-severity newly introduced dependencies. Upgrading `jsonparser` removes the flagged vulnerable version.
+- govulncheck reports vulnerabilities against the standard library version selected by the module's Go directive/toolchain setup in CI, so the module needed to select a patched 1.25.x release.
+
+### What worked
+- Local legacy generator check passed:
+  `GOTOOLCHAIN=auto go run ./cmd/logcopter-gen -area-prefix lib.ble -strip-prefix github.com/go-go-golems/logcopter/examples/library-prefix -check ./examples/library-prefix/...`.
+- Local docs export still passed:
+  `GOTOOLCHAIN=auto go run ./cmd/logcopter-gen help export --format sqlite --output-path /tmp/logcopter-help.sqlite`.
+- `docsctl validate --file /tmp/logcopter-help.sqlite --package logcopter --version v0.0.0-local` passed with 3 sections.
+- `GOTOOLCHAIN=auto go test ./...` passed.
+- `GOTOOLCHAIN=auto go run golang.org/x/vuln/cmd/govulncheck@latest ./...` passed after bumping to `go 1.25.11`.
+- GitHub checks after the final push showed Dependency Review, test, Go Vulnerability Check, lint, TruffleHog, CodeQL, and Analyze passing; GoSec was still pending when the watch command was interrupted by the user's next prompt.
+
+### What didn't work
+- My first compatibility attempt normalized single-dash long flags to double-dash Cobra flags. That fixed `-area-prefix`, but Cobra still treated positional package patterns like `./examples/library-prefix/...` as unknown subcommands. Restoring the stdlib `flag` path for normal generator invocations was the correct compatibility fix.
+- Bumping only to `go 1.25.9` was insufficient; CI govulncheck still found standard-library vulnerabilities fixed in `go 1.25.11`.
+
+### What I learned
+- For tools that historically use stdlib `flag`, adding Cobra solely for docs/help export can be safer as a special `help`/`completion` path instead of converting the primary execution path.
+- `govulncheck` in CI may use `GOTOOLCHAIN=local`, so the module's Go directive must point at a patched version available through `actions/setup-go`.
+
+### What was tricky to build
+- The CLI needed to support two parsing modes without making docsctl impossible. The final invariant is: if the first argument is `help` or `completion`, use Cobra; otherwise, use the legacy generator parser.
+- The vulnerability fix required distinguishing dependency-review failures from standard-library govulncheck failures. `jsonparser` fixed the former; the Go directive fixed the latter.
+
+### What warrants a second pair of eyes
+- The dual parser mode is intentionally conservative but should be reviewed: Cobra flags shown in `logcopter-gen --help` are not used for normal generator runs unless the command is invoked through `help` subcommands.
+- Confirm the project is comfortable requiring Go `1.25.11` for logcopter.
+
+### What should be done in the future
+- Wait for the final GoSec job to complete if it was still pending.
+- Consider adding a regression test around `main`/argument routing or a small command-level smoke script for legacy single-dash flags.
+
+### Code review instructions
+- Review `cmd/logcopter-gen/main.go` first, especially `main()` and `run(args)`.
+- Review `go.mod` for `go 1.25.11` and `github.com/buger/jsonparser v1.2.0`.
+- Validate locally with the commands listed in `What worked`.
+
+### Technical details
+- Initial test failure: `unknown command "lib.ble" for "logcopter-gen"`.
+- Dependency Review failure: `github.com/buger/jsonparser@1.1.1` high severity denial-of-service advisory.
+- Final govulncheck failure before the last bump: standard library vulnerabilities fixed in `net/textproto@go1.25.11` and `crypto/x509@go1.25.11`.
