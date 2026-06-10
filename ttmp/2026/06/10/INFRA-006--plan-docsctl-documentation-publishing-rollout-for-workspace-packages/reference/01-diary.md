@@ -937,3 +937,57 @@ The failure was not Vault authentication or registry upload: the logs showed `OK
   - `vm-system/v0.0.2/vm-system.db`
   - `docmgr/v0.0.19/docmgr.db`
 - Infra-tooling PR #18: https://github.com/go-go-golems/infra-tooling/pull/18
+
+## Step 15: Attempt reruns after normalization workflow fix
+
+After merging the reusable workflow normalization fix, I attempted to rerun the failed docs publishing jobs to turn the historical GitHub Actions runs green. This confirmed an important immutability edge case: rerunning a tag publish after the database has been repaired/normalized can produce a byte-different SQLite file for the same package version, and the registry correctly rejects it because `--allow-overwrite=false` is enabled.
+
+The production docs pages are healthy after the PVC normalization and `docs-yolo` restart, but the original tag workflow runs remain failed unless we choose to allow an administrative overwrite or cut new tags. I did not change registry overwrite policy.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 13)
+
+**Assistant interpretation:** Continue operational cleanup after the docs pages were repaired and the workflow fix merged.
+
+**Inferred user intent:** Leave an accurate audit trail of what was attempted and why the GitHub run status may not match the repaired production state.
+
+### What I did
+- Reran failed docs publish jobs with `gh run rerun <run-id> --failed` for the tagged rollout workflows.
+- Downloaded the `devctl` rerun attempt logs through `gh api repos/go-go-golems/devctl/actions/runs/27297638352/attempts/2/logs`.
+- Confirmed the rerun failed in `Publish docs to docs-registry` with a registry immutability conflict.
+
+### Why
+- I wanted the workflow status to reflect the now-healthy production docs pages after infra-tooling PR #18 merged.
+- Rerunning was safer than cutting new tags if the registry treated identical normalized content as idempotent.
+
+### What worked
+- The rerun used the updated reusable workflow from `infra-tooling@main`.
+- The failure mode was explicit and safe: the registry refused to overwrite an existing version with different content.
+
+### What didn't work
+- The rerun could not turn the historical tag workflow green because the normalized freshly exported SQLite file differed from the already-published repaired database bytes.
+- Example error:
+  `publish failed: 409 Conflict: {"error":"version_already_exists","message":"devctl@v0.0.7 is already published with different content"}`.
+
+### What I learned
+- Once a version has been published and repaired on the PVC, rerunning the publish workflow is not guaranteed to be idempotent at the byte level.
+- The durable proof for these tags is the public docs verification output, not the original failed workflow conclusion.
+
+### What was tricky to build
+- The operational state has two truths: GitHub run status remains failed for the original tag jobs, while the public docs browser now serves valid version-specific sections. The diary needs to record both so future reviewers do not assume the failed runs mean production is still broken.
+
+### What warrants a second pair of eyes
+- Decide whether to leave the failed historical runs as-is, cut new patch tags after PR #18 for perfectly green release evidence, or add an administrative registry repair/overwrite path with careful safeguards.
+
+### What should be done in the future
+- For future packages, rely on the merged normalization workflow before first tag publish so the registry never receives browser-incompatible SQLite files.
+- Improve `docsctl publish` idempotency diagnostics to distinguish schema-normalization byte drift from actual content drift.
+
+### Code review instructions
+- Compare this diary step with infra-tooling PR #18 and the devctl rerun logs if investigating why v0.0.7 workflow status is failed while the docs page is healthy.
+- Validate production state with `ggg release verify-docs --package devctl --version v0.0.7 --output json` and equivalent commands for the other tagged packages.
+
+### Technical details
+- Devctl rerun log source: `gh api repos/go-go-golems/devctl/actions/runs/27297638352/attempts/2/logs`.
+- Registry overwrite policy in deployment args: `--allow-overwrite=false`.

@@ -100,3 +100,12 @@ Tagged release docs for devctl v0.0.7, logcopter v0.1.1, chat-overlay v0.0.1, re
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/.github/workflows/publish-docsctl.yml — Reusable workflow normalization fix
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Detailed release and production repair diary
 
+
+## 2026-06-10
+
+Recorded post-fix rerun attempt: failed docs workflow reruns now use the normalized workflow but the registry rejects republishing existing versions with byte-different content (409 version_already_exists); production docs verification remains the source of truth for repaired tags.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Rerun/immutability diary note
+
