@@ -90,3 +90,13 @@ Continued rollout: fixed llm-proxy PR #3 CI by regenerating pkg/doc logcopter ou
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/cmd/llm-proxy-server/main.go — GoSec G118 shutdown-context fix
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/pkg/doc/logcopter.go — Generated package logger required by CI
 
+
+## 2026-06-10
+
+Tagged release docs for devctl v0.0.7, logcopter v0.1.1, chat-overlay v0.0.1, remarquee v0.0.8, scraper v0.0.4, sessionstream v0.0.7, vm-system v0.0.2, and docmgr v0.0.19; diagnosed docs-yolo read-only SQLite migration crash, normalized published DBs on the PVC, verified public docs, and opened infra-tooling PR #18 to normalize SQLite exports before future publishes.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/.github/workflows/publish-docsctl.yml — Reusable workflow normalization fix
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Detailed release and production repair diary
+
