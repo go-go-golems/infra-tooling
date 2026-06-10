@@ -1,0 +1,11 @@
+repo	module	status	package	cmd_dir	export_command	note
+devctl	github.com/go-go-golems/devctl	ready	devctl	./cmd/devctl	GOWORK=off go run ./cmd/devctl help export --format sqlite --output-path .docsctl/help.sqlite	
+docmgr	github.com/go-go-golems/docmgr	needs-work(code=1)	docmgr	./cmd/docmgr	GOWORK=off go run ./cmd/docmgr help export --format sqlite --output-path .docsctl/help.sqlite	already has release-coupled docs job; keep as reference/baseline
+goja-bleve	github.com/go-go-golems/goja-bleve	ready	goja-bleve	./cmd/goja-bleve	mkdir -p .docsctl && (cd cmd/goja-bleve && GOWORK=off go run . help export --format sqlite --output-path ../../.docsctl/help.sqlite)	already has separate publish-docs workflow; nested command module
+llm-proxy	github.com/go-go-golems/llm-proxy	needs-work(code=124)	llm-proxy	./cmd/llm-proxy-server	GOWORK=off go run ./cmd/llm-proxy-server help export --format sqlite --output-path .docsctl/help.sqlite	currently stdlib flag/http server, expected to need CLI/help wiring first
+logcopter	github.com/go-go-golems/logcopter	needs-work(code=1)	logcopter	./cmd/logcopter-gen	GOWORK=off go run ./cmd/logcopter-gen help export --format sqlite --output-path .docsctl/help.sqlite	currently stdlib flag generator, expected to need CLI/help wiring first
+react-chat	github.com/go-go-golems/chat-overlay	needs-work(code=1)	chat-overlay	./cmd/chat-overlay	GOWORK=off go run ./cmd/chat-overlay help export --format sqlite --output-path .docsctl/help.sqlite	
+remarquee	github.com/go-go-golems/remarquee	ready	remarquee	./cmd/remarquee	GOWORK=off go run ./cmd/remarquee help export --format sqlite --output-path .docsctl/help.sqlite	help command is cgo-gated; CI default must keep cgo or use build tags deliberately
+scraper	github.com/go-go-golems/scraper	ready	scraper	./cmd/scraper	GOWORK=off go run ./cmd/scraper help export --format sqlite --output-path .docsctl/help.sqlite	
+sessionstream	github.com/go-go-golems/sessionstream	ready	sessionstream	./cmd/sessionstream-systemlab	GOWORK=off go run ./cmd/sessionstream-systemlab help export --format sqlite --output-path .docsctl/help.sqlite	published package can be sessionstream while binary is sessionstream-systemlab
+vm-system	github.com/go-go-golems/vm-system	ready	vm-system	./cmd/vm-system	GOWORK=off go run ./cmd/vm-system help export --format sqlite --output-path .docsctl/help.sqlite	

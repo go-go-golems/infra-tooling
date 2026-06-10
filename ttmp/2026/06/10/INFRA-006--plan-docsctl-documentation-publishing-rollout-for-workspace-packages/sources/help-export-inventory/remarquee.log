@@ -1,0 +1,17 @@
+/home/manuel/.hishtory/config.sh: line 72: bind: warning: line editing not enabled
+go: downloading github.com/go-go-golems/glazed v1.2.7
+go: downloading github.com/go-go-golems/geppetto v0.11.17
+go: downloading github.com/marcobarcelos/rmapi v0.0.0-20260518211546-a0d079936d46
+go: downloading github.com/unidoc/unipdf/v3 v3.6.1
+go: downloading google.golang.org/api v0.272.0
+go: downloading github.com/golang-jwt/jwt v3.2.2+incompatible
+go: downloading github.com/googleapis/gax-go/v2 v2.18.0
+go: downloading github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
+go: downloading google.golang.org/genproto/googleapis/api v0.0.0-20260217215200-42d3e9bedb6d
+go: downloading github.com/adrg/sysfont v0.1.0
+go: downloading github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
+go: downloading github.com/adrg/strutil v0.1.0
+go: downloading cloud.google.com/go/auth v0.18.2
+go: downloading go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.61.0
+go: downloading go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.61.0
+OK: /home/manuel/workspaces/2026-06-10/add-docs-deploy/remarquee/.docsctl/help.sqlite is a valid Glazed help database for remarquee@v0.0.0-local (12 sections, 12 slugs)

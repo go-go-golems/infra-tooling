@@ -1,0 +1,3 @@
+/home/manuel/.hishtory/config.sh: line 72: bind: warning: line editing not enabled
+go: downloading github.com/go-go-golems/glazed v1.2.5
+OK: /home/manuel/workspaces/2026-06-10/add-docs-deploy/devctl/.docsctl/help.sqlite is a valid Glazed help database for devctl@v0.0.0-local (6 sections, 6 slugs)
