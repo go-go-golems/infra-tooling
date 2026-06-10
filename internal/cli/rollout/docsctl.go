@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -181,7 +182,7 @@ func validateDocsctlCandidate(ctx context.Context, c docsctlCandidate, timeout t
 	if exportCommand == "" {
 		exportCommand = fmt.Sprintf("GOWORK=off go run %s help export --format sqlite --output-path %s", c.CmdDir, shellQuote(sqlitePath))
 	} else {
-		exportCommand = strings.ReplaceAll(exportCommand, ".docsctl/help.sqlite", shellQuote(sqlitePath))
+		exportCommand = rewriteDocsctlOutputPath(exportCommand, sqlitePath)
 	}
 	stdout, stderr, code := runShellInRepo(ctx, c.Path, exportCommand)
 	c.ExitCode = code
@@ -288,6 +289,16 @@ func moduleNameFromGoMod(path string) string {
 		}
 	}
 	return ""
+}
+
+var docsctlOutputPathPattern = regexp.MustCompile(`--output-path(?:=|[[:space:]]+)(?:"[^"]*"|'[^']*'|[^[:space:])]+)`)
+
+func rewriteDocsctlOutputPath(command, outputPath string) string {
+	replacement := "--output-path " + shellQuote(outputPath)
+	if docsctlOutputPathPattern.MatchString(command) {
+		return docsctlOutputPathPattern.ReplaceAllString(command, replacement)
+	}
+	return command + " " + replacement
 }
 
 func shellQuote(s string) string {

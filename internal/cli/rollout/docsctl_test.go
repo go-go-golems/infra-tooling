@@ -38,6 +38,24 @@ func TestDocsctlInventoryUsesDocsWorkflow(t *testing.T) {
 	}
 }
 
+func TestRewriteDocsctlOutputPathHandlesNestedOverride(t *testing.T) {
+	command := "mkdir -p .docsctl && (cd cmd/goja-bleve && GOWORK=off go run . help export --format sqlite --output-path ../../.docsctl/help.sqlite)"
+	got := rewriteDocsctlOutputPath(command, "/tmp/ggg-docsctl-123/help.sqlite")
+	want := "mkdir -p .docsctl && (cd cmd/goja-bleve && GOWORK=off go run . help export --format sqlite --output-path '/tmp/ggg-docsctl-123/help.sqlite')"
+	if got != want {
+		t.Fatalf("rewriteDocsctlOutputPath() = %q, want %q", got, want)
+	}
+}
+
+func TestRewriteDocsctlOutputPathHandlesEqualsAndQuotedValues(t *testing.T) {
+	command := `go run ./cmd/tool help export --format sqlite --output-path=".docsctl/help.sqlite"`
+	got := rewriteDocsctlOutputPath(command, "/tmp/ggg-docsctl-456/help.sqlite")
+	want := `go run ./cmd/tool help export --format sqlite --output-path '/tmp/ggg-docsctl-456/help.sqlite'`
+	if got != want {
+		t.Fatalf("rewriteDocsctlOutputPath() = %q, want %q", got, want)
+	}
+}
+
 func writeFile(t *testing.T, root, rel, body string) {
 	t.Helper()
 	path := filepath.Join(root, rel)
