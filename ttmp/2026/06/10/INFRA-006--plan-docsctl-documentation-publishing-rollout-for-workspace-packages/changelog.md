@@ -120,3 +120,15 @@ Fixed goja-bleve docs publishing after v0.0.3 failed on absolute nested-module r
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/goja-bleve/cmd/goja-bleve/go.sum — Updated nested command module checksums
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Goja-bleve failure analysis and docs verification results
 
+
+## 2026-06-10
+
+Completed llm-proxy release/docs rollout: cleaned release scaffold placeholders, merged PR #4, tagged v0.0.1, verified docs workflow 27301347553, release workflow 27301347099, and public docs at llm-proxy/v0.0.1.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — llm-proxy release completion diary
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/.github/workflows/release.yaml — Removed stale disabled docs template
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/.goreleaser.yaml — Release metadata and llm-proxy-server build target
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/Makefile — Release/install helper cleanup
+
