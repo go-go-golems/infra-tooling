@@ -132,3 +132,16 @@ Completed llm-proxy release/docs rollout: cleaned release scaffold placeholders,
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/.goreleaser.yaml — Release metadata and llm-proxy-server build target
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/Makefile — Release/install helper cleanup
 
+
+## 2026-06-10
+
+Added package-specific goja-bleve Glazed help docs (getting started, user guide, JS API reference), embedded them into cmd/goja-bleve help export, merged PR #9, tagged v0.0.5, and verified publish run 27302333674 plus public docs.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/goja-bleve/cmd/goja-bleve/help/topics/01-user-guide.md — Goja Bleve user guide
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/goja-bleve/cmd/goja-bleve/help/topics/02-js-api-reference.md — JavaScript API reference
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/goja-bleve/cmd/goja-bleve/help/tutorials/01-getting-started.md — Getting-started Glazed help tutorial
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/goja-bleve/cmd/goja-bleve/main.go — Embedded help wiring for docsctl export
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Goja Bleve rich help diary
+
