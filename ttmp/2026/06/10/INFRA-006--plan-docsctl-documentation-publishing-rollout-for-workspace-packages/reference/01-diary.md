@@ -630,3 +630,56 @@ I restored the public embedded filesystem API and made the Glazed helper load fr
 ### Technical details
 - PR: https://github.com/go-go-golems/logcopter/pull/3
 - Commit: `602c6ca Preserve embedded docs filesystem for help export`.
+
+## Step 10: Verify pushed branch state after merges and open docmgr follow-up
+
+The user asked whether all fix branches had been pushed because several PRs were merged quickly. I checked every rollout repository against its upstream branch. All local branches were clean and matched their upstream tracking branches, so the pushes themselves succeeded.
+
+However, GitHub showed that `docmgr` PR #41 had already been merged at commit `a061f30`, before the later docs-job gating commit `c4e0268` was included in the merged PR. I verified `origin/main` still had the disabled `false && startsWith(...)` condition, so I created a focused follow-up PR from current `origin/main` and cherry-picked the gating fix.
+
+### Prompt Context
+
+**User prompt (verbatim):** "did you push all the branches, btw? I think i merged a bunch without merging the fixes if you didn't push them"
+
+**Assistant interpretation:** Verify whether the latest review-fix commits reached the remote branches and whether any already-merged PR missed late fixes.
+
+**Inferred user intent:** Avoid losing review fixes because PRs were merged before late commits were pushed or included.
+
+### What I did
+- Compared `HEAD` and `@{u}` for all rollout branches; each showed `0 0` ahead/behind.
+- Queried PR states and head SHAs with `gh pr view`.
+- Found `docmgr` PR #41 was merged with head `a061f30`, while the later gating fix was `c4e0268` on the branch.
+- Created `docmgr` branch `fix/docsctl-docs-job-gating` from `origin/main`.
+- Cherry-picked `c4e0268` as `f029e9f`.
+- Pushed the branch and opened https://github.com/go-go-golems/docmgr/pull/42.
+
+### Why
+- A merged PR does not automatically include commits pushed to its branch after merge.
+- The docmgr docs job must not remain disabled or runnable from manual dispatch without tag gating.
+
+### What worked
+- The branch-state check confirmed all local fixes were pushed to their upstream branches.
+- The docmgr follow-up PR cleanly applies the missing workflow fix on top of current `main`.
+
+### What didn't work
+- `docmgr` PR #41 was merged before commit `c4e0268` was included, so the fix was not present on `main`.
+
+### What I learned
+- For fast review/merge cycles, checking PR `headRefOid` after merge is necessary; branch push state alone is not enough.
+
+### What was tricky to build
+- The distinction between an updated remote branch and the commit that GitHub actually merged was the important detail. `origin/task/add-docs-deploy` had the fix, but `origin/main` did not.
+
+### What warrants a second pair of eyes
+- Review docmgr PR #42 and merge it before tagging docmgr.
+
+### What should be done in the future
+- Re-check merged package PRs before release tagging to ensure expected workflow contents are on `main`.
+
+### Code review instructions
+- Review `docmgr/.github/workflows/release.yml` in PR #42.
+- Confirm the `publish-docs` job has tag-push-only `if` and job-level OIDC permissions.
+
+### Technical details
+- Follow-up PR: https://github.com/go-go-golems/docmgr/pull/42
+- Cherry-picked commit: `f029e9f Gate docs publishing to release tag pushes`.

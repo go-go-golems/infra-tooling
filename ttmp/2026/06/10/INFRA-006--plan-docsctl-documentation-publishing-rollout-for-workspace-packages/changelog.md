@@ -70,3 +70,12 @@ Addressed logcopter PR #3 review comments by restoring exported doc.FS, embeddin
 
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/logcopter/pkg/doc/doc.go — Preserves public embedded docs filesystem and docsctl help loading
 
+
+## 2026-06-10
+
+Verified rollout branches were pushed; found docmgr PR #41 merged before late gating fix, so opened follow-up PR #42 with the missing release-tag docs job gating.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Records branch/merge verification and docmgr follow-up PR
+
