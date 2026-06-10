@@ -90,3 +90,13 @@ Addressed infra-tooling PR #16 review by rewriting full docsctl --output-path ar
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/internal/cli/rollout/docsctl_test.go — Regression tests for nested and quoted output paths
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/sources/02-ggg-docsctl-plan.yaml — Regenerated validation plan including goja-bleve
 
+
+## 2026-06-10
+
+Analyzed and fixed logcopter PR #3 CI failures: restored legacy generator flag parsing for normal runs, kept Cobra help export, upgraded jsonparser, and bumped Go directive to 1.25.11; pushed commits 4286c3c and bc3e60b.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/logcopter/cmd/logcopter-gen/main.go — Dual legacy generator and Cobra help-export parsing
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/logcopter/go.mod — Patched Go directive and jsonparser version for CI security checks
+
