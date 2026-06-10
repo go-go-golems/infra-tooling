@@ -41,3 +41,12 @@ Removed workflow_dispatch from all separate docs publishing workflows so docsctl
 
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Records review-response workflow trigger cleanup
 
+
+## 2026-06-10
+
+Updated docmgr release-coupled publish-docs job to run only on v* tag pushes and grant job-level OIDC permissions; pushed commit c4e0268 to PR #41.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/docmgr/.github/workflows/release.yml — Docmgr docs job gating and OIDC permissions
+

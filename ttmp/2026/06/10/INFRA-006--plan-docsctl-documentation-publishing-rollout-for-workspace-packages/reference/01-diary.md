@@ -450,3 +450,55 @@ I removed `workflow_dispatch` from all new separate `publish-docs.yaml` workflow
 
 ### Technical details
 - The Terraform roles were not changed because their tag-push claim bindings were already correct.
+
+## Step 7: Gate docmgr release-coupled docs job
+
+After cleaning up the separate `publish-docs.yaml` workflows, the user asked about `docmgr`. `docmgr` is different because its docs publishing job is embedded in `.github/workflows/release.yml` rather than in a separate docs workflow. That release workflow still has a manual dispatch trigger for release operations, so the correct fix is to gate only the `publish-docs` job to release tag pushes.
+
+I updated the `publish-docs` job from a disabled placeholder condition to an explicit tag-push condition and added job-level `id-token: write` permissions. This both enables docs publishing for real `v*` tag pushes and prevents manual workflow dispatches from trying to publish docs with a branch name as the package version.
+
+### Prompt Context
+
+**User prompt (verbatim):** "what about docmgr?"
+
+**Assistant interpretation:** Check whether the manual-dispatch docs publishing concern also applies to `docmgr` and patch it if needed.
+
+**Inferred user intent:** Ensure every docs publishing path, including release-coupled docmgr, is consistently release-tag-only and actually functional.
+
+### What I did
+- Updated `docmgr/.github/workflows/release.yml` in PR #41.
+- Changed `publish-docs` condition to:
+  `if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}`.
+- Added job-level permissions:
+  `contents: read` and `id-token: write`.
+- Committed and pushed `docmgr` commit `c4e0268`.
+
+### Why
+- `workflow_dispatch` can remain on the release workflow for non-docs release operations, but docs publishing must stay tag-push-only.
+- The reusable docs workflow needs GitHub OIDC, so the caller job must grant `id-token: write`.
+- The previous `false && startsWith(...)` condition meant the docs job was still disabled.
+
+### What worked
+- The docmgr branch pushed successfully to PR #41.
+
+### What didn't work
+- N/A.
+
+### What I learned
+- Release-coupled docs jobs need a different cleanup than separate docs workflows: do not remove `workflow_dispatch` from the whole release workflow unless release owners want that; instead gate the docs job.
+
+### What was tricky to build
+- The important subtlety was spotting that docmgr's docs job was disabled with `false && ...`; fixing the manual dispatch concern also required enabling the job for real tag pushes.
+
+### What warrants a second pair of eyes
+- Confirm that release workflow manual dispatch is still desired for docmgr generally. The docs job itself is now safe.
+
+### What should be done in the future
+- After docmgr PR #41 merges, tag a `v*` release and verify docs publishing after `goreleaser-merge` completes.
+
+### Code review instructions
+- Review `docmgr/.github/workflows/release.yml` around the `publish-docs` job.
+- Confirm `needs: goreleaser-merge`, tag-push-only `if`, job-level OIDC permissions, and Terraform `workflow_ref` for `release.yml` still match.
+
+### Technical details
+- Commit: `c4e0268 Gate docs publishing to release tag pushes`.
