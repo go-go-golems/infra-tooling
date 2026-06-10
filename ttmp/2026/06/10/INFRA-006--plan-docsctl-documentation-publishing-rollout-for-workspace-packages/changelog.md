@@ -109,3 +109,14 @@ Recorded post-fix rerun attempt: failed docs workflow reruns now use the normali
 
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Rerun/immutability diary note
 
+
+## 2026-06-10
+
+Fixed goja-bleve docs publishing after v0.0.3 failed on absolute nested-module replace directives; merged PR #8, tagged v0.0.4, verified successful publish run 27299692669, and rechecked public docs for all rollout packages.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/goja-bleve/cmd/goja-bleve/go.mod — Removed absolute clean-checkout-breaking replacements
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/goja-bleve/cmd/goja-bleve/go.sum — Updated nested command module checksums
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Goja-bleve failure analysis and docs verification results
+
