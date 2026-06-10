@@ -1,6 +1,6 @@
 profile: docsctl
 workspace: /home/manuel/workspaces/2026-06-10/add-docs-deploy
-generated_at: "2026-06-10T11:26:29-04:00"
+generated_at: "2026-06-10T14:14:03-04:00"
 repositories:
     - repo: devctl
       path: /home/manuel/workspaces/2026-06-10/add-docs-deploy/devctl
@@ -12,7 +12,7 @@ repositories:
       vault_role: docsctl-devctl-publisher
       status: validate_ok
       sqlite_size: 151552
-      note: 'OK: /tmp/ggg-docsctl-772977011/help.sqlite is a valid Glazed help database for devctl@v0.0.0-local (6 sections, 6 slugs)'
+      note: 'OK: /tmp/ggg-docsctl-273131212/help.sqlite is a valid Glazed help database for devctl@v0.0.0-local (6 sections, 6 slugs)'
     - repo: docmgr
       path: /home/manuel/workspaces/2026-06-10/add-docs-deploy/docmgr
       package_name: docmgr
@@ -23,7 +23,18 @@ repositories:
       vault_role: docsctl-docmgr-publisher
       status: validate_ok
       sqlite_size: 376832
-      note: 'OK: /tmp/ggg-docsctl-2430498559/help.sqlite is a valid Glazed help database for docmgr@v0.0.0-local (17 sections, 17 slugs)'
+      note: 'OK: /tmp/ggg-docsctl-2910263169/help.sqlite is a valid Glazed help database for docmgr@v0.0.0-local (17 sections, 17 slugs)'
+    - repo: goja-bleve
+      path: /home/manuel/workspaces/2026-06-10/add-docs-deploy/goja-bleve
+      package_name: goja-bleve
+      cmd_dir: ./cmd/goja-bleve
+      workflow: .github/workflows/publish-docs.yaml
+      export_command: mkdir -p .docsctl && (cd cmd/goja-bleve && GOWORK=off go run . help export --format sqlite --output-path ../../.docsctl/help.sqlite)
+      sqlite_path: .docsctl/help.sqlite
+      vault_role: docsctl-goja-bleve-publisher
+      status: validate_ok
+      sqlite_size: 57344
+      note: 'OK: /tmp/ggg-docsctl-72613101/help.sqlite is a valid Glazed help database for goja-bleve@v0.0.0-local (2 sections, 2 slugs)'
     - repo: llm-proxy
       path: /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy
       package_name: llm-proxy
@@ -34,7 +45,7 @@ repositories:
       vault_role: docsctl-llm-proxy-publisher
       status: validate_ok
       sqlite_size: 49152
-      note: 'OK: /tmp/ggg-docsctl-3956747023/help.sqlite is a valid Glazed help database for llm-proxy@v0.0.0-local (1 sections, 1 slugs)'
+      note: 'OK: /tmp/ggg-docsctl-3257804370/help.sqlite is a valid Glazed help database for llm-proxy@v0.0.0-local (1 sections, 1 slugs)'
     - repo: logcopter
       path: /home/manuel/workspaces/2026-06-10/add-docs-deploy/logcopter
       package_name: logcopter
@@ -44,8 +55,8 @@ repositories:
       sqlite_path: .docsctl/help.sqlite
       vault_role: docsctl-logcopter-publisher
       status: validate_ok
-      sqlite_size: 57344
-      note: 'OK: /tmp/ggg-docsctl-2972223879/help.sqlite is a valid Glazed help database for logcopter@v0.0.0-local (2 sections, 2 slugs)'
+      sqlite_size: 61440
+      note: 'OK: /tmp/ggg-docsctl-1847533052/help.sqlite is a valid Glazed help database for logcopter@v0.0.0-local (3 sections, 3 slugs)'
     - repo: react-chat
       path: /home/manuel/workspaces/2026-06-10/add-docs-deploy/react-chat
       package_name: chat-overlay
@@ -56,7 +67,7 @@ repositories:
       vault_role: docsctl-chat-overlay-publisher
       status: validate_ok
       sqlite_size: 49152
-      note: 'OK: /tmp/ggg-docsctl-813979037/help.sqlite is a valid Glazed help database for chat-overlay@v0.0.0-local (1 sections, 1 slugs)'
+      note: 'OK: /tmp/ggg-docsctl-38697399/help.sqlite is a valid Glazed help database for chat-overlay@v0.0.0-local (1 sections, 1 slugs)'
     - repo: remarquee
       path: /home/manuel/workspaces/2026-06-10/add-docs-deploy/remarquee
       package_name: remarquee
@@ -67,7 +78,7 @@ repositories:
       vault_role: docsctl-remarquee-publisher
       status: validate_ok
       sqlite_size: 131072
-      note: 'OK: /tmp/ggg-docsctl-1557384172/help.sqlite is a valid Glazed help database for remarquee@v0.0.0-local (12 sections, 12 slugs)'
+      note: 'OK: /tmp/ggg-docsctl-880832915/help.sqlite is a valid Glazed help database for remarquee@v0.0.0-local (12 sections, 12 slugs)'
     - repo: scraper
       path: /home/manuel/workspaces/2026-06-10/add-docs-deploy/scraper
       package_name: scraper
@@ -78,7 +89,7 @@ repositories:
       vault_role: docsctl-scraper-publisher
       status: validate_ok
       sqlite_size: 147456
-      note: 'OK: /tmp/ggg-docsctl-1732948427/help.sqlite is a valid Glazed help database for scraper@v0.0.0-local (11 sections, 11 slugs)'
+      note: 'OK: /tmp/ggg-docsctl-3482017152/help.sqlite is a valid Glazed help database for scraper@v0.0.0-local (11 sections, 11 slugs)'
     - repo: sessionstream
       path: /home/manuel/workspaces/2026-06-10/add-docs-deploy/sessionstream
       package_name: sessionstream
@@ -89,7 +100,7 @@ repositories:
       vault_role: docsctl-sessionstream-publisher
       status: validate_ok
       sqlite_size: 86016
-      note: 'OK: /tmp/ggg-docsctl-507980672/help.sqlite is a valid Glazed help database for sessionstream@v0.0.0-local (4 sections, 4 slugs)'
+      note: 'OK: /tmp/ggg-docsctl-1505039757/help.sqlite is a valid Glazed help database for sessionstream@v0.0.0-local (4 sections, 4 slugs)'
     - repo: vm-system
       path: /home/manuel/workspaces/2026-06-10/add-docs-deploy/vm-system
       package_name: vm-system
@@ -100,4 +111,4 @@ repositories:
       vault_role: docsctl-vm-system-publisher
       status: validate_ok
       sqlite_size: 135168
-      note: 'OK: /tmp/ggg-docsctl-503423283/help.sqlite is a valid Glazed help database for vm-system@v0.0.0-local (7 sections, 7 slugs)'
+      note: 'OK: /tmp/ggg-docsctl-961186680/help.sqlite is a valid Glazed help database for vm-system@v0.0.0-local (7 sections, 7 slugs)'
