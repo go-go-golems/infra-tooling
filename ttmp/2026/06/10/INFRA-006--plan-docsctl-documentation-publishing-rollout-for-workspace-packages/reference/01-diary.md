@@ -502,3 +502,75 @@ I updated the `publish-docs` job from a disabled placeholder condition to an exp
 
 ### Technical details
 - Commit: `c4e0268 Gate docs publishing to release tag pushes`.
+
+## Step 8: Port llm-proxy CLI flags to a Glazed serve command
+
+After review on `llm-proxy` PR #3, the user asked to install the Glazed lint check and convert Cobra/go flag code into Glazed commands. I changed `llm-proxy-server` so runtime server options now belong to a Glazed-backed `serve` command instead of being hand-declared Cobra flags on the root command.
+
+The root command still owns logging and help-system setup. The `serve` command owns `--listen` and `--profiles` through Glazed field definitions, decodes them from `values.Values`, and calls the existing server runtime. This means `help export` sees a real Glazed command and `make glazed-lint` can enforce the expected CLI policy in CI.
+
+### Prompt Context
+
+**User prompt (verbatim):** "https://github.com/go-go-golems/llm-proxy/pull/3/changes <- install the glazed lint check, and transform every cobra verb / go flags code here into a glalzed command (see skill)."
+
+**Assistant interpretation:** Update the llm-proxy PR so command flags are defined through Glazed, add the Glazed CLI linter to local/CI checks, and push the changes to the existing PR.
+
+**Inferred user intent:** Bring llm-proxy in line with go-go-golems CLI conventions before merging docsctl publishing.
+
+### What I did
+- Rewrote `llm-proxy/cmd/llm-proxy-server/main.go`:
+  - root command keeps Glazed logging/help setup;
+  - added `ServeCommand` embedding `*cmds.CommandDescription`;
+  - added `ServeSettings` with `glazed:"listen"` and `glazed:"profiles"` tags;
+  - defined `--listen` and `--profiles` via `fields.New(...)`;
+  - built the subcommand via `cli.BuildCobraCommandFromCommand(...)`;
+  - decoded settings with `parsedValues.DecodeSectionInto(schema.DefaultSlug, settings)`.
+- Added `glazed-lint-build` and `glazed-lint` Makefile targets.
+- Added `make glazed-lint` to `.github/workflows/push.yml`.
+- Updated embedded docs and README examples from `llm-proxy-server --profiles ...` to `llm-proxy-server serve --profiles ...`.
+- Committed and pushed to PR #3:
+  - `f344257 Port server CLI to Glazed command`
+  - `9378925 Document Glazed serve command`
+
+### Why
+- Handwritten Cobra flags bypass Glazed command metadata and policy linting.
+- Defining the server as a Glazed command makes flags inspectable, exportable, lintable, and consistent with the rest of the ecosystem.
+
+### What worked
+- `GOWORK=off go test ./...` passed.
+- `make glazed-lint` passed.
+- `GOWORK=off go run ./cmd/llm-proxy-server help export --format sqlite --output-path .docsctl/help.sqlite` still exported valid docs.
+- `docsctl validate --file .docsctl/help.sqlite --package llm-proxy --version v0.0.0-local` passed.
+- `GOWORK=off go run ./cmd/llm-proxy-server serve --help` showed the Glazed-backed `serve` command and its flags.
+
+### What didn't work
+- N/A.
+
+### What I learned
+- For long-running server commands, implementing Glazed's `Run(ctx, values)` method is a good fit because the command does not emit rows and should block until the HTTP server exits.
+
+### What was tricky to build
+- The subtle CLI behavior change is that serving now runs as `llm-proxy-server serve`, while root-level `help export` remains available for docsctl. I updated docs to make that explicit instead of keeping a backwards-compatibility shim on the root command.
+
+### What warrants a second pair of eyes
+- Review whether the intentional CLI shape change from root flags to `serve` subcommand is acceptable for current users.
+- Check if the placeholder `cmd/XXX` should be removed in a separate cleanup PR; it remains unchanged because it is not part of the server CLI behavior.
+
+### What should be done in the future
+- If backwards compatibility is required, add an explicit migration note or compatibility command intentionally rather than reintroducing root-level Cobra flags.
+
+### Code review instructions
+- Start with `llm-proxy/cmd/llm-proxy-server/main.go` and verify the Glazed command pattern.
+- Then review `llm-proxy/Makefile` and `.github/workflows/push.yml` for glazed-lint integration.
+- Validate with:
+  - `cd llm-proxy && GOWORK=off go test ./...`
+  - `cd llm-proxy && make glazed-lint`
+  - `cd llm-proxy && mkdir -p .docsctl && GOWORK=off go run ./cmd/llm-proxy-server help export --format sqlite --output-path .docsctl/help.sqlite && docsctl validate --file .docsctl/help.sqlite --package llm-proxy --version v0.0.0-local`
+
+### Technical details
+- Main files changed:
+  - `/home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/cmd/llm-proxy-server/main.go`
+  - `/home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/Makefile`
+  - `/home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/.github/workflows/push.yml`
+  - `/home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/pkg/doc/topics/llm-proxy-overview.md`
+  - `/home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/README.md`

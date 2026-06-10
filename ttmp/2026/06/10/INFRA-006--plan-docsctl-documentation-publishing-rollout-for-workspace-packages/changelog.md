@@ -50,3 +50,14 @@ Updated docmgr release-coupled publish-docs job to run only on v* tag pushes and
 
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/docmgr/.github/workflows/release.yml — Docmgr docs job gating and OIDC permissions
 
+
+## 2026-06-10
+
+Updated llm-proxy PR #3 to define server flags through a Glazed serve command and added make glazed-lint to CI; pushed commits f344257 and 9378925.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/.github/workflows/push.yml — CI glazed-lint check
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/Makefile — glazed-lint targets
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/cmd/llm-proxy-server/main.go — Glazed serve command implementation
+
