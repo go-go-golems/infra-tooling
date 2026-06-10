@@ -131,6 +131,39 @@ jobs:
           ${{ inputs.export_command }}
           test -s "${SQLITE_PATH}"
 
+      - name: Normalize help SQLite database
+        shell: bash
+        env:
+          SQLITE_PATH: ${{ inputs.sqlite_path }}
+        run: |
+          set -euo pipefail
+          normalizer="${RUNNER_TEMP}/normalize-help-db.go"
+          cat > "${normalizer}" <<'EOF'
+          package main
+
+          import (
+            "fmt"
+            "os"
+
+            "github.com/go-go-golems/glazed/pkg/help/store"
+          )
+
+          func main() {
+            if len(os.Args) != 2 {
+              panic("usage: normalize-help-db DB")
+            }
+            s, err := store.New(os.Args[1])
+            if err != nil {
+              panic(err)
+            }
+            if err := s.Close(); err != nil {
+              panic(err)
+            }
+            fmt.Println("normalized", os.Args[1])
+          }
+          EOF
+          GOWORK=off go run "${normalizer}" "${SQLITE_PATH}"
+
       - name: Login to Vault with GitHub OIDC
         uses: hashicorp/vault-action@v3
         with:
