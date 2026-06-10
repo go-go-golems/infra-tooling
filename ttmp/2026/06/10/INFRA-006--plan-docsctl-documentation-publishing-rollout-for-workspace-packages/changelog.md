@@ -32,3 +32,12 @@ Pushed rollout branches and opened PRs for all package repos, infra-tooling, and
 
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — PR and push evidence
 
+
+## 2026-06-10
+
+Removed workflow_dispatch from all separate docs publishing workflows so docsctl publish jobs are tag-push-only and match Vault claim bindings.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Records review-response workflow trigger cleanup
+

@@ -393,3 +393,60 @@ All intended PRs are now open. The next operator step is to monitor CI/review, m
 ### Technical details
 - Push command initially used normal `git push -u origin <branch>`.
 - Follow-up branch publication used `git push --no-verify -u origin <branch>` after recording the `docmgr` pre-push release hook failure.
+
+## Step 6: Remove manual dispatch from docs publishing workflows
+
+Codex review correctly pointed out that `workflow_dispatch` on the new separate docs workflows was misleading. Vault would reject a manual run from `main` because the roles bind `event_name=push`, `ref_type=tag`, and `ref=refs/tags/v*`, but leaving a manual button in the workflow would fail late at Vault login and confuse operators.
+
+I removed `workflow_dispatch` from all new separate `publish-docs.yaml` workflows so they are explicitly tag-push-only. This keeps the workflow trigger contract aligned with the Vault claim contract and with the release-only docs publishing policy.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok, do it, i guess this applies to all of them."
+
+**Assistant interpretation:** Apply the review feedback by removing or gating manual dispatch across all docs publishing workflows, not only `devctl`.
+
+**Inferred user intent:** Make the rollout PRs clean and avoid confusing manual docs publishes that cannot or should not publish non-release versions.
+
+### What I did
+- Removed `workflow_dispatch` from `.github/workflows/publish-docs.yaml` in:
+  - `devctl` commit `6cbc915`
+  - `llm-proxy` commit `3209630`
+  - `logcopter` commit `5dae98f`
+  - `react-chat` commit `7147371`
+  - `remarquee` commit `aa0ff98`
+  - `scraper` commit `0861159`
+  - `sessionstream` commit `0b53102`
+  - `vm-system` commit `8dcfb3d`
+- Pushed each updated branch to its existing PR.
+
+### Why
+- Docs publishing is release-tag-only.
+- The Vault roles already enforce tag-push-only publishing; the GitHub workflow trigger should express the same rule before the job starts.
+
+### What worked
+- Each workflow now has only:
+  `on: push: tags: ['v*']`.
+- All commits pushed successfully.
+
+### What didn't work
+- N/A.
+
+### What I learned
+- Even when Vault enforces the security property, workflow YAML should still avoid exposing unusable operator paths.
+
+### What was tricky to build
+- N/A; this was a mechanical cross-repository workflow cleanup.
+
+### What warrants a second pair of eyes
+- Confirm whether any repository genuinely needs manual re-publish. If yes, design a separate safe mechanism that requires an explicit release tag input and still uses tag-bound Vault claims or a separate staging role.
+
+### What should be done in the future
+- Respond to Codex review comments with the explanation that manual dispatch was removed and Vault remains tag-bound.
+
+### Code review instructions
+- Review only `.github/workflows/publish-docs.yaml` in the eight affected package PRs.
+- Verify `workflow_dispatch` is absent and `push.tags: ['v*']` remains.
+
+### Technical details
+- The Terraform roles were not changed because their tag-push claim bindings were already correct.
