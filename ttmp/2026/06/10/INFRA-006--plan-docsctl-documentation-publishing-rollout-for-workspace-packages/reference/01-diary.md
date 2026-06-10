@@ -991,3 +991,92 @@ The production docs pages are healthy after the PVC normalization and `docs-yolo
 ### Technical details
 - Devctl rerun log source: `gh api repos/go-go-golems/devctl/actions/runs/27297638352/attempts/2/logs`.
 - Registry overwrite policy in deployment args: `--allow-overwrite=false`.
+
+## Step 16: Fix goja-bleve v0.0.3 docs publish failure and verify rollout docs
+
+The user pointed me at the failed `goja-bleve` docs workflow for tag `v0.0.3` and asked me to also check whether the other repositories actually published docs. I inspected the reusable workflow job and found that it failed before Vault/publish: the nested `cmd/goja-bleve` module still contained absolute local `replace` directives pointing at `/home/manuel/workspaces/2026-05-27/rag-evaluation-system/...`, which existed on the operator machine but not in GitHub Actions.
+
+I fixed `goja-bleve` by removing the absolute `geppetto` and `go-go-goja` replacements from the nested command module, keeping only a relative replacement for the current repository root. After merging the fix as PR #8, I tagged `v0.0.4`; the tag-triggered docs workflow succeeded end-to-end, including the new SQLite normalization step, registry publish, and public API verification. I then verified public docs pages for all rollout packages.
+
+### Prompt Context
+
+**User prompt (verbatim):** "https://github.com/go-go-golems/goja-bleve/actions/runs/27097772523/job/79972917567
+
+also, check other repos to see if docs successfully got published."
+
+**Assistant interpretation:** Inspect the specific failed goja-bleve docs publishing job, determine/fix the cause, and audit whether the rest of the docsctl rollout packages have visible public docs.
+
+**Inferred user intent:** Close the loop on docs publishing evidence, especially for the baseline goja-bleve repository that had been assumed ready.
+
+### What I did
+- Inspected `goja-bleve` workflow run `27097772523`, job `79972917567`.
+- Downloaded the run logs ZIP with `gh api repos/go-go-golems/goja-bleve/actions/runs/27097772523/logs` because `gh run view --log` returned no log body.
+- Confirmed the failing step was `Export Glazed help SQLite database`.
+- Patched `goja-bleve/cmd/goja-bleve/go.mod` and `go.sum` so clean checkouts no longer depend on absolute local replacement directories.
+- Validated locally:
+  - `cd cmd/goja-bleve && GOWORK=off go run . help export --format sqlite --output-path /tmp/goja-bleve-help.sqlite`
+  - `docsctl validate --file /tmp/goja-bleve-help.sqlite --package goja-bleve --version v0.0.4`
+  - `GOWORK=off go test ./...`
+  - `cd cmd/goja-bleve && GOWORK=off go test ./...`
+- Opened and merged `goja-bleve` PR #8: `Fix docsctl help export in clean checkout`.
+- Waited for PR checks; Analyze, CodeQL, Dependency Review, Go Vulnerability Check, GoSec, TruffleHog, lint, and test all passed.
+- Tagged `goja-bleve v0.0.4` with `ggg release tag-patch --repo goja-bleve --yes --output json`.
+- Watched publish run `27299692669`; it passed all docs workflow steps.
+- Verified public docs for the rollout packages with `ggg release verify-docs`.
+
+### Why
+- The v0.0.3 tag cannot be repaired in place without violating release immutability; the correct fix is a new commit and a new patch tag.
+- The original local inventory passed because the absolute replacement directories existed on the operator machine. GitHub Actions clean checkouts exposed the real portability bug.
+- Verifying public docs pages is necessary because earlier workflow conclusions were affected by stale browser state and SQLite normalization issues.
+
+### What worked
+- `goja-bleve v0.0.4` docs publish workflow succeeded:
+  - Export Glazed help SQLite database
+  - Normalize help SQLite database
+  - Login to Vault
+  - Mint docs-registry JWT
+  - Publish docs
+  - Verify package appears in docs API
+- Public docs verification passed:
+  - `devctl v0.0.7` — 6 sections
+  - `logcopter v0.1.1` — 3 sections
+  - `chat-overlay v0.0.1` — 1 section
+  - `remarquee v0.0.8` — 24 sections
+  - `scraper v0.0.4` — 11 sections
+  - `sessionstream v0.0.7` — 4 sections
+  - `vm-system v0.0.2` — 7 sections
+  - `docmgr v0.0.19` — 17 sections
+  - `goja-bleve v0.0.4` — 2 sections
+
+### What didn't work
+- `goja-bleve v0.0.3` remains failed and unpublished. Its export step failed with missing replacement directories before publish.
+- The earlier local inventory did not catch the problem because local filesystem paths masked the clean-checkout failure.
+
+### What I learned
+- Nested generated command modules need an explicit clean-checkout validation path. `GOWORK=off` is not enough if committed nested `go.mod` files contain absolute `replace` directives that exist locally.
+- `goja-bleve` was not merely a baseline; it required the same release-tag proof as the newly onboarded packages.
+
+### What was tricky to build
+- Removing all replacements from `cmd/goja-bleve/go.mod` was not sufficient because the generated command imports the current `github.com/go-go-golems/goja-bleve` module at `v0.0.0`; that pseudo requirement does not exist remotely. The correct compromise is to keep only `replace github.com/go-go-golems/goja-bleve => ../..` and let `geppetto`/`go-go-goja` resolve to released module versions.
+- `go mod tidy` upgraded the nested command's `geppetto` requirement to `v0.13.3`, which is the released version containing the imported provider package.
+
+### What warrants a second pair of eyes
+- Review `goja-bleve/cmd/goja-bleve/go.mod` to ensure using released `geppetto v0.13.3` in the generated command module is acceptable.
+- Consider adding an automated check in `ggg rollout docsctl plan` that scans nested command modules for absolute `replace` directives.
+
+### What should be done in the future
+- Leave `v0.0.3` as historical failed evidence and use `v0.0.4` as the successful docs release.
+- Add clean-checkout or containerized docs export validation for nested command modules.
+
+### Code review instructions
+- Review `goja-bleve` PR #8, especially `cmd/goja-bleve/go.mod` and `go.sum`.
+- Validate with the four local commands listed above and by checking `https://docs.yolo.scapegoat.dev/goja-bleve/v0.0.4`.
+
+### Technical details
+- Original failing run: https://github.com/go-go-golems/goja-bleve/actions/runs/27097772523/job/79972917567
+- Failure examples:
+  - `github.com/go-go-golems/geppetto@v0.11.7: replacement directory /home/manuel/workspaces/2026-05-27/rag-evaluation-system/geppetto does not exist`
+  - `github.com/go-go-golems/go-go-goja@v0.8.3: replacement directory /home/manuel/workspaces/2026-05-27/rag-evaluation-system/go-go-goja does not exist`
+  - `github.com/go-go-golems/goja-bleve@v0.0.0: replacement directory /home/manuel/workspaces/2026-05-27/rag-evaluation-system/goja-bleve does not exist`
+- Fix PR: https://github.com/go-go-golems/goja-bleve/pull/8
+- Successful publish run: https://github.com/go-go-golems/goja-bleve/actions/runs/27299692669
