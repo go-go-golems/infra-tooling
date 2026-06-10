@@ -757,3 +757,81 @@ I fixed the command compatibility issue by preserving the original stdlib `flag`
 - Initial test failure: `unknown command "lib.ble" for "logcopter-gen"`.
 - Dependency Review failure: `github.com/buger/jsonparser@1.1.1` high severity denial-of-service advisory.
 - Final govulncheck failure before the last bump: standard library vulnerabilities fixed in `net/textproto@go1.25.11` and `crypto/x509@go1.25.11`.
+
+## Step 13: Continue rollout by fixing llm-proxy CI and opening an infra-tooling follow-up
+
+After the logcopter checks recovered, I continued the rollout queue and found that `llm-proxy` PR #3 still had two failing checks: the test workflow's logcopter verification and GoSec. I regenerated the stale package logger for `pkg/doc`, changed the server shutdown goroutine so it derives its timeout from `context.WithoutCancel(ctx)` rather than `context.Background()`, and pushed the fix. The refreshed GitHub Actions run for `llm-proxy` then passed all checks.
+
+I also noticed that `infra-tooling` PR #16 had already been merged before the nested `--output-path` review fix and diary commit landed on the original branch. To avoid silently losing that fix, I created a follow-up PR from current `origin/main`, cherry-picked the nested path validation fix, and backfilled the diary entry for the logcopter CI work onto that follow-up branch.
+
+### Prompt Context
+
+**User prompt (verbatim):** "then continue"
+
+**Assistant interpretation:** Continue progressing the INFRA-006 rollout after the logcopter CI fix, including checking other PR states, fixing remaining failures, and preserving diary/bookkeeping.
+
+**Inferred user intent:** Keep the docsctl rollout moving toward merge/release readiness without losing late fixes or investigation notes.
+
+### What I did
+- Checked PR states and CI for the remaining rollout PRs.
+- Found `llm-proxy` PR #3 still failing:
+  - `test` failed at `make logcopter-check` because `pkg/doc/logcopter.go` was stale/missing after adding `pkg/doc`.
+  - `GoSec Security Scan` failed with `G118` at `cmd/llm-proxy-server/main.go:140` because the shutdown goroutine used `context.Background()` while a request-scoped/application context was available.
+- Regenerated llm-proxy package loggers with:
+  `GOWORK=off go tool logcopter-gen -area-prefix go-go-golems.llm-proxy -strip-prefix github.com/go-go-golems/llm-proxy ./pkg/...`.
+- Changed the shutdown timeout context to:
+  `context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)`.
+- Validated llm-proxy locally with:
+  - `GOWORK=off go test ./...`
+  - `make logcopter-check`
+  - `make glazed-lint`
+  - `gosec -exclude=G101,G304,G301,G306,G204 -exclude-dir=.history ./...`
+- Committed and pushed `cb4028d Fix docs rollout CI checks` to `llm-proxy`.
+- Watched the refreshed `llm-proxy` GitHub checks until all passed.
+- Merged `llm-proxy` PR #3; `logcopter` PR #3 was already merged by the time I attempted to merge it.
+- Created infra-tooling follow-up PR #17 for the nested docsctl output-path validation fix because PR #16 had already merged before that fix reached `main`.
+
+### Why
+- `llm-proxy` needed to be mergeable before Terraform/docsctl Vault bindings were useful for release tags.
+- The stale generated logcopter file was a normal generated-code drift issue caused by adding a new package under `pkg/doc`.
+- The GoSec finding was better fixed by using the available application context lineage than by suppressing the rule.
+- The infra-tooling nested-output-path fix matters for packages such as `goja-bleve`, whose docs export runs from a nested command and writes to `../../.docsctl/help.sqlite`.
+
+### What worked
+- Regenerating logcopter files produced `pkg/doc/logcopter.go` and made `make logcopter-check` pass.
+- `context.WithoutCancel(ctx)` avoided the `context.Background()` GoSec finding while still allowing shutdown to have a fresh 5-second timeout after the parent context is canceled.
+- `llm-proxy` refreshed checks passed: Analyze, CodeQL, Dependency Review, Go Vulnerability Check, GoSec, TruffleHog, lint, and test.
+- The infra-tooling follow-up branch cherry-picked the nested path fix cleanly from code/test/source-plan perspective; diary backfill required conflict resolution because the ticket docs had diverged.
+
+### What didn't work
+- Cherry-picking the prior diary commit `cd2d456` onto the infra-tooling follow-up branch conflicted in both `reference/01-diary.md` and `changelog.md` because current `main` already had Step 11/changelog content, while the old branch had Step 12 appended after a slightly different tail.
+- I resolved the conflict by keeping the current branch's Step 11 content and appending the Step 12 logcopter CI diary content from the old commit, rather than duplicating Step 11.
+
+### What I learned
+- Some rollout PRs were merged while the original local branch continued receiving late fixes, so checking PR `state` and `headRefOid` matters before assuming a pushed branch commit is on `main`.
+- GoSec's `G118` rule can flag application goroutines as well as request handlers; `context.WithoutCancel` is useful when shutdown work should keep values/deadline lineage but outlive cancellation briefly.
+
+### What was tricky to build
+- The infra-tooling follow-up needed to preserve both the code fix and the diary history without replaying stale ticket-document structure over the already-merged ticket docs. The safe approach was a targeted cherry-pick for code and source-plan changes, followed by manual diary backfill.
+- The llm-proxy GoSec fix had to avoid a false semantic change: using the already-canceled `ctx` directly for shutdown would make `srv.Shutdown` return immediately, so the fix uses `WithoutCancel(ctx)` and then adds a bounded timeout.
+
+### What warrants a second pair of eyes
+- Review `llm-proxy/cmd/llm-proxy-server/main.go` shutdown behavior to ensure retaining context values with `WithoutCancel` is acceptable for this server.
+- Review infra-tooling PR #17 to confirm it is safe to merge after PR #16 and does not duplicate any already-merged changes.
+
+### What should be done in the future
+- Merge infra-tooling PR #17 after review/checks.
+- Re-run final PR-state inventory before tagging releases.
+- Verify package `main` branches contain tag-only docs workflows and required help export commands before creating tags.
+
+### Code review instructions
+- For llm-proxy, review `cmd/llm-proxy-server/main.go` around server shutdown and `pkg/doc/logcopter.go` as generated logcopter output.
+- For infra-tooling, review `internal/cli/rollout/docsctl.go`, `internal/cli/rollout/docsctl_test.go`, and `sources/02-ggg-docsctl-plan.yaml` in PR #17.
+- Validate llm-proxy with the four commands listed in `What I did`.
+- Validate infra-tooling with `go test ./internal/cli/rollout`.
+
+### Technical details
+- `llm-proxy` failing test log: `logcopter-gen: generated file is not current: /home/runner/work/llm-proxy/llm-proxy/pkg/doc/logcopter.go`.
+- `llm-proxy` failing GoSec log: `G118 (CWE-400): Goroutine uses context.Background/TODO while request-scoped context is available` at `cmd/llm-proxy-server/main.go:140`.
+- `llm-proxy` fix commit: `cb4028d Fix docs rollout CI checks`.
+- Infra-tooling follow-up PR: https://github.com/go-go-golems/infra-tooling/pull/17

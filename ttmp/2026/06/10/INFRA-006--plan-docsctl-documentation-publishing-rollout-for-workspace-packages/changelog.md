@@ -79,3 +79,14 @@ Verified rollout branches were pushed; found docmgr PR #41 merged before late ga
 
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Records branch/merge verification and docmgr follow-up PR
 
+
+## 2026-06-10
+
+Continued rollout: fixed llm-proxy PR #3 CI by regenerating pkg/doc logcopter output and replacing shutdown context.Background with context.WithoutCancel(ctx); opened infra-tooling PR #17 because PR #16 merged before the nested --output-path validation fix landed.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/internal/cli/rollout/docsctl.go — Nested docsctl output-path rewrite fix carried in follow-up PR #17
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/cmd/llm-proxy-server/main.go — GoSec G118 shutdown-context fix
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/pkg/doc/logcopter.go — Generated package logger required by CI
+
