@@ -79,3 +79,14 @@ Verified rollout branches were pushed; found docmgr PR #41 merged before late ga
 
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Records branch/merge verification and docmgr follow-up PR
 
+
+## 2026-06-10
+
+Addressed infra-tooling PR #16 review by rewriting full docsctl --output-path arguments during validation; regenerated plan now includes goja-bleve validate_ok; pushed commit 30d75be.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/internal/cli/rollout/docsctl.go — Nested output-path rewrite fix
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/internal/cli/rollout/docsctl_test.go — Regression tests for nested and quoted output paths
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/sources/02-ggg-docsctl-plan.yaml — Regenerated validation plan including goja-bleve
+

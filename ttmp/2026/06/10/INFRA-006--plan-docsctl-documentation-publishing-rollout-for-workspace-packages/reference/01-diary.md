@@ -683,3 +683,62 @@ However, GitHub showed that `docmgr` PR #41 had already been merged at commit `a
 ### Technical details
 - Follow-up PR: https://github.com/go-go-golems/docmgr/pull/42
 - Cherry-picked commit: `f029e9f Gate docs publishing to release tag pushes`.
+
+## Step 11: Address infra-tooling nested export path review
+
+Codex review on `infra-tooling` PR #16 found a real bug in `ggg rollout docsctl validate`: nested export command overrides such as `--output-path ../../.docsctl/help.sqlite` were rewritten by replacing only the `.docsctl/help.sqlite` suffix. That produced invalid commands like `--output-path ../../'/tmp/ggg-docsctl-.../help.sqlite'`, which is neither the intended absolute temp path nor a valid nested output path.
+
+I replaced suffix replacement with an output-path argument rewrite that replaces the entire `--output-path` value. The fix handles space-separated, equals-form, and quoted values, and falls back to appending `--output-path <tmp>` if a command lacks that flag.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Also address code review comments in https://github.com/go-go-golems/infra-tooling/pull/16"
+
+**Assistant interpretation:** Inspect and fix the Codex review comment on infra-tooling PR #16, validate it, and push the update.
+
+**Inferred user intent:** Make the rollout tooling robust enough for nested command-module repositories like `goja-bleve` before merging infra-tooling.
+
+### What I did
+- Fetched PR #16 review comments via GitHub API.
+- Updated `infra-tooling/internal/cli/rollout/docsctl.go`:
+  - added `rewriteDocsctlOutputPath(command, outputPath)`;
+  - added a regexp that matches the whole `--output-path` argument value;
+  - changed validation to rewrite the full output path rather than replacing `.docsctl/help.sqlite` substrings.
+- Added tests in `infra-tooling/internal/cli/rollout/docsctl_test.go` for:
+  - nested override `../../.docsctl/help.sqlite` inside a subshell;
+  - quoted equals-form `--output-path=".docsctl/help.sqlite"`.
+- Regenerated `sources/02-ggg-docsctl-plan.yaml`; `goja-bleve` now appears in the validated plan with `status: validate_ok`.
+- Committed and pushed `30d75be Fix docsctl validation for nested export paths` to infra-tooling PR #16.
+
+### Why
+- `ggg rollout docsctl plan` must not silently drop nested-module packages.
+- The command shown in inventory/plan should be the command validated, but validation needs a safe temp output path.
+
+### What worked
+- `go test ./internal/cli/rollout` passed.
+- Targeted validation passed:
+  `go run ./cmd/ggg rollout docsctl plan --include goja-bleve ...` returned `goja-bleve` with `validate_ok`.
+- Full rollout plan regeneration now includes `goja-bleve` with `validate_ok`.
+
+### What didn't work
+- The old substring replacement was too naive for nested relative paths.
+
+### What I learned
+- Shell command rewrites should operate on full CLI arguments, not on suffixes that may appear inside longer relative paths.
+
+### What was tricky to build
+- The rewrite had to avoid consuming the closing `)` in subshell commands. The regexp treats whitespace and `)` as terminators for unquoted output values.
+
+### What warrants a second pair of eyes
+- The regexp is intentionally pragmatic rather than a complete shell parser. It is appropriate for generated docsctl export commands, but future arbitrary-shell support might need a more structured command representation.
+
+### What should be done in the future
+- Consider adding an explicit `sqlite_path` override to validation rather than parsing shell strings if more complex export commands appear.
+
+### Code review instructions
+- Review `rewriteDocsctlOutputPath` and its tests first.
+- Confirm the refreshed `sources/02-ggg-docsctl-plan.yaml` includes `goja-bleve`.
+
+### Technical details
+- Commit: `30d75be Fix docsctl validation for nested export paths`.
+- Review comment addressed: PR #16 nested `--output-path ../../.docsctl/help.sqlite` rewrite bug.
