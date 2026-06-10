@@ -61,3 +61,12 @@ Updated llm-proxy PR #3 to define server flags through a Glazed serve command an
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/Makefile — glazed-lint targets
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/cmd/llm-proxy-server/main.go — Glazed serve command implementation
 
+
+## 2026-06-10
+
+Addressed logcopter PR #3 review comments by restoring exported doc.FS, embedding tutorials as well as topics, and loading Glazed help from the exported FS; pushed commit 602c6ca.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/logcopter/pkg/doc/doc.go — Preserves public embedded docs filesystem and docsctl help loading
+

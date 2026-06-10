@@ -574,3 +574,59 @@ The root command still owns logging and help-system setup. The `serve` command o
   - `/home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/.github/workflows/push.yml`
   - `/home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/pkg/doc/topics/llm-proxy-overview.md`
   - `/home/manuel/workspaces/2026-06-10/add-docs-deploy/llm-proxy/README.md`
+
+## Step 9: Address logcopter embedded-docs review comments
+
+Codex review on `logcopter` PR #3 found two regressions in `pkg/doc/doc.go`: my initial Glazed helper change embedded only `topics/*`, dropping the existing tutorial from docs exports, and it replaced the exported `FS` with an unexported `docFS`, breaking downstream consumers that mount or read logcopter docs directly.
+
+I restored the public embedded filesystem API and made the Glazed helper load from that same exported value. The docsctl export now includes both topics and tutorials, and downstream non-Glazed consumers can continue importing `pkg/doc.FS`.
+
+### Prompt Context
+
+**User prompt (verbatim):** "https://github.com/go-go-golems/logcopter/pull/3 <- address the code review comments here too."
+
+**Assistant interpretation:** Inspect and fix the PR review comments on logcopter PR #3, then push the updates.
+
+**Inferred user intent:** Clean up review findings before merging the logcopter docsctl rollout PR.
+
+### What I did
+- Fetched PR review comments with GitHub API.
+- Updated `logcopter/pkg/doc/doc.go`:
+  - restored exported `var FS embed.FS`;
+  - embedded `topics/*.md tutorials/*.md`;
+  - added `AddDocToHelpSystem` that calls `helpSystem.LoadSectionsFromFS(FS, ".")`.
+- Committed and pushed logcopter commit `602c6ca Preserve embedded docs filesystem for help export`.
+
+### Why
+- Docs publishing should not silently drop existing tutorial documentation.
+- Adding Glazed helper support should not break the public filesystem API that downstream consumers may rely on.
+
+### What worked
+- `GOWORK=off go test ./...` passed.
+- Pre-commit `golangci-lint` and tests passed.
+- Docs export and validation passed:
+  `OK: ... help.sqlite is a valid Glazed help database for logcopter@v0.0.0-local (3 sections, 3 slugs)`.
+
+### What didn't work
+- N/A.
+
+### What I learned
+- When adding helper functions to an existing docs package, preserve exported `embed.FS` variables unless explicitly doing a breaking API change.
+- `docsctl validate` section counts are useful for spotting dropped docs: logcopter went from 2 sections to 3 sections after tutorials were restored.
+
+### What was tricky to build
+- The fix had to satisfy both use cases: Glazed docs loading for docsctl and plain `fs.FS` access for non-Glazed callers. Loading from exported `FS` keeps a single source of truth.
+
+### What warrants a second pair of eyes
+- Confirm whether the package comment accurately describes the public API expectations.
+
+### What should be done in the future
+- Consider adding a small test that loads `doc.FS` and asserts the tutorial path exists, so future embed-pattern edits do not drop it again.
+
+### Code review instructions
+- Review `logcopter/pkg/doc/doc.go` only for this follow-up.
+- Confirm both `topics/*.md` and `tutorials/*.md` are embedded and `FS` remains exported.
+
+### Technical details
+- PR: https://github.com/go-go-golems/logcopter/pull/3
+- Commit: `602c6ca Preserve embedded docs filesystem for help export`.
