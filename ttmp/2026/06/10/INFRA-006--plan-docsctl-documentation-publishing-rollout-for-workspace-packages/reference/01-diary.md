@@ -269,3 +269,59 @@ The key validation milestone was a successful `ggg rollout docsctl plan` run wit
   - `cd /home/manuel/code/wesen/terraform && source .envrc && cd vault/github-actions/envs/k3s && terraform plan -out=/tmp/infra006-docsctl-vault.tfplan`
   - `terraform apply -auto-approve /tmp/infra006-docsctl-vault.tfplan`
   - `terraform plan > /tmp/infra006-docsctl-vault-post-apply-plan.log`
+
+## Step 4: Validate ticket hygiene and upload to reMarkable
+
+After implementation and the intern-facing guide were written, I validated the docmgr ticket and uploaded the primary deliverables as a single PDF bundle to reMarkable. This closes the documentation-delivery portion of the request while leaving only branch pushing/PR creation and post-merge release verification as follow-up rollout operations.
+
+The upload included the design guide, diary, tasks, and changelog. The reMarkable command reported success with the destination `/ai/2026/06/10/INFRA-006`.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 2)
+
+**Assistant interpretation:** Keep the ticket current and deliver the implementation guide and diary to reMarkable after validation.
+
+**Inferred user intent:** Ensure the work is not only implemented but also easy to review away from the terminal.
+
+### What I did
+- Ran `docmgr doctor --ticket INFRA-006 --stale-after 30`.
+- Uploaded a bundle with:
+  - `design-doc/01-workspace-docsctl-publishing-rollout-implementation-guide.md`
+  - `reference/01-diary.md`
+  - `tasks.md`
+  - `changelog.md`
+- Updated `tasks.md` to mark doctor and reMarkable upload complete.
+
+### Why
+- The ticket should pass docmgr hygiene before being treated as a handoff artifact.
+- The user explicitly requested upload to reMarkable.
+
+### What worked
+- `docmgr doctor` returned `All checks passed`.
+- `remarquee upload bundle ... --non-interactive` returned:
+  `OK: uploaded INFRA-006 docsctl rollout guide.pdf -> /ai/2026/06/10/INFRA-006`.
+
+### What didn't work
+- N/A.
+
+### What I learned
+- The reMarkable upload path convention `/ai/YYYY/MM/DD/<ticket>` worked for this ticket bundle.
+
+### What was tricky to build
+- N/A; this was a delivery/validation step.
+
+### What warrants a second pair of eyes
+- Review the final guide for whether it is sufficiently explicit for an intern to run the release/tag verification phase.
+
+### What should be done in the future
+- Push all branches and open/update PRs.
+- After merge, tag releases and verify `docs.yolo.scapegoat.dev/<package>/<version>` for each package.
+
+### Code review instructions
+- Start with the design doc and the saved validation artifacts under `sources/`.
+- Confirm the reMarkable PDF bundle contains the guide, diary, tasks, and changelog.
+
+### Technical details
+- Doctor command: `docmgr doctor --ticket INFRA-006 --stale-after 30`.
+- Upload command: `remarquee upload bundle ... --name "INFRA-006 docsctl rollout guide" --remote-dir "/ai/2026/06/10/INFRA-006" --toc-depth 2 --non-interactive`.
