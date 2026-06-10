@@ -2,7 +2,6 @@
 
 ## TODO
 
-- [ ] Push branches and open/update PRs where repository remotes allow it.
 - [ ] After PR merges, tag releases and verify production docs URLs.
 - [ ] Expand minimal embedded docs for `llm-proxy`, `logcopter`, and `chat-overlay` in future follow-up PRs.
 
@@ -23,3 +22,4 @@
 - [x] Write the intern-facing analysis/design/implementation guide with file references, diagrams, rollout tables, pseudocode, and validation instructions.
 - [x] Validate docmgr ticket hygiene with `docmgr doctor --ticket INFRA-006 --stale-after 30`.
 - [x] Upload the final ticket bundle to reMarkable at `/ai/2026/06/10/INFRA-006/INFRA-006 docsctl rollout guide.pdf`.
+- [x] Push branches and open/update PRs for package repos, infra-tooling, and Terraform.

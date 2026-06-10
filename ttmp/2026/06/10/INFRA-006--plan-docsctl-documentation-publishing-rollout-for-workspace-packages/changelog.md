@@ -23,3 +23,12 @@ Validated INFRA-006 with docmgr doctor and uploaded the guide/diary/tasks/change
 
 - /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — Records doctor and reMarkable upload evidence
 
+
+## 2026-06-10
+
+Pushed rollout branches and opened PRs for all package repos, infra-tooling, and Terraform; recorded docmgr pre-push release-snapshot asset failure.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-06-10/add-docs-deploy/infra-tooling/ttmp/2026/06/10/INFRA-006--plan-docsctl-documentation-publishing-rollout-for-workspace-packages/reference/01-diary.md — PR and push evidence
+
