@@ -1162,3 +1162,97 @@ The user told me to go ahead after I identified `llm-proxy` as the last docsctl 
 - Docs workflow: https://github.com/go-go-golems/llm-proxy/actions/runs/27301347553
 - Release workflow: https://github.com/go-go-golems/llm-proxy/actions/runs/27301347099
 - Public docs: https://docs.yolo.scapegoat.dev/llm-proxy/v0.0.1
+
+## Step 18: Add real goja-bleve help documentation and publish v0.0.5
+
+The user noticed that the successful `goja-bleve` docs page still did not really document the Bleve JavaScript module. I inspected the generated help export and confirmed the issue: the binary only published generic xgoja runtime topics, not user-facing Bleve documentation. I treated this as a wiring and content problem, then added three substantial Glazed help documents and embedded them into the generated `cmd/goja-bleve` runtime.
+
+The fix adds a getting-started tutorial, a practical user guide, and a JavaScript API reference for `require("bleve")`. I updated the generated command's embedded help filesystem and runtime spec so `help export` includes these pages, and I updated the xgoja YAML specs so future regeneration keeps the help source. After merging PR #9, I tagged `v0.0.5`; the publish-docs workflow succeeded and the public docs page now exposes the Bleve-specific topics.
+
+### Prompt Context
+
+**User prompt (verbatim):** "also, goja-bleve doesn't really publish any bleve related documentation, it might need to be wired up properly for export. 
+
+If not existent, write an extensive user-guide, getting-started and js-api-reference documents in the glazed help writing entry to be bundled and published by the job. 
+
+Look at similar goja packages to see the kind of documentation that should be written .
+
+Commit and push and publish."
+
+**Assistant interpretation:** Ensure `goja-bleve` publishes actual Bleve module documentation, author missing Glazed help pages, wire them into the generated xgoja help export, then merge/tag/publish.
+
+**Inferred user intent:** Make the published docs useful for users of the Bleve JavaScript API, not merely proof that the docs pipeline can publish generic runtime help.
+
+### What I did
+- Loaded the Glazed help authoring skill and inspected similar goja/xgoja documentation patterns, especially the Loupedeck help docs and xgoja provider-shipped help examples.
+- Added Glazed help docs under `goja-bleve/cmd/goja-bleve/help/`:
+  - `tutorials/01-getting-started.md`
+  - `topics/01-user-guide.md`
+  - `topics/02-js-api-reference.md`
+- Updated `cmd/goja-bleve/main.go` to:
+  - embed `help/topics/*.md` and `help/tutorials/*.md`;
+  - pass `EmbeddedHelp: embeddedHelp` into `app.NewRootCommand`;
+  - add a runtime `help.sources` entry for `goja-bleve-docs` at path `help`.
+- Updated xgoja specs for future regeneration:
+  - `cmd/goja-bleve/xgoja.yaml`
+  - `cmd/goja-bleve/xgoja-vectors.yaml`
+  - `cmd/goja-bleve/xgoja-vectors.ci.yaml`
+- Validated locally:
+  - `GOWORK=off go test ./...`
+  - `cd cmd/goja-bleve && GOWORK=off go test ./...`
+  - `cd cmd/goja-bleve && GOWORK=off go run . help export --format sqlite --output-path /tmp/goja-bleve-rich-help.sqlite`
+  - `docsctl validate --file /tmp/goja-bleve-rich-help.sqlite --package goja-bleve --version v0.0.5`
+  - `cd cmd/goja-bleve && GOWORK=off go run . help goja-bleve-js-api-reference`
+- Opened and merged `goja-bleve` PR #9.
+- Tagged `goja-bleve v0.0.5` with `ggg release tag-patch --repo goja-bleve --yes --output json`.
+- Watched publish run `27302333674`; it passed all steps.
+- Verified `https://docs.yolo.scapegoat.dev/goja-bleve/v0.0.5` and checked the preloaded section list.
+
+### Why
+- A docs page with only generic runtime sections does not help a user learn the Bleve module API.
+- The docs should live in the Glazed help export so docsctl publishes them automatically on release tags.
+- Updating the xgoja YAML specs prevents the next generated-code pass from dropping the help wiring.
+
+### What worked
+- Local `docsctl validate` reported 5 sections and 5 slugs after adding the embedded help pages.
+- The rendered local help topic `goja-bleve-js-api-reference` showed the new API reference content.
+- PR #9 checks passed: Analyze, CodeQL, Dependency Review, Go Vulnerability Check, GoSec, TruffleHog, lint, and test.
+- Publish run `27302333674` succeeded end-to-end.
+- The public v0.0.5 page lists version-specific sections:
+  - `runtime-overview`
+  - `jsverbs`
+  - `goja-bleve-user-guide`
+  - `goja-bleve-js-api-reference`
+  - `goja-bleve-getting-started`
+
+### What didn't work
+- The first successful docs release (`v0.0.4`) proved the pipeline but did not contain enough package-specific documentation. It remains useful as pipeline evidence but is not the best user-facing docs version.
+- The `ggg release verify-docs` summary reported `section_count: 7`, while direct inspection of the version-specific `listSections` preloaded state showed 5 sections. This appears to be the known package-summary vs version-specific count ambiguity.
+
+### What I learned
+- For generated xgoja binaries, docs can be wired either as provider-shipped help sources or embedded local help sources. For this repository, embedded local help under `cmd/goja-bleve/help` was the most direct path because the publishing command runs that generated binary.
+- The generated command's `EmbeddedHelp` parameter was already supported by `go-go-goja`; the missing piece was populating it and adding `help.sources` to the runtime spec.
+
+### What was tricky to build
+- `cmd/goja-bleve/main.go` is generated, so editing it directly is not enough. The xgoja YAML specs also needed `help.sources` entries so future regeneration has a source-of-truth hint.
+- The published page count needed version-specific verification because package-level counts can include summary state that does not exactly match the selected version.
+
+### What warrants a second pair of eyes
+- Review the help docs for API completeness against `pkg/testdata/bleve.d.ts.golden` and the actual builder methods.
+- Review whether `goja-bleve` should eventually expose these docs as a provider-shipped help source from `pkg/xgoja/providers/bleve`, so other generated binaries can import the same docs without copying local command help.
+- Review whether editing generated `main.go` should be replaced by rerunning xgoja generation after confirming the generator preserves the exact v0.0.5 help wiring.
+
+### What should be done in the future
+- Add a CI assertion that `help export` includes `goja-bleve-user-guide`, `goja-bleve-getting-started`, and `goja-bleve-js-api-reference`.
+- Improve `ggg release verify-docs` to report version-specific section counts.
+
+### Code review instructions
+- Start with `cmd/goja-bleve/help/topics/01-user-guide.md`, `cmd/goja-bleve/help/topics/02-js-api-reference.md`, and `cmd/goja-bleve/help/tutorials/01-getting-started.md`.
+- Then review `cmd/goja-bleve/main.go` and the three xgoja YAML files for embedded help wiring.
+- Validate with the local export and `docsctl validate` commands listed above.
+
+### Technical details
+- Fix PR: https://github.com/go-go-golems/goja-bleve/pull/9
+- Release tag: `v0.0.5` at merge commit `d3aaa2407b5b4e2c7ed490aa1c71814cc06eebfd`
+- Publish run: https://github.com/go-go-golems/goja-bleve/actions/runs/27302333674
+- Public docs: https://docs.yolo.scapegoat.dev/goja-bleve/v0.0.5
