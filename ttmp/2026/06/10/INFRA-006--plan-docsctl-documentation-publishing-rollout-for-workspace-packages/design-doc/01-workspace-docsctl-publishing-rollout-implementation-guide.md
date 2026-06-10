@@ -11,13 +11,28 @@ Topics:
 DocType: design-doc
 Intent: long-term
 Owners: []
-RelatedFiles: []
+RelatedFiles:
+    - Path: ../../../../../../../../../../code/wesen/terraform/vault/github-actions/envs/k3s/main.tf
+      Note: Vault docsctl publisher roles for package workflows
+    - Path: infra-tooling/.github/workflows/publish-docsctl.yml
+      Note: Reusable GitHub Actions docs publishing workflow
+    - Path: infra-tooling/docs/go-go-golems/playbooks/docsctl-docs-publishing-rollout-playbook.md
+      Note: Source rollout playbook for package docs publishing
+    - Path: infra-tooling/internal/cli/rollout/docsctl.go
+      Note: ggg docsctl rollout inventory/validation helper updated for this work
+    - Path: llm-proxy/cmd/llm-proxy-server/main.go
+      Note: Example of converting a stdlib flag server to Cobra and Glazed help export
+    - Path: logcopter/cmd/logcopter-gen/main.go
+      Note: Example of converting a stdlib flag generator to Cobra and Glazed help export
+    - Path: react-chat/cmd/chat-overlay/main.go
+      Note: Chat overlay help export wiring and public package naming
 ExternalSources: []
-Summary: "Intern-facing guide for adding docsctl documentation publishing across the add-docs-deploy workspace packages."
+Summary: Intern-facing guide for adding docsctl documentation publishing across the add-docs-deploy workspace packages.
 LastUpdated: 2026-06-10T11:45:00-04:00
-WhatFor: "Explain the docsctl publishing system, package-specific rollout decisions, and validation/operational steps."
-WhenToUse: "Use when reviewing, extending, releasing, or troubleshooting the INFRA-006 docsctl rollout."
+WhatFor: Explain the docsctl publishing system, package-specific rollout decisions, and validation/operational steps.
+WhenToUse: Use when reviewing, extending, releasing, or troubleshooting the INFRA-006 docsctl rollout.
 ---
+
 
 # Workspace docsctl publishing rollout implementation guide
 
