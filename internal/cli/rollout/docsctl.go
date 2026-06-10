@@ -17,14 +17,15 @@ import (
 )
 
 type docsctlSettings struct {
-	workspace string
-	include   []string
-	exclude   []string
-	packages  []string
-	commands  []string
-	output    string
-	timeout   time.Duration
-	version   string
+	workspace      string
+	include        []string
+	exclude        []string
+	packages       []string
+	commands       []string
+	exportCommands []string
+	output         string
+	timeout        time.Duration
+	version        string
 }
 
 type docsctlCandidate struct {
@@ -58,19 +59,20 @@ func newDocsctlCommand() (*cobra.Command, error) {
 		c.Flags().StringSliceVar(&s.exclude, "exclude", nil, "Repository names to exclude")
 		c.Flags().StringSliceVar(&s.packages, "package", nil, "Package override repo=package; repeatable")
 		c.Flags().StringSliceVar(&s.commands, "cmd", nil, "Command selection repo=./cmd/name; repeatable")
+		c.Flags().StringSliceVar(&s.exportCommands, "export-command", nil, "Export command override repo='shell command'; repeatable")
 		c.Flags().StringVar(&s.output, "output", "table", "Output format: table, json, yaml")
 		c.Flags().DurationVar(&s.timeout, "timeout", 90*time.Second, "Per-command validation timeout")
 		c.Flags().StringVar(&s.version, "version", "v0.0.0-local", "Version string to pass to docsctl validate")
 	}
 	inventory := &cobra.Command{Use: "inventory", Short: "Inventory candidate docsctl help exporters", RunE: func(cmd *cobra.Command, args []string) error {
-		candidates, err := docsctlInventory(s.workspace, s.include, s.exclude, s.packages, s.commands)
+		candidates, err := docsctlInventory(s.workspace, s.include, s.exclude, s.packages, s.commands, s.exportCommands)
 		if err != nil {
 			return err
 		}
 		return writeDocsctlCandidates(candidates, s.output)
 	}}
 	validate := &cobra.Command{Use: "validate", Short: "Validate candidate docsctl help SQLite exports", RunE: func(cmd *cobra.Command, args []string) error {
-		candidates, err := docsctlInventory(s.workspace, s.include, s.exclude, s.packages, s.commands)
+		candidates, err := docsctlInventory(s.workspace, s.include, s.exclude, s.packages, s.commands, s.exportCommands)
 		if err != nil {
 			return err
 		}
@@ -78,7 +80,7 @@ func newDocsctlCommand() (*cobra.Command, error) {
 		return writeDocsctlCandidates(validated, s.output)
 	}}
 	plan := &cobra.Command{Use: "plan", Short: "Emit a docsctl rollout plan for validated candidates", RunE: func(cmd *cobra.Command, args []string) error {
-		candidates, err := docsctlInventory(s.workspace, s.include, s.exclude, s.packages, s.commands)
+		candidates, err := docsctlInventory(s.workspace, s.include, s.exclude, s.packages, s.commands, s.exportCommands)
 		if err != nil {
 			return err
 		}
@@ -99,7 +101,7 @@ func newDocsctlCommand() (*cobra.Command, error) {
 	return cmd, nil
 }
 
-func docsctlInventory(workspace string, include, exclude, packages, commands []string) ([]docsctlCandidate, error) {
+func docsctlInventory(workspace string, include, exclude, packages, commands, exportCommands []string) ([]docsctlCandidate, error) {
 	if workspace == "" {
 		return nil, fmt.Errorf("--workspace is required")
 	}
@@ -111,6 +113,7 @@ func docsctlInventory(workspace string, include, exclude, packages, commands []s
 	excludeSet := stringSet(exclude)
 	packageOverrides := assignmentMap(packages)
 	commandOverrides := assignmentMap(commands)
+	exportCommandOverrides := assignmentMap(exportCommands)
 	var candidates []docsctlCandidate
 	for _, entry := range entries {
 		if !entry.IsDir() {
@@ -124,6 +127,7 @@ func docsctlInventory(workspace string, include, exclude, packages, commands []s
 		if _, err := os.Stat(filepath.Join(repoPath, "go.mod")); err != nil {
 			continue
 		}
+		moduleName := moduleNameFromGoMod(filepath.Join(repoPath, "go.mod"))
 		mains, _ := filepath.Glob(filepath.Join(repoPath, "cmd", "*", "main.go"))
 		for _, main := range mains {
 			cmdDir := "./" + filepath.ToSlash(strings.TrimSuffix(strings.TrimPrefix(main, repoPath+string(os.PathSeparator)), string(os.PathSeparator)+"main.go"))
@@ -131,11 +135,18 @@ func docsctlInventory(workspace string, include, exclude, packages, commands []s
 				continue
 			}
 			packageName := repo
+			if moduleName != "" {
+				packageName = filepath.Base(moduleName)
+			}
 			if override, ok := packageOverrides[repo]; ok {
 				packageName = override
 			}
 			workflow := detectDocsWorkflow(repoPath)
-			candidates = append(candidates, docsctlCandidate{Repo: repo, Path: repoPath, PackageName: packageName, CmdDir: cmdDir, Workflow: workflow, ExportCommand: fmt.Sprintf("GOWORK=off go run %s help export --format sqlite --output-path .docsctl/help.sqlite", cmdDir), SQLitePath: ".docsctl/help.sqlite", VaultRole: "docsctl-" + packageName + "-publisher"})
+			exportCommand := fmt.Sprintf("GOWORK=off go run %s help export --format sqlite --output-path .docsctl/help.sqlite", cmdDir)
+			if override, ok := exportCommandOverrides[repo]; ok {
+				exportCommand = override
+			}
+			candidates = append(candidates, docsctlCandidate{Repo: repo, Path: repoPath, PackageName: packageName, CmdDir: cmdDir, Workflow: workflow, ExportCommand: exportCommand, SQLitePath: ".docsctl/help.sqlite", VaultRole: "docsctl-" + packageName + "-publisher"})
 		}
 	}
 	sort.Slice(candidates, func(i, j int) bool {
@@ -166,8 +177,13 @@ func validateDocsctlCandidate(ctx context.Context, c docsctlCandidate, timeout t
 	}
 	defer os.RemoveAll(tmp)
 	sqlitePath := filepath.Join(tmp, "help.sqlite")
-	exportArgs := []string{"run", c.CmdDir, "help", "export", "--format", "sqlite", "--output-path", sqlitePath}
-	stdout, stderr, code := runInRepo(ctx, c.Path, "go", exportArgs...)
+	exportCommand := c.ExportCommand
+	if exportCommand == "" {
+		exportCommand = fmt.Sprintf("GOWORK=off go run %s help export --format sqlite --output-path %s", c.CmdDir, shellQuote(sqlitePath))
+	} else {
+		exportCommand = strings.ReplaceAll(exportCommand, ".docsctl/help.sqlite", shellQuote(sqlitePath))
+	}
+	stdout, stderr, code := runShellInRepo(ctx, c.Path, exportCommand)
 	c.ExitCode = code
 	if code != 0 {
 		c.Status, c.Note = "export_failed", trimNote(stderr+stdout)
@@ -187,6 +203,10 @@ func validateDocsctlCandidate(ctx context.Context, c docsctlCandidate, timeout t
 	}
 	c.Status, c.Note = "validate_ok", trimNote(stdout)
 	return c
+}
+
+func runShellInRepo(ctx context.Context, dir, command string) (string, string, int) {
+	return runInRepo(ctx, dir, "bash", "-lc", command)
 }
 
 func runInRepo(ctx context.Context, dir, name string, args ...string) (string, string, int) {
@@ -254,6 +274,24 @@ func detectDocsWorkflow(repoPath string) string {
 		}
 	}
 	return ""
+}
+
+func moduleNameFromGoMod(path string) string {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	for _, line := range strings.Split(string(b), "\n") {
+		fields := strings.Fields(line)
+		if len(fields) == 2 && fields[0] == "module" {
+			return fields[1]
+		}
+	}
+	return ""
+}
+
+func shellQuote(s string) string {
+	return "'" + strings.ReplaceAll(s, "'", "'\\''") + "'"
 }
 
 func stringSet(values []string) map[string]bool {

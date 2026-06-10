@@ -1,0 +1,13 @@
+/home/manuel/.hishtory/config.sh: line 72: bind: warning: line editing not enabled
+go: downloading github.com/go-go-golems/geppetto v0.12.2
+go: downloading github.com/go-go-golems/sessionstream v0.0.5
+internal/mockengine/engine.go:10:2: github.com/go-go-golems/pinocchio@v0.11.0: replacement directory ../pinocchio does not exist
+internal/mockengine/engine.go:11:2: github.com/go-go-golems/pinocchio@v0.11.0: replacement directory ../pinocchio does not exist
+internal/mockengine/engine.go:12:2: github.com/go-go-golems/pinocchio@v0.11.0: replacement directory ../pinocchio does not exist
+internal/mockengine/engine.go:13:2: github.com/go-go-golems/pinocchio@v0.11.0: replacement directory ../pinocchio does not exist
+internal/mockengine/engine.go:14:2: github.com/go-go-golems/pinocchio@v0.11.0: replacement directory ../pinocchio does not exist
+internal/mockengine/engine.go:15:2: github.com/go-go-golems/pinocchio@v0.11.0: replacement directory ../pinocchio does not exist
+internal/webchat/helpers.go:6:2: github.com/go-go-golems/pinocchio@v0.11.0: replacement directory ../pinocchio does not exist
+internal/webchat/real_runtime.go:15:2: github.com/go-go-golems/pinocchio@v0.11.0: replacement directory ../pinocchio does not exist
+internal/webchat/real_runtime.go:16:2: github.com/go-go-golems/pinocchio@v0.11.0: replacement directory ../pinocchio does not exist
+internal/webchat/real_runtime.go:17:2: github.com/go-go-golems/pinocchio@v0.11.0: replacement directory ../pinocchio does not exist

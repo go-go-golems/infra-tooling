@@ -1,0 +1,20 @@
+/home/manuel/.hishtory/config.sh: line 72: bind: warning: line editing not enabled
+Error: unknown flag: --format
+
+  # help - Help about any command or topic                                    
+                                                                              
+  Help provides help for any command and topic in the application.            
+                                                                              
+  --------                                                                    
+                                                                              
+  **No examples found!**                                                      
+                                                                              
+  Showing a list of alternatives:                                             
+                                                                              
+  For more help, run: docmgr help help                                        
+                                                                              
+  Run docmgr help --ui to open the interactive help TUI.                      
+
+
+Error: unknown flag: --format
+exit status 1

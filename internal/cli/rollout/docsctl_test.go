@@ -26,7 +26,7 @@ func TestDocsctlInventoryUsesDocsWorkflow(t *testing.T) {
 	writeFile(t, repo, ".github/workflows/release.yaml", "jobs: {}\n")
 	writeFile(t, repo, ".github/workflows/publish-docs.yaml", "jobs: {}\n")
 
-	candidates, err := docsctlInventory(workspace, nil, nil, nil, nil)
+	candidates, err := docsctlInventory(workspace, nil, nil, nil, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
