@@ -1080,3 +1080,85 @@ also, check other repos to see if docs successfully got published."
   - `github.com/go-go-golems/goja-bleve@v0.0.0: replacement directory /home/manuel/workspaces/2026-05-27/rag-evaluation-system/goja-bleve does not exist`
 - Fix PR: https://github.com/go-go-golems/goja-bleve/pull/8
 - Successful publish run: https://github.com/go-go-golems/goja-bleve/actions/runs/27299692669
+
+## Step 17: Finish llm-proxy release readiness and publish docs
+
+The user told me to go ahead after I identified `llm-proxy` as the last docsctl rollout package that had not been tagged. I treated that as approval to fix the release blockers, merge the fix, tag the release, and verify both release artifacts and docs publishing.
+
+`llm-proxy` was blocked by scaffold leftovers rather than docsctl itself: `.goreleaser.yaml` still built `./cmd/XXX`, the release workflow still had a disabled docs template containing `XXX`, the Makefile release/install helpers still referenced `XXX`, and the empty `cmd/XXX` package still existed. I replaced the release metadata with `llm-proxy-server`, removed the disabled release-workflow docs template because this repo uses a separate tag-only `publish-docs.yaml`, merged the fix as PR #4, tagged `v0.0.1`, and verified the docs page.
+
+### Prompt Context
+
+**User prompt (verbatim):** "go ahead."
+
+**Assistant interpretation:** Proceed with the previously identified next step: clean up `llm-proxy` release configuration, tag it, and verify docs publishing.
+
+**Inferred user intent:** Complete the last remaining package in the INFRA-006 docsctl rollout instead of leaving it release-blocked.
+
+### What I did
+- Created `llm-proxy` branch `fix/release-config` from `origin/main`.
+- Updated `.goreleaser.yaml`:
+  - `project_name: llm-proxy`
+  - release builds use `./cmd/llm-proxy-server`
+  - binary name is `llm-proxy-server`
+  - Homebrew/nFPM descriptions and homepage no longer contain `XXX`.
+- Removed the disabled `publish-docs` template from `.github/workflows/release.yaml`; the real docs workflow is `.github/workflows/publish-docs.yaml` and remains tag-only.
+- Updated Makefile release/install helpers to use `github.com/go-go-golems/llm-proxy` and `llm-proxy-server`.
+- Deleted the empty scaffold command `cmd/XXX/main.go`.
+- Validated locally:
+  - `GOWORK=off go test ./...`
+  - `make logcopter-check`
+  - `make glazed-lint`
+  - `GOWORK=off go run ./cmd/llm-proxy-server help export --format sqlite --output-path /tmp/llm-proxy-help.sqlite`
+  - `docsctl validate --file /tmp/llm-proxy-help.sqlite --package llm-proxy --version v0.0.1`
+  - `ggg release preflight --repo . --output json`
+  - `GOWORK=off go build ./cmd/llm-proxy-server`
+- Opened and merged `llm-proxy` PR #4.
+- Tagged `llm-proxy v0.0.1` with `ggg release tag-patch --repo llm-proxy --yes --output json`.
+- Watched the tag-triggered docs workflow `27301347553`; it succeeded.
+- Watched the tag-triggered release workflow `27301347099`; linux, darwin, and merge jobs all succeeded.
+- Re-ran public docs verification for all rollout packages, including `llm-proxy`.
+
+### Why
+- The docs rollout should end with every target package having a tag and verified public docs. `llm-proxy` was the only remaining exception.
+- Fixing GoReleaser placeholders before tagging avoids publishing meaningless `XXX` artifacts and makes the normal release workflow trustworthy.
+- Removing the disabled docs template prevents future confusion because docs publishing is already handled by the separate release-tag-only workflow.
+
+### What worked
+- `llm-proxy` PR #4 checks passed: Analyze, CodeQL, Dependency Review, Go Vulnerability Check, GoSec, TruffleHog, lint, and test.
+- `ggg release preflight` returned `ok: true` after the release cleanup.
+- `ggg release tag-patch` created and Go-proxy-verified `v0.0.1`.
+- Docs workflow `27301347553` passed all steps, including SQLite normalization and registry/API verification.
+- Release workflow `27301347099` passed all GoReleaser split/merge jobs.
+- Public docs verification passed for `llm-proxy v0.0.1` with 1 section.
+
+### What didn't work
+- `GOWORK=off go build ./cmd/llm-proxy-server` created a local `llm-proxy-server` binary in the repo root, which I removed before committing.
+- Initial `git add` attempted to stage `cmd/XXX` by path after it had been removed and failed with `fatal: pathspec 'cmd/XXX' did not match any files`; I corrected by using `git add -A`.
+
+### What I learned
+- `ggg release preflight` was effective at blocking a bad release before the tag existed; the remaining work was straightforward scaffold cleanup.
+- The separate docs workflow can succeed independently from the release workflow, but both should be watched for a first package tag.
+
+### What was tricky to build
+- `llm-proxy` had both real docs publishing and a disabled generated docs template in `release.yaml`. Leaving the template in place would not affect runtime behavior, but it kept stale `XXX` strings around and could confuse future preflight/review, so removing it was cleaner than trying to parameterize dead code.
+- The empty `cmd/XXX` package compiled before, which could hide release config mistakes if GoReleaser pointed at it. Deleting it makes future misconfiguration fail loudly.
+
+### What warrants a second pair of eyes
+- Review `.goreleaser.yaml` artifact metadata for naming preferences: the package/repo is `llm-proxy`, while the binary is `llm-proxy-server`.
+- Review whether keeping both `workflow_dispatch` and tag push in the release workflow is acceptable. Docs publishing itself remains tag-only in the separate workflow.
+
+### What should be done in the future
+- Consider updating the generator/template that created `cmd/XXX` and `.goreleaser.yaml` placeholders so new repos cannot reach release time with scaffold values.
+- Consider adding a `ggg release preflight` rule that flags empty scaffold commands such as `cmd/XXX` even if GoReleaser no longer references them.
+
+### Code review instructions
+- Start with `llm-proxy/.goreleaser.yaml`, `.github/workflows/release.yaml`, `Makefile`, and the removal of `cmd/XXX/main.go`.
+- Validate with `ggg release preflight --repo llm-proxy --output json` and `ggg release verify-docs --package llm-proxy --version v0.0.1 --output json`.
+
+### Technical details
+- Fix PR: https://github.com/go-go-golems/llm-proxy/pull/4
+- Release tag: `v0.0.1` at merge commit `35c021765755dd7c46749d2782a90281c69b11f4`
+- Docs workflow: https://github.com/go-go-golems/llm-proxy/actions/runs/27301347553
+- Release workflow: https://github.com/go-go-golems/llm-proxy/actions/runs/27301347099
+- Public docs: https://docs.yolo.scapegoat.dev/llm-proxy/v0.0.1
