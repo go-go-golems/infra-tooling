@@ -127,7 +127,7 @@ jobs:
 
     steps:
       - name: Check out caller repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -203,10 +203,10 @@ jobs:
 
     steps:
       - name: Check out caller repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
 
       - name: Check out infra-tooling repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
         with:
           repository: ${{ inputs.tooling_repository }}
           ref: ${{ inputs.tooling_ref }}
