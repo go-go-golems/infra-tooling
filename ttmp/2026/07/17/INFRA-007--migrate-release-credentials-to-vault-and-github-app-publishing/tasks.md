@@ -32,10 +32,12 @@
 ### Phase 3 — Vault bootstrap and verification
 
 - [x] Add a one-time, repository-bound GitHub-secret migration workflow and write-only Vault role.
-- [ ] Seed approved Vault paths without exposing raw values in logs or tickets.
-- [ ] Verify key names/fingerprint/lengths only.
-- [ ] Install the Homebrew publisher App with minimum permissions.
-- [ ] Run and retain evidence from the token mint/write/delete verifier.
+- [x] Store the Homebrew publisher App credential at its approved Vault path and verify non-secret metadata.
+- [x] Seed approved Vault paths without exposing raw values in logs or tickets.
+- [x] Verify key names/fingerprint/lengths only.
+- [x] Install the Homebrew publisher App with minimum permissions.
+- [x] Run and retain evidence from the token mint/write/delete verifier.
+- [ ] Merge and apply removal of the temporary bootstrap and App-verifier roles/workflows.
 
 ### Phase 4 — Sqleton pilot
 

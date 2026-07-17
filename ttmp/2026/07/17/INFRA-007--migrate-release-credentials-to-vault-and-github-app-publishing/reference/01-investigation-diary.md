@@ -1024,6 +1024,165 @@ bash ttmp/.../scripts/check_sqleton_release_contract.sh \
   /tmp/sqleton-release-vault-sqleton
 ```
 
+## Step 8: Complete live credential migration and App-scope proof
+
+The App credential was placed directly in Vault, the release roles were applied
+through a reviewed targeted plan, and both one-time GitHub Actions workflows
+completed successfully. This established the three release credential paths
+and proved that the App installation can create and clean up a branch in the
+Homebrew tap without granting a workflow a long-lived tap credential.
+
+The same live plan also found unrelated almanach docsctl state drift and a
+dynamic Terraform object-field defect. Neither caused a broad apply: the field
+was corrected and merged in Terraform PR #17, then only the eight Sqleton
+resources were targeted. Cleanup PRs now remove the temporary authority.
+
+### Prompt Context
+
+**User prompt (verbatim):** "2.merged"
+
+**Assistant interpretation:** The user confirmed Terraform bootstrap PR #16
+was merged and authorized the previously described plan/apply sequence.
+
+**Inferred user intent:** Apply only the reviewed release/bootstrap roles,
+store the new App credential without displaying it, and obtain real evidence
+before granting production release status.
+
+**Commits:** `7578b4d fix(vault): use bootstrap policy name`; cleanup commits
+`a1c6852 chore(vault): remove Sqleton bootstrap roles` and
+`3082fd9 chore(release): remove bootstrap workflows` are pending review in
+Terraform PR #18 and Sqleton PR #274.
+
+### What I did
+
+- Created a fresh detached worktree at the merged Terraform revision and
+  initialized the real S3 backend.
+- Used the App storage helper with the supplied numeric App ID and local PEM.
+  It stored the credential at
+  `kv/ci/github/homebrew-go-go-go/release-publisher-app` and printed only
+  `version: 1` plus the field names `app_id` and `private_key`.
+- Ran a non-targeted remote-state plan. It found the expected release resources
+  but also three unrelated almanach docsctl destroys and an unsupported
+  `bootstrap_policy_name` attribute.
+- Opened and merged Terraform PR #17 with the one-line `policy_name` fix.
+- Ran a targeted plan with exactly the eight Sqleton build, publish, bootstrap,
+  and verifier policy/role resources: `8 to add, 0 to change, 0 to destroy`.
+- Applied that saved targeted plan. Terraform reported `8 added, 0 changed, 0
+  destroyed`.
+- Dispatched `bootstrap-release-credentials` on Sqleton `main` with its
+  required confirmation. Run
+  [29618538658](https://github.com/go-go-golems/sqleton/actions/runs/29618538658)
+  passed every step, including legacy-secret availability, OIDC login, and two
+  fixed-path Vault writes.
+- Dispatched `verify-homebrew-publisher-app` on Sqleton `main`. Run
+  [29618554610](https://github.com/go-go-golems/sqleton/actions/runs/29618554610)
+  passed credential read, App-token mint, temporary tap-branch creation, and
+  cleanup.
+- Queried only Vault metadata: GoReleaser, Fury, and App paths all report
+  version 1. The GitHub matching-ref query reports zero remaining verifier
+  branches.
+- Opened cleanup PRs #18 and #274 and changed the permanent contract harness
+  to stop requiring the temporary verifier after its removal.
+
+### Why
+
+The App private key should leave the downloaded PEM and enter Vault as directly
+as possible. The migration and verifier workflows then use short-lived OIDC and
+installation tokens rather than a manually copied vendor secret or a retained
+tap PAT.
+
+Targeting was exceptional but justified: the full plan proposed unrelated
+docsctl destruction. The saved target plan made the exact live mutation
+auditable and preserved unrelated infrastructure for separate reconciliation.
+
+### What worked
+
+```text
+Targeted plan: 8 to add, 0 to change, 0 to destroy.
+Apply complete! Resources: 8 added, 0 changed, 0 destroyed.
+remaining verifier branches: 0
+```
+
+Both GitHub Actions runs completed successfully. Their only annotation is a
+non-failing Node.js 20 deprecation warning from third-party actions being run
+under Node.js 24.
+
+### What didn't work
+
+The initial full plan correctly refused to proceed due to:
+
+```text
+Error: Unsupported attribute
+each.value.bootstrap_policy_name
+This object does not have an attribute named "bootstrap_policy_name".
+```
+
+It also proposed three unrelated destroys for
+`docsctl_publish["almanach"]`. No apply occurred from that plan. The defect
+was fixed in PR #17; the almanach drift remains explicitly out of scope.
+
+The first metadata loop used zsh's reserved `path` variable as its loop name,
+which temporarily replaced command lookup and produced `command not found`.
+Renaming it to `secret_path` fixed the evidence command. No Vault action was
+affected.
+
+### What I learned
+
+- `terraform validate` is necessary but insufficient for dynamic `for_each`
+  object paths; a real plan caught the missing attribute before mutation.
+- A targeted Terraform apply can be appropriate for recovery from unrelated
+  state drift when it is based on a saved, independently reviewed plan and
+  limited to an exact resource list.
+- GitHub App installation scope is now demonstrated by a real token operation,
+  not inferred from registration settings alone.
+
+### What was tricky to build
+
+The security objective required keeping three concerns distinct: persistent
+release roles, one-time legacy-secret writes, and one-time App-scope proof.
+The successful proof is not a reason to retain the latter two. Removing their
+workflows and policies immediately after evidence is the final least-privilege
+transition; the normal tag release still has only its builder/publisher roles.
+
+### What warrants a second pair of eyes
+
+- Review cleanup PRs Terraform #18 and Sqleton #274 together. Their intended
+  net effect is exactly four temporary policies/roles and two manual workflows
+  removed; permanent release roles must remain.
+- Investigate the almanach docsctl Terraform state drift in a separate ticket.
+  Do not add it to the cleanup apply.
+- Resolve the reported Node.js 20 deprecation of `hashicorp/vault-action@v3`
+  and `actions/create-github-app-token@v2` before a long-term migration rolls
+  out broadly.
+
+### What should be done in the future
+
+- Merge cleanup PRs #18 and #274, then apply a targeted Terraform destroy for
+  only the bootstrap and verifier policy/role pairs.
+- Ask the App-key owner to remove the downloaded PEM according to the approved
+  local secure-storage procedure.
+- Perform a controlled Sqleton tag release after resolving/approving its
+  GoReleaser v2 deprecation gate, then remove the legacy GitHub secrets.
+
+### Code review instructions
+
+- Begin with the cleanup PR resource list and verify it excludes
+  `release_build` and `release_publish`.
+- Confirm each workflow deletion corresponds to a completed run URL above.
+- Re-run a targeted plan after cleanup PR #18 merges; require four destroys,
+  zero changes, zero unrelated resources.
+
+### Technical details
+
+```text
+terraform plan -lock=false -target=<eight Sqleton policy/role addresses>
+terraform apply -lock=false /tmp/sqleton-release-bootstrap-targeted.plan
+gh workflow run bootstrap-release-credentials.yml --ref main ...
+gh workflow run verify-homebrew-publisher-app.yml --ref main ...
+vault kv metadata get -format=json <approved-path>
+gh api repos/go-go-golems/homebrew-go-go-go/git/matching-refs/heads/verify-release-publisher-
+```
+
 ## Quick Reference
 
 <!-- Provide copy/paste-ready content, API contracts, or quick-look tables -->
