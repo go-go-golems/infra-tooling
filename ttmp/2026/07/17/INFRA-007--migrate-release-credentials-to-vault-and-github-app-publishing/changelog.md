@@ -48,3 +48,12 @@ Step 6: added one-time Sqleton GitHub-secret migration path, Homebrew publisher 
 
 - /home/manuel/code/wesen/go-go-golems/sqleton/.github/workflows/bootstrap-release-credentials.yml — Manual OIDC bootstrap workflow.
 - /home/manuel/code/wesen/terraform/vault/github-actions/envs/k3s/main.tf — Least-privilege bootstrap role.
+
+## 2026-07-17
+
+Step 7: added a separately bound Homebrew App verifier workflow/role and expanded the contract harness and cleanup plan (Terraform eb3342b; Sqleton 42d976c).
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/sqleton/.github/workflows/verify-homebrew-publisher-app.yml — Manual branch create/delete App-scope proof.
+- /home/manuel/code/wesen/terraform/vault/github-actions/envs/k3s/main.tf — Verifier role and read-only App credential policy.

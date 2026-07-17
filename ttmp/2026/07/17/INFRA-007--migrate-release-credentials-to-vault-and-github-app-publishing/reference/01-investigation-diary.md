@@ -888,6 +888,142 @@ jq empty scripts/02-homebrew-publisher-app-manifest.json
 bash -n scripts/03-store-homebrew-publisher-app.sh
 ```
 
+## Step 7: Implement and bind the Homebrew publisher App verifier
+
+The bootstrap runbook originally required a proof that a newly installed
+GitHub App could update only the Homebrew tap, but the proof workflow had not
+yet been implemented. This step closes that gap with a separate read-only
+Vault role and a manual branch create/delete verifier.
+
+The verifier does not share the release publisher role. It can read the App
+credential, but it cannot read the GoReleaser license or Fury token; the App
+installation itself restricts the minted token to the selected tap repository.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok, go ahead."
+
+**Assistant interpretation:** Continue the bootstrap implementation through
+the remaining known verification requirement instead of leaving a runbook-only
+placeholder.
+
+**Inferred user intent:** Establish evidence that the Homebrew App can perform
+the intended write before it is used by a real release, while retaining a
+clear removal path for temporary authority.
+
+**Commit (Terraform):** `eb3342b feat(vault): add Homebrew App verifier role`.
+
+**Commit (Sqleton):** `42d976c ci(release): verify Homebrew publisher App`.
+
+### What I did
+
+- Added a separate `release_app_verifiers` Terraform map containing only
+  Sqleton.
+- Added `release-sqleton-homebrew-app-verifier`, bound to a manual dispatch of
+  `verify-homebrew-publisher-app.yml` from Sqleton `main` and its immutable
+  repository ID.
+- Granted the verifier policy read access only to
+  `kv/data/ci/github/homebrew-go-go-go/release-publisher-app`; it cannot read
+  the GoReleaser license, Fury token, or another release profile.
+- Added Sqleton's manually confirmed verifier workflow. It reads the App
+  credential from Vault, creates a short-lived App installation token scoped
+  to `homebrew-go-go-go`, creates a `verify-release-publisher-<run>-<attempt>`
+  branch at the tap's `main` SHA, and deletes the branch through an EXIT trap.
+- Extended the cross-repository contract harness to assert the verifier role,
+  policy separation, tap selection, and cleanup trap.
+- Updated the bootstrap runbook to name the actual workflow and require
+  removal of the verifier workflow and role after its evidence is captured.
+
+### Why
+
+The publication workflow needs confidence in two independent constraints:
+Vault returns the right App credential, and GitHub grants its installation
+token only the tap repository's Contents-write capability. A temporary branch
+create/delete is the smallest end-to-end operation that proves both. It is
+safer than using a production release as the first test of an App key.
+
+### What worked
+
+```text
+terraform -chdir=/tmp/terraform-release-bootstrap-sqleton/vault/github-actions/envs/k3s validate
+Success! The configuration is valid.
+
+App verifier workflow YAML syntax OK
+Sqleton release contract: PASS
+```
+
+The Terraform verifier commit was pushed to Terraform PR #16 and the Sqleton
+workflow commit was pushed to existing Sqleton PR #273.
+
+### What didn't work
+
+The first combined validation command used the Terraform worktree as its
+current directory and attempted to parse a relative Sqleton workflow path:
+
+```text
+No such file or directory @ rb_sysopen - .github/workflows/verify-homebrew-publisher-app.yml
+```
+
+The workflow exists in the separate Sqleton worktree. Re-running with its
+absolute path passed. This was a command working-directory error, not a YAML
+or implementation failure.
+
+### What I learned
+
+- The App verifier should be independent of the bootstrap secret-migration
+  workflow. The migration writes legacy vendor credentials; the verifier only
+  reads a newly created App credential and proves repository scope.
+- An EXIT trap is important because a branch proof can be interrupted after
+  creation. The trap attempts deletion on both success and failure and emits a
+  non-secret warning if an operator must remove a branch manually.
+
+### What was tricky to build
+
+The GitHub Git References API uses different representations in creation and
+deletion calls. Creation accepts `ref=refs/heads/<branch>`, while deletion is
+addressed beneath `git/refs/heads/<branch>`. Keeping the canonical branch
+suffix in one variable and constructing the API forms explicitly prevents a
+false-positive verifier that creates a branch but deletes a different path.
+
+### What warrants a second pair of eyes
+
+- Verify `homebrew-go-go-go` uses `main`; if its default branch changes, the
+  verifier must be updated deliberately rather than falling back to an
+  unconstrained repository API lookup.
+- Verify that the `release` environment approves manual verifier runs under
+  the intended release-owner policy.
+- Confirm the App installation is selected-repository-only before running the
+  proof; an all-repositories installation passing this verifier would still be
+  overprivileged.
+
+### What should be done in the future
+
+- Merge Terraform #16 and Sqleton #273, apply Terraform, register/install the
+  App, store the key, then run the verifier from `main`.
+- Remove the verifier and bootstrap roles/workflows after successful evidence
+  capture. Do not leave them available for future releases.
+
+### Code review instructions
+
+- Read the verifier policy before the workflow and verify it names only the
+  App KV path.
+- Confirm the workflow has no repository write permission of its own; all tap
+  mutation must occur via the App token.
+- Run Terraform validation, YAML parsing, and the cross-repository harness.
+
+### Technical details
+
+```text
+terraform fmt -check vault/github-actions/envs/k3s
+terraform -chdir=vault/github-actions/envs/k3s validate
+ruby -e 'require "yaml"; YAML.load_file(ARGV.fetch(0))' \
+  /tmp/sqleton-release-vault-sqleton/.github/workflows/verify-homebrew-publisher-app.yml
+bash ttmp/.../scripts/check_sqleton_release_contract.sh \
+  /tmp/infra-tooling-release-bootstrap-sqleton \
+  /tmp/terraform-release-bootstrap-sqleton \
+  /tmp/sqleton-release-vault-sqleton
+```
+
 ## Quick Reference
 
 <!-- Provide copy/paste-ready content, API contracts, or quick-look tables -->

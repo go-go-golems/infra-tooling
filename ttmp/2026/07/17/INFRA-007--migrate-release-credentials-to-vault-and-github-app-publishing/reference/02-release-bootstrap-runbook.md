@@ -119,11 +119,18 @@ approved Vault key name.
 
 ## 4. Verify metadata and App capability
 
-Run the ticket’s existing non-secret contract harness, then use the App token
-verifier from the Phase 0 task to create and remove a uniquely named temporary
-branch in `homebrew-go-go-go`. Verify only the run result, target repository,
-branch name, token expiry, and App installation permission; do not emit the
-token.
+Run the ticket’s existing non-secret contract harness, then in
+`go-go-golems/sqleton` open **Actions → verify-homebrew-publisher-app → Run
+workflow**, choose `main`, and type exactly:
+
+```text
+VERIFY_HOMEBREW_PUBLISHER_APP
+```
+
+The verifier receives a distinct, read-only Vault role, mints an installation
+token scoped to `homebrew-go-go-go`, and creates then removes a uniquely named
+temporary branch. Verify only the run result, target repository, branch name,
+token expiry, and App installation permission; do not emit the token.
 
 ```bash
 bash ttmp/2026/07/17/INFRA-007--migrate-release-credentials-to-vault-and-github-app-publishing/scripts/check_sqleton_release_contract.sh \
@@ -138,9 +145,13 @@ After successful migration and verification:
    dedicated follow-up change.
 2. Remove the `release-sqleton-bootstrap` Terraform policy and role in the
    same change and apply it.
-3. Record Vault metadata versions and GitHub Actions run URL, not secret
+3. Remove the `verify-homebrew-publisher-app` workflow and
+   `release-sqleton-homebrew-app-verifier` policy/role after the branch proof
+   has passed; the long-lived publisher role remains the only consumer of the
+   App credential.
+4. Record Vault metadata versions and GitHub Actions run URL, not secret
    values.
-4. Only after a successful controlled release, remove the legacy GitHub
+5. Only after a successful controlled release, remove the legacy GitHub
    secrets and record that removal separately.
 
 ## Failure handling
