@@ -30,6 +30,7 @@
 
 ### Phase 3 — Vault bootstrap and verification
 
+- [x] Add a one-time, repository-bound GitHub-secret migration workflow and write-only Vault role.
 - [ ] Seed approved Vault paths without exposing raw values in logs or tickets.
 - [ ] Verify key names/fingerprint/lengths only.
 - [ ] Install the Homebrew publisher App with minimum permissions.

@@ -1,0 +1,10 @@
+{
+  "name": "go-go-golems-homebrew-release-publisher",
+  "url": "https://github.com/go-go-golems/infra-tooling",
+  "description": "Writes release formulas to go-go-golems/homebrew-go-go-go through short-lived installation tokens.",
+  "public": false,
+  "default_permissions": {
+    "contents": "write"
+  },
+  "default_events": []
+}

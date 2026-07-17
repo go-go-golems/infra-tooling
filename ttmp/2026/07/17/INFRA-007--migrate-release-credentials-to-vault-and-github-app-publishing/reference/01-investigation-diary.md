@@ -728,6 +728,166 @@ docmgr doc relate --ticket INFRA-007 --file-note ...
 docmgr doctor --ticket INFRA-007 --stale-after 30
 ```
 
+## Step 6: Implement the one-time credential bootstrap path
+
+The initial release migration roles intentionally had read-only access. This
+step adds the smallest separate write path needed to move any existing
+Sqleton-scoped GitHub secrets into Vault without exposing them to an operator,
+while keeping GitHub App key creation outside GitHub Actions.
+
+The implementation is deliberately a follow-up to the released publisher
+foundation. A generic reusable workflow with a caller-selected secret name and
+Vault path would turn every future migration into an arbitrary secret-copy
+primitive. The actual workflow and Terraform role instead name exactly two
+legacy values and two fixed KV v2 paths.
+
+### Prompt Context
+
+**User prompt (verbatim):** "bootstrap vault/app credentials"
+
+**Assistant interpretation:** Perform the next operational phase after the
+publisher implementation: provide a safe path to seed release values in Vault
+and establish the Homebrew publisher GitHub App credential.
+
+**Inferred user intent:** Replace legacy GitHub Actions release secrets without
+ever displaying their plaintext and make the new App-based Homebrew publisher
+usable in a controlled release.
+
+**Commit (Terraform):** `f46408b feat(vault): add Sqleton credential bootstrap
+role`.
+
+**Commit (Sqleton):** `dd6b446 ci(release): add Vault credential bootstrap
+workflow`.
+
+### What I did
+
+- Checked GitHub organization installations read-only. None is an existing
+  go-go-golems Homebrew publisher App that can be safely reused.
+- Checked only non-secret Vault authorization metadata. The current operator
+  identity has the `admin` identity policy and the required KV path
+  capabilities; no secret value was read.
+- Added `release_bootstrappers` as a separate Terraform map rather than
+  automatically deriving write roles from `release_publishers`.
+- Added `release-sqleton-bootstrap`, bound to one workflow-dispatch run from
+  `go-go-golems/sqleton` `main`, its immutable repository ID, and the exact
+  bootstrap workflow reference.
+- Granted the bootstrap policy only `create` and `update` on the shared
+  GoReleaser license and Fury token paths. It cannot read, list, delete, or
+  write the Homebrew App path.
+- Added Sqleton's `bootstrap-release-credentials.yml`. It requires the literal
+  confirmation `MIGRATE_GITHUB_SECRETS_TO_VAULT`, checks both legacy secret
+  values are available before authenticating, obtains a five-minute Vault OIDC
+  token, creates temporary mode-0600 JSON payloads, posts them to the two
+  fixed KV v2 endpoints, and deletes the payloads through an EXIT trap.
+- Added a GitHub App manifest, operator-only Vault storage script, and
+  runbook. The App is limited to Contents write and installation on exactly
+  `go-go-golems/homebrew-go-go-go`.
+- Validated Terraform, workflow YAML, JSON syntax, shell syntax, and the
+  existing cross-repository contract harness.
+
+### Why
+
+GitHub does not reveal stored Actions secret plaintext through its API, but a
+same-repository workflow can receive its configured secret and pass it directly
+to Vault. This migration path avoids copying plaintext through a terminal or
+ticket. It is bounded by both GitHub OIDC claims and fixed Vault policies.
+
+The App private key has no legacy secret source. GitHub creates it during
+registration and shows it as a downloaded PEM. The correct path is therefore
+App registration download → operator terminal → Vault, not App key → GitHub
+Actions secret → Vault.
+
+### What worked
+
+```text
+terraform -chdir=vault/github-actions/envs/k3s validate
+Success! The configuration is valid.
+
+bootstrap workflow YAML syntax OK
+Sqleton release contract: PASS
+```
+
+The Sqleton bootstrap workflow commit was pushed to its existing open PR
+without changing unrelated files.
+
+### What didn't work
+
+Read-only inventory of organization Actions secret names returned HTTP 403:
+
+```text
+failed to get secrets: HTTP 403: You must be an org admin or have the actions secrets fine-grained permission.
+```
+
+The GitHub token has repository scope but not the organization Actions-secrets
+permission. This does not block the migration workflow itself: its availability
+check produces a safe failure if either configured secret is absent. It does
+mean the runbook cannot promise that Sqleton is the secret's original source;
+if the check fails, the license/Fury owner must populate the same approved
+Vault paths directly.
+
+GitHub App registration and private-key generation are owner-controlled web
+operations, not normal GitHub REST API operations. The manifest and exact
+settings are prepared, but a human organization owner must perform the
+registration and download the key.
+
+### What I learned
+
+- A migration role must not be automatically granted to every release
+  publisher. `release_bootstrappers` makes write access opt-in and auditable.
+- GitHub App installation tokens are constrained by both installation-selected
+  repositories and permissions. The shared workflow adds a third constraint by
+  requesting the installation token only for `homebrew-go-go-go`.
+- The existing PR foundation had already been merged for infra-tooling and
+  Terraform, while Sqleton PR #273 remains open. The bootstrap changes are
+  therefore a Terraform follow-up PR and an update to Sqleton #273.
+
+### What was tricky to build
+
+The migration must avoid two subtle security failures. First, shell commands
+must not interpolate a secret into an argument that later appears in logs; the
+workflow writes JSON files via `jq --arg`, sends them as curl bodies, redirects
+responses, and cleans them up. Second, a workflow that could select arbitrary
+Vault paths from inputs would bypass the Terraform authorization model. There
+are no path inputs: all strings are committed constants and policy-limited.
+
+### What warrants a second pair of eyes
+
+- Confirm the `release` GitHub environment requires the intended approver
+  before the migration workflow becomes available on `main`.
+- Confirm the organization owner creates an App with no permissions beyond
+  Contents write and selects only the tap repository.
+- Review whether current `GORELEASER_KEY` and `FURY_TOKEN` values are present
+  in the Sqleton workflow context before dispatching. Do not make a production
+  release the first test of that assumption.
+
+### What should be done in the future
+
+- Merge and apply the Terraform bootstrap role; merge Sqleton #273.
+- Register/install the App using the runbook and write its key directly to
+  Vault.
+- Dispatch the bootstrap workflow from `main`, retain its URL and Vault
+  metadata version, run the App branch verifier, then remove the bootstrap
+  workflow and role in a follow-up.
+
+### Code review instructions
+
+- Start with `release_bootstrappers`, not `release_publishers`: check that
+  only Sqleton receives a write role.
+- Verify the policy lacks `read`, `list`, and `delete` on all data paths.
+- Verify the workflow's two write URLs exactly match the Terraform policy and
+  that its logging has no `set -x` or secret echo.
+- Run the validation commands listed below before merge.
+
+### Technical details
+
+```text
+terraform fmt -check vault/github-actions/envs/k3s
+terraform -chdir=vault/github-actions/envs/k3s validate
+ruby -e 'require "yaml"; YAML.load_file(ARGV.fetch(0))' .github/workflows/bootstrap-release-credentials.yml
+jq empty scripts/02-homebrew-publisher-app-manifest.json
+bash -n scripts/03-store-homebrew-publisher-app.sh
+```
+
 ## Quick Reference
 
 <!-- Provide copy/paste-ready content, API contracts, or quick-look tables -->
