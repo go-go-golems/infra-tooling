@@ -319,13 +319,13 @@ material.
 ```hcl
 locals {
   release_publishers = {
-    tinyidp = {
-      repository       = "go-go-golems/tiny-idp"
-      repository_id    = "<immutable GitHub repository id>"
-      workflow_ref     = "go-go-golems/tiny-idp/.github/workflows/release.yml@refs/tags/v*"
+    sqleton = {
+      repository       = "go-go-golems/sqleton"
+      repository_id    = "579241534"
+      workflow_ref     = "go-go-golems/sqleton/.github/workflows/release.yml@refs/tags/v*"
       publish_workflow = "go-go-golems/infra-tooling/.github/workflows/publish-goreleaser-release.yml@refs/tags/v*"
-      profile          = "gpg-homebrew"
-      needs_fury       = false
+      profile          = "homebrew-fury"
+      needs_fury       = true
     }
     pinocchio = {
       repository       = "go-go-golems/pinocchio"
@@ -615,26 +615,57 @@ release can merge artifacts without secrets appearing in logs.
 **Exit criteria:** every profile path exists, its policy is readable only by
 the intended role, and App token mint/write/delete has passed.
 
-### Phase 4 — Pilot with tiny-idp
+### Phase 4 — Pilot with Sqleton
 
-**Goal:** prove the pattern with the newest release workflow before legacy
-repositories adopt it.
+**Goal:** prove the pattern with a compact but real multi-platform release
+workflow before moving a repository whose established GPG signing setup makes
+failure recovery more expensive. Sqleton is deliberately the first consumer:
+it publishes GitHub releases, GHCR images, Homebrew metadata, and Fury
+packages, but its committed GoReleaser configuration has no GPG or Cosign
+signing stanza. Its current workflow nevertheless imports GPG and Cosign
+secrets, so this pilot also proves that unused release credentials can be
+removed rather than silently migrated.
 
-1. Add `tinyidp` to Terraform with the immutable repository ID and exact
+1. Add `sqleton` to Terraform with the immutable repository ID and exact
    release workflow path.
-2. Change the tiny-idp merge job to call the pinned reusable publish workflow.
-3. Leave split jobs unchanged except for any unavoidable license retrieval.
-4. Run a release-candidate/snapshot test and inspect artifacts, signature,
-   release metadata, and tap update behavior.
+2. Convert Sqleton from its Linux/Darwin sequential OSS invocation to two
+   independent GoReleaser Pro split jobs and one shared merge job. The
+   official split/merge mechanism is a GoReleaser Pro feature; the build jobs
+   therefore read only the license, while the merge job receives the publisher
+   credential profile.
+3. Keep GHCR publication in the Linux split job using the repository-scoped
+   `GITHUB_TOKEN`; do not pass a long-lived package credential to Vault.
+4. Run a release-candidate/snapshot test and inspect artifacts, release
+   metadata, GHCR publication behavior, Homebrew update behavior, and Fury
+   publication behavior.
 5. Create a real tag only after code review, Terraform deployment, and
    environment approval.
 6. Remove the corresponding GitHub Actions secrets only after the first
    production tag succeeds and rollback evidence is captured.
 
+**Exit criteria:** release, GHCR, Homebrew update, and Fury publication succeed
+using Vault/App credentials; the retired GPG/Cosign wiring is demonstrably
+unneeded and no retired GitHub secret is needed.
+
+### Phase 5 — Pilot with tiny-idp
+
+**Goal:** move the production-oriented tiny-idp release workflow after the
+shared workflow and credential boundary have passed the Sqleton pilot.
+
+1. Add `tinyidp` to Terraform with its immutable repository ID and exact
+   release workflow path.
+2. Change the tiny-idp merge job to call the shared publish workflow.
+3. Run a release-candidate/snapshot test and inspect artifacts, signature,
+   release metadata, and tap update behavior.
+4. Create a real tag only after code review, Terraform deployment, and
+   environment approval.
+5. Remove corresponding GitHub Actions secrets only after the production tag
+   succeeds and rollback evidence is captured.
+
 **Exit criteria:** release, signed checksums, and Homebrew update succeed using
 Vault/App credentials; no retired GitHub secret is needed.
 
-### Phase 5 — Adopt Pinocchio and go-minitrace
+### Phase 6 — Adopt Pinocchio and go-minitrace
 
 **Goal:** migrate the two established release patterns and eliminate stale
 credential wiring.
@@ -651,7 +682,7 @@ credential wiring.
 **Exit criteria:** both releases use Vault-backed profiles; stale Cosign wiring
 is removed or tracked by a concrete successor ticket.
 
-### Phase 6 — Operations, observability, and keyless signing follow-up
+### Phase 7 — Operations, observability, and keyless signing follow-up
 
 **Goal:** make the system maintainable after rollout.
 

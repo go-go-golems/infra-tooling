@@ -9,13 +9,18 @@ Topics:
 DocType: index
 Intent: long-term
 Owners: []
-RelatedFiles: []
+RelatedFiles:
+    - Path: repo://.github/workflows/publish-goreleaser-release.yml
+      Note: Reusable Vault-backed merge publication workflow.
+    - Path: repo://ttmp/2026/07/17/INFRA-007--migrate-release-credentials-to-vault-and-github-app-publishing/sources/01-goreleaser-split-and-merge.md
+      Note: Official GoReleaser Pro split/merge source captured with Defuddle.
 ExternalSources: []
-Summary: "Design and rollout plan for Vault-backed GoReleaser credentials and GitHub App Homebrew publishing."
+Summary: Design and rollout plan for Vault-backed GoReleaser credentials and GitHub App Homebrew publishing.
 LastUpdated: 2026-07-17T17:21:34.284068781-04:00
-WhatFor: "Track platform work to centralize release credential access in Vault."
-WhenToUse: "Use when planning or reviewing release workflow credential migration."
+WhatFor: Track platform work to centralize release credential access in Vault.
+WhenToUse: Use when planning or reviewing release workflow credential migration.
 ---
+
 
 # Migrate release credentials to Vault and GitHub App publishing
 

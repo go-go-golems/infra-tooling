@@ -243,6 +243,195 @@ remarquee upload bundle --dry-run ... --remote-dir /ai/2026/07/17/INFRA-007
 remarquee upload bundle ... --remote-dir /ai/2026/07/17/INFRA-007
 ```
 
+## Step 3: Re-scope the first pilot and implement its Vault boundary
+
+### Prompt Context
+
+**User prompt (verbatim):** “alright, add tasks if you haven't already, and
+then implement step by step, cmomit at appropriate itnervals, keeping a
+detailed diary as you go. Start with ~/code/wesen/go-go-golems/sqleton as a
+first repository, until it works, and then we can advise how to continue once
+that works. terraform is in ~/code/wesen/terraform”
+
+**Assistant interpretation:** Treat Sqleton as the first concrete adopter,
+track the work at task granularity, implement only the infrastructure that can
+be safely validated without copying secrets or changing live Vault state, and
+commit that boundary independently.
+
+**Inferred user intent:** Prove the design against an operational release
+workflow before advising a wider migration. The proof must use the real
+Terraform repository, preserve auditability, and avoid inventing replacement
+credentials for values GitHub cannot reveal.
+
+**Commit (Terraform):** `a56efca feat(vault): add Sqleton release publisher
+roles` in the dedicated Terraform feature worktree.
+
+### What I did
+
+- Created clean feature worktrees for infra-tooling, Sqleton, and Terraform;
+  the active Terraform checkout had unrelated work and was left untouched.
+- Captured the official GoReleaser split/merge documentation using Defuddle at
+  `sources/01-goreleaser-split-and-merge.md`.
+- Inspected Sqleton's actual release configuration. It builds Linux and macOS
+  with CGO and publishes a GitHub release, GHCR images, a Homebrew formula, and
+  Fury packages. Its current workflow imports GPG and Cosign-related secrets,
+  but its committed `.goreleaser.yaml` defines neither a `signs` stanza nor a
+  Cosign publisher.
+- Reordered the rollout plan so Sqleton is Phase 4, ahead of tiny-idp. The
+  task checklist now separately records local implementation, reviewed Vault
+  apply, bootstrap, and production-release evidence.
+- Added Terraform `release_credential_profiles` and `release_publishers` for
+  Sqleton. The only initial profile is `homebrew-fury`, with fixed policies for
+  the GoReleaser Pro license, Homebrew publisher App credential, and Fury
+  token.
+- Added separate build and publisher Vault JWT roles. The build role reads
+  only the GoReleaser Pro license. The publisher role is bound to the calling
+  repository, immutable repository ID, `v*` tag push, caller workflow path,
+  and the shared reusable workflow's `job_workflow_ref`.
+- Added a non-secret `release_publishers` Terraform output for review and
+  inventory tooling.
+- Ran `terraform fmt` and a backend-free `terraform validate` after downloading
+  only the pinned providers into the temporary worktree. No `terraform plan`
+  or `terraform apply` was run, and no live Vault state was changed.
+
+### Why
+
+GoReleaser's documented split/merge flow is a Pro-only feature. Sqleton's
+existing two-platform workflow cannot safely be converted to the shared merge
+design without supplying the Pro license to each split build. Keeping the
+license in a build-only role limits a compromised build job to the capability
+it needs; it cannot update Homebrew or publish to Fury. The merge role receives
+the remaining static credentials only when the caller is the approved
+reusable workflow.
+
+Sqleton is a good first consumer because it exercises several publication
+channels but avoids an otherwise confounding GPG migration. Retiring unused
+GPG/Cosign wiring is safer than carrying it forward merely because a secret
+exists.
+
+### What worked
+
+- Defuddle successfully saved the official GoReleaser source after the ticket
+  `sources/` directory was created.
+- `terraform fmt` normalized the new HCL.
+- `terraform -chdir=vault/github-actions/envs/k3s init -backend=false` installed
+  the lockfile-pinned Vault and Kubernetes providers in the temporary
+  worktree.
+- `terraform -chdir=vault/github-actions/envs/k3s validate` reported
+  `Success! The configuration is valid.`
+- The Terraform implementation was committed as `a56efca` without staging
+  unrelated files.
+
+### What didn't work
+
+The first Defuddle command failed because the newly created ticket did not yet
+have a `sources/` directory:
+
+```text
+Error: ENOENT: no such file or directory, open '.../sources/01-goreleaser-split-and-merge.md'
+```
+
+Creating the standard folder and repeating the identical capture succeeded.
+
+The first validation attempt stopped at formatting drift, as designed:
+
+```text
+vault/github-actions/envs/k3s/main.tf
+vault/github-actions/envs/k3s/outputs.tf
+```
+
+After formatting, validation initially could not use the copied worktree's
+absent provider cache:
+
+```text
+Error: missing or corrupted provider plugins:
+  - registry.terraform.io/hashicorp/kubernetes: there is no package ... cached
+  - registry.terraform.io/hashicorp/vault: there is no package ... cached
+```
+
+`terraform init -backend=false` resolved that local, expected condition. It
+did not use the S3 backend or contact Vault.
+
+### What I learned
+
+- The previous docsctl publisher entry for Sqleton names `release.yaml`, but
+  the real release file is `release.yml`. The new release role uses the actual
+  path, so claim binding is not inherited from a stale documentation entry.
+- The standard reusable workflow reference is expected in the OIDC
+  `job_workflow_ref` claim at `@refs/heads/main`, even though callers write
+  `@main`; existing docsctl roles demonstrate this convention.
+- GitHub Actions secret values cannot be inventoried or copied back out of
+  GitHub. A later bootstrap phase must obtain current values from their owners,
+  place them directly in the approved Vault paths, and verify only metadata
+  such as key names and fingerprint.
+
+### What was tricky to build
+
+The security boundary is intentionally split in two dimensions. A broad
+repository-tag role would be simpler, but then every platform build could
+read credentials that update an external Homebrew repository and vendor
+registry. Conversely, binding only the shared workflow would make it
+impossible for platform builds to read the Pro license. The two-role design
+preserves the smallest useful authority:
+
+```text
+Sqleton v* tag build job
+  -> release-sqleton-builder
+  -> GoReleaser Pro license only
+
+Sqleton v* tag merge job calling approved reusable workflow
+  -> release-sqleton-publisher
+  -> license + Homebrew App credentials + Fury token
+```
+
+The role does not grant list, create, or update on KV paths, and it does not
+grant an arbitrary input-selected path. The profile-to-path map is Terraform
+data, reviewed with the authorization policy.
+
+### What warrants a second pair of eyes
+
+- Confirm that the chosen Homebrew GitHub App is installed only for
+  `go-go-golems/homebrew-go-go-go` and has the minimum contents permission to
+  update the formula.
+- Confirm the intended Vault secret owners and rotation cadence before paths
+  are seeded. The source repository has no `kv/ci/release` entries yet.
+- Review whether GoReleaser Pro licensing permits the planned CI use and
+  whether its exact action distribution/version should be pinned before the
+  first tag.
+
+### What should be done in the future
+
+- Implement the Sqleton caller workflow and validate it locally with
+  GoReleaser configuration checks.
+- Add a workflow contract test and a policy-render negative test, then run a
+  non-production OIDC claim diagnostic.
+- Seed secrets and apply Terraform only after owner approval. A real tag and
+  secret deletion are explicitly later tasks, not part of this implementation
+  commit.
+
+### Code review instructions
+
+- Review Terraform `release_build` before `release_publish`; verify the former
+  cannot read the Homebrew or Fury paths.
+- Check every `bound_claims` entry against the exact Sqleton workflow path and
+  the reusable workflow's checked-out branch ref.
+- Check that all secret paths use KV v2 `kv/data/...` policy paths and that the
+  output includes no secret values.
+- Re-run the backend-free initialization and validation commands below in a
+  clean worktree. Do not apply without reviewing the remote-state plan.
+
+### Technical details
+
+```text
+defuddle parse https://goreleaser.com/customization/general/partial/ --md -o \
+  ttmp/.../sources/01-goreleaser-split-and-merge.md
+terraform fmt vault/github-actions/envs/k3s/main.tf \
+  vault/github-actions/envs/k3s/outputs.tf
+terraform -chdir=vault/github-actions/envs/k3s init -backend=false
+terraform -chdir=vault/github-actions/envs/k3s validate
+git commit -m "feat(vault): add Sqleton release publisher roles"
+```
+
 ## Quick Reference
 
 <!-- Provide copy/paste-ready content, API contracts, or quick-look tables -->
