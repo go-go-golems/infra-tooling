@@ -93,7 +93,7 @@ jobs:
           fi
 
       - name: Check out caller repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -106,13 +106,13 @@ jobs:
           test -f "${GORELEASER_CONFIG}"
 
       - name: Download Linux split artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{ inputs.linux_artifact }}
           path: dist-parts/linux
 
       - name: Download Darwin split artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{ inputs.darwin_artifact }}
           path: dist-parts/darwin
@@ -123,8 +123,13 @@ jobs:
           set -euo pipefail
           rm -rf dist
           mkdir -p dist
-          cp -a dist-parts/linux/. dist/
-          cp -a dist-parts/darwin/. dist/
+          for part in linux darwin; do
+            if [ -d "dist-parts/${part}/dist" ]; then
+              cp -a "dist-parts/${part}/dist/." dist/
+            else
+              cp -a "dist-parts/${part}/." dist/
+            fi
+          done
           test -n "$(find dist -mindepth 1 -maxdepth 1 -print -quit)"
 
       - name: Read Vault-backed publisher credentials
@@ -173,10 +178,10 @@ jobs:
           echo "TAP_GITHUB_TOKEN=${{ steps.homebrew-app-token.outputs.token }}" >> "$GITHUB_ENV"
 
       - name: Publish merged release
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@v7
         with:
           distribution: goreleaser-pro
-          version: latest
+          version: "~> v2"
           args: continue --merge --config=${{ inputs.goreleaser_config }}
         env:
           GITHUB_TOKEN: ${{ github.token }}

@@ -432,6 +432,170 @@ terraform -chdir=vault/github-actions/envs/k3s validate
 git commit -m "feat(vault): add Sqleton release publisher roles"
 ```
 
+## Step 4: Convert Sqleton to least-privilege split and merge publication
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 3)
+
+**Assistant interpretation:** Implement the first repository adoption rather
+than stopping at platform plumbing, retain a testable release workflow, and
+record any production-relevant limitation instead of masking it with a broad
+configuration rewrite.
+
+**Inferred user intent:** The first pilot should be a realistic release path:
+the platform builds should be able to create artifacts and Linux container
+images, while only a final merge job may create the GitHub release or mutate
+external publishers.
+
+**Commit (Sqleton):** `3b14bc5 ci(release): split Sqleton build and Vault
+publish` in the dedicated Sqleton feature worktree.
+
+### What I did
+
+- Replaced Sqleton's old sequential Linux-then-macOS release process with two
+  independent GoReleaser Pro split jobs and a reusable merge/publish job.
+- Restricted the release trigger from every tag to `v*`, matching the Vault
+  role's exact tag claim.
+- Applied job-level permissions:
+  - Linux build: `contents: read`, `packages: write`, `id-token: write`.
+  - macOS build: `contents: read`, `id-token: write`.
+  - shared publication call: `contents: write`, `id-token: write`.
+- Changed the Linux GHCR login to the repository-scoped `github.token` and
+  removed use of the long-lived `RELEASE_ACTION_PAT`.
+- Had both build jobs authenticate to Vault as `release-sqleton-builder` and
+  retrieve only `license_key` for GoReleaser Pro.
+- Uploaded independent `sqleton-dist-linux` and `sqleton-dist-darwin`
+  artifacts. The shared publisher consumes those names, validates inputs,
+  reloads the merged credentials through `release-sqleton-publisher`, mints a
+  Homebrew App installation token, and runs `goreleaser continue --merge`.
+- Removed workflow references to `RELEASE_ACTION_PAT`,
+  `GO_GO_GOLEMS_SIGN_KEY`, `GO_GO_GOLEMS_SIGN_PASSPHRASE`, `COSIGN_PWD`, and
+  the direct GitHub `FURY_TOKEN` secret.
+- Ran YAML parsing, GoReleaser configuration validation, a static retired
+  secret scan, and `go test ./...`.
+
+### Why
+
+The old workflow granted `contents: write` globally and gave both platform
+jobs all publisher-related GitHub secrets, despite its GoReleaser
+configuration not using GPG or Cosign. The new structure communicates the
+operational split directly in the workflow graph:
+
+```text
+v* push
+  ├── Linux split build (Pro license + GHCR package write)
+  ├── macOS split build (Pro license only)
+  └── reusable merge publication (Vault publisher role)
+          ├── GitHub Release via caller GITHUB_TOKEN
+          ├── Homebrew formula via short-lived App token
+          └── Fury packages via Vault vendor token
+```
+
+This matches GoReleaser's documented split/merge model: split jobs produce
+platform artifacts and the merge command performs final release publication.
+
+### What worked
+
+- Ruby's YAML parser reported `YAML syntax OK` for the new workflow.
+- `go test ./...` passed after downloading normal Go module dependencies.
+- The installed `goreleaser-pro` (v2.13.3) accepted the configuration under
+  `goreleaser check --soft --config .goreleaser.yaml` and reported `1
+  configuration file(s) validated`.
+- The static scan found no retired release-secret references in
+  `.github/workflows/release.yml`.
+- The caller workflow was committed as `3b14bc5` independently of Terraform
+  and infra-tooling changes.
+
+### What didn't work
+
+Strict `goreleaser check --config .goreleaser.yaml` exited nonzero even though
+the configuration parsed, because the committed config uses v2-deprecated
+properties:
+
+```text
+DEPRECATED: snapshot.name_template should not be used anymore
+DEPRECATED: archives.format should not be used anymore
+DEPRECATED: archives.builds should not be used anymore
+dockers and docker_manifests are being phased out ... dockers_v2
+brews is being phased out in favor of homebrew_casks
+```
+
+`goreleaser check --soft` is explicitly a syntax-only validation mode and
+passed. This is not treated as an ignored production error. A new Phase 4 task
+requires a reviewed deprecation resolution or explicit temporary approval
+before a real production tag. The official deprecation reference is captured
+as `sources/02-goreleaser-v2-deprecations.md`.
+
+### What I learned
+
+- The local development environment has GoReleaser Pro installed, so it can
+  validate the existing v2 configuration without fabricating a license.
+- Existing Pinocchio and go-minitrace workflows are useful current examples:
+  they use `goreleaser-action@v7`, `actions/upload-artifact@v7`, and
+  `actions/download-artifact@v8`. The new implementation follows those
+  project-local conventions rather than retaining Sqleton's older action
+  versions.
+- Artifact download layouts can vary between direct and directory-wrapped
+  uploads. The shared workflow accepts both `dist-parts/<platform>/` and
+  `dist-parts/<platform>/dist/` layouts before calling GoReleaser merge.
+
+### What was tricky to build
+
+The credential roles must correspond to the actual execution graph. It would
+be incorrect to give each split job the same Vault role as the reusable
+publisher merely because both invoke GoReleaser. The split commands need the
+license; they do not need to update the Homebrew tap or call Fury. Conversely,
+the merge command must still receive the caller repository's GitHub token for
+the GitHub Release, but no long-lived token for the caller repository is
+stored in Vault.
+
+Another subtle constraint is trigger alignment. The Vault policy accepts only
+`refs/tags/v*`; keeping the old workflow's `'*'` trigger would result in
+unexplained Vault authentication failures for tags outside that convention.
+
+### What warrants a second pair of eyes
+
+- Verify GitHub's effective permissions for the nested reusable workflow when
+  `contents: write` is passed by the caller; the real run should confirm the
+  GitHub Release can be created.
+- Verify that the repository `GITHUB_TOKEN` has package-write access for GHCR
+  in Sqleton's Actions settings.
+- Review the GoReleaser deprecation migration separately. Replacing Docker or
+  Homebrew configuration changes release artifacts and should not be bundled
+  into a credential-boundary change without focused tests.
+
+### What should be done in the future
+
+- Commit the small action-major-version correction in the shared infra-tooling
+  workflow, then run the same YAML validation there.
+- Perform the Phase 3 bootstrap steps and a real, non-production end-to-end
+  run only after the Homebrew App and Vault values exist.
+- Do not delete old GitHub secrets until the approved production tag has
+  demonstrated GitHub Release, GHCR, Homebrew, and Fury behavior.
+
+### Code review instructions
+
+- Compare `release-linux` and `release-darwin` environment blocks: neither
+  should contain a tap, Fury, GPG, or Cosign credential.
+- Verify that the only job with `contents: write` is `publish`, which calls
+  the shared workflow after both artifact producers complete.
+- Verify that `GGOOS` is `linux` or `darwin` in the respective split jobs and
+  artifact names match the shared-workflow inputs exactly.
+- Re-run the commands below and inspect the deprecation output rather than
+  assuming a zero exit from `--soft` means all production quality gates pass.
+
+### Technical details
+
+```text
+ruby -e 'require "yaml"; YAML.load_file(ARGV.fetch(0))' .github/workflows/release.yml
+goreleaser check --config .goreleaser.yaml       # reports existing deprecations
+goreleaser check --soft --config .goreleaser.yaml
+go test ./...
+rg -n 'secrets\\.(RELEASE_ACTION_PAT|GO_GO_GOLEMS_SIGN_KEY|GO_GO_GOLEMS_SIGN_PASSPHRASE|COSIGN_PWD|FURY_TOKEN)' .github/workflows/release.yml
+git commit -m "ci(release): split Sqleton build and Vault publish"
+```
+
 ## Quick Reference
 
 <!-- Provide copy/paste-ready content, API contracts, or quick-look tables -->

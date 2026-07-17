@@ -39,8 +39,9 @@
 
 - [x] Add the Sqleton release-publisher Terraform entry and validate it locally.
 - [ ] Apply the reviewed Sqleton release-publisher policy to Vault.
-- [ ] Move Sqleton to split/merge publication with the shared workflow.
+- [x] Move Sqleton to split/merge publication with the shared workflow.
 - [ ] Run a release-candidate/snapshot validation.
+- [ ] Resolve or explicitly approve Sqleton's GoReleaser v2 configuration deprecations before a production tag.
 - [ ] Complete a reviewed production tag and verify release, GHCR, Homebrew, and Fury behavior.
 - [ ] Remove migrated Sqleton GitHub secrets after success.
 
