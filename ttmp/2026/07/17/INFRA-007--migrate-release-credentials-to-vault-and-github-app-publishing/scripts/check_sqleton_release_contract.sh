@@ -19,8 +19,9 @@ sqleton_root="$3"
 shared_workflow="${infra_root}/.github/workflows/publish-goreleaser-release.yml"
 terraform_main="${terraform_root}/vault/github-actions/envs/k3s/main.tf"
 sqleton_workflow="${sqleton_root}/.github/workflows/release.yml"
+app_verifier_workflow="${sqleton_root}/.github/workflows/verify-homebrew-publisher-app.yml"
 
-for file in "${shared_workflow}" "${terraform_main}" "${sqleton_workflow}"; do
+for file in "${shared_workflow}" "${terraform_main}" "${sqleton_workflow}" "${app_verifier_workflow}"; do
   if [[ ! -f "${file}" ]]; then
     echo "required file is missing: ${file}" >&2
     exit 1
@@ -96,5 +97,21 @@ done
 
 require "publisher role binds the immutable Sqleton repository id" 'repository_id    = each.value.repository_id' "${terraform_main}"
 require "publisher role binds the reusable workflow" 'job_workflow_ref = var.release_publish_job_workflow_ref' "${terraform_main}"
+
+# The App verifier may read the App key but not the release license or Fury
+# token. It proves the App's selected-repository scope through a temporary
+# branch create/delete cycle.
+verifier_policy="$(sed -n '/resource "vault_policy" "release_app_verifier"/,/resource "vault_jwt_auth_backend_role" "release_app_verifier"/p' "${terraform_main}")"
+if [[ "${verifier_policy}" != *'kv/data/ci/github/homebrew-go-go-go/release-publisher-app'* ]]; then
+  echo "contract violation: App verifier cannot read the publisher App credential" >&2
+  exit 1
+fi
+if [[ "${verifier_policy}" == *'goreleaser-pro'* || "${verifier_policy}" == *'fury-go-golems'* ]]; then
+  echo "contract violation: App verifier can read unrelated release credentials" >&2
+  exit 1
+fi
+require "App verifier uses the dedicated Vault role" 'role: release-sqleton-homebrew-app-verifier' "${app_verifier_workflow}"
+require "App verifier scopes the App token to the Homebrew tap" 'repositories: homebrew-go-go-go' "${app_verifier_workflow}"
+require "App verifier registers branch cleanup" 'trap cleanup EXIT' "${app_verifier_workflow}"
 
 echo "Sqleton release contract: PASS"

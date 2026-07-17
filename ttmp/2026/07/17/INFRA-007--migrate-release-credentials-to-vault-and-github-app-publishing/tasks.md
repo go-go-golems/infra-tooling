@@ -7,6 +7,7 @@
 - [x] Inventory all release workflows and actual GoReleaser credential consumers.
 - [ ] Assign credential owners, rotation cadence, and incident contacts.
 - [ ] Add a non-production reusable-workflow OIDC claim diagnostic.
+- [x] Add a manually confirmed Homebrew App verifier and least-privilege Vault role.
 - [ ] Prove the Homebrew GitHub App can mint a token and write/delete a temporary branch.
 - [x] Decide and document whether split builds require the GoReleaser Pro license.
 
@@ -30,6 +31,7 @@
 
 ### Phase 3 — Vault bootstrap and verification
 
+- [x] Add a one-time, repository-bound GitHub-secret migration workflow and write-only Vault role.
 - [ ] Seed approved Vault paths without exposing raw values in logs or tickets.
 - [ ] Verify key names/fingerprint/lengths only.
 - [ ] Install the Homebrew publisher App with minimum permissions.

@@ -39,3 +39,21 @@ contract harness. No Vault policy was applied and no secret was copied.
 - scripts/check_sqleton_release_contract.sh — repeatable cross-repository contract check
 - sources/01-goreleaser-split-and-merge.md — official split/merge reference
 - sources/02-goreleaser-v2-deprecations.md — official configuration deprecation reference
+
+## 2026-07-17
+
+Step 6: added one-time Sqleton GitHub-secret migration path, Homebrew publisher App manifest, direct Vault storage helper, and operator runbook (Terraform f46408b; Sqleton dd6b446).
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/sqleton/.github/workflows/bootstrap-release-credentials.yml — Manual OIDC bootstrap workflow.
+- /home/manuel/code/wesen/terraform/vault/github-actions/envs/k3s/main.tf — Least-privilege bootstrap role.
+
+## 2026-07-17
+
+Step 7: added a separately bound Homebrew App verifier workflow/role and expanded the contract harness and cleanup plan (Terraform eb3342b; Sqleton 42d976c).
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/sqleton/.github/workflows/verify-homebrew-publisher-app.yml — Manual branch create/delete App-scope proof.
+- /home/manuel/code/wesen/terraform/vault/github-actions/envs/k3s/main.tf — Verifier role and read-only App credential policy.
