@@ -57,3 +57,12 @@ Step 7: added a separately bound Homebrew App verifier workflow/role and expande
 
 - /home/manuel/code/wesen/go-go-golems/sqleton/.github/workflows/verify-homebrew-publisher-app.yml — Manual branch create/delete App-scope proof.
 - /home/manuel/code/wesen/terraform/vault/github-actions/envs/k3s/main.tf — Verifier role and read-only App credential policy.
+
+## 2026-07-17
+
+Step 8: stored App credential, applied eight targeted Sqleton roles, completed one-time migration and App branch proof, and opened cleanup PRs #18/#274; full plan almanach drift deliberately untouched.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/sqleton/.github/workflows/bootstrap-release-credentials.yml — Successful one-time migration workflow pending deletion.
+- /home/manuel/code/wesen/terraform/vault/github-actions/envs/k3s/main.tf — Targeted role application and pending temporary-role cleanup.
