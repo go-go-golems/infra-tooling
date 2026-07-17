@@ -1,0 +1,190 @@
+name: publish-goreleaser-release
+
+on:
+  workflow_call:
+    inputs:
+      linux_artifact:
+        required: true
+        type: string
+      darwin_artifact:
+        required: true
+        type: string
+      goreleaser_config:
+        required: false
+        type: string
+        default: .goreleaser.yaml
+      credential_profile:
+        required: true
+        type: string
+      vault_role:
+        required: true
+        type: string
+      homebrew_owner:
+        required: false
+        type: string
+        default: go-go-golems
+      homebrew_repository:
+        required: false
+        type: string
+        default: homebrew-go-go-go
+      vault_addr:
+        required: false
+        type: string
+        default: https://vault.yolo.scapegoat.dev
+      vault_auth_path:
+        required: false
+        type: string
+        default: github-actions
+      vault_audience:
+        required: false
+        type: string
+        default: https://vault.yolo.scapegoat.dev
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate publication contract
+        shell: bash
+        env:
+          LINUX_ARTIFACT: ${{ inputs.linux_artifact }}
+          DARWIN_ARTIFACT: ${{ inputs.darwin_artifact }}
+          GORELEASER_CONFIG: ${{ inputs.goreleaser_config }}
+          CREDENTIAL_PROFILE: ${{ inputs.credential_profile }}
+          VAULT_ROLE: ${{ inputs.vault_role }}
+          HOMEBREW_OWNER: ${{ inputs.homebrew_owner }}
+          HOMEBREW_REPOSITORY: ${{ inputs.homebrew_repository }}
+        run: |
+          set -euo pipefail
+
+          for artifact in "${LINUX_ARTIFACT}" "${DARWIN_ARTIFACT}"; do
+            if [[ ! "${artifact}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+              echo "artifact names must be simple GitHub artifact identifiers" >&2
+              exit 1
+            fi
+          done
+
+          if [[ "${GORELEASER_CONFIG}" = /* || "${GORELEASER_CONFIG}" = *".."* ]]; then
+            echo "goreleaser_config must be a relative repository path without .." >&2
+            exit 1
+          fi
+
+          if [[ -z "${VAULT_ROLE}" ]]; then
+            echo "vault_role is required" >&2
+            exit 1
+          fi
+
+          case "${CREDENTIAL_PROFILE}" in
+            homebrew-fury) ;;
+            *)
+              echo "unsupported credential_profile: ${CREDENTIAL_PROFILE}" >&2
+              exit 1
+              ;;
+          esac
+
+          if [[ "${HOMEBREW_OWNER}/${HOMEBREW_REPOSITORY}" != "go-go-golems/homebrew-go-go-go" ]]; then
+            echo "the approved Homebrew publisher target is go-go-golems/homebrew-go-go-go" >&2
+            exit 1
+          fi
+
+      - name: Check out caller repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Verify GoReleaser configuration
+        shell: bash
+        env:
+          GORELEASER_CONFIG: ${{ inputs.goreleaser_config }}
+        run: |
+          set -euo pipefail
+          test -f "${GORELEASER_CONFIG}"
+
+      - name: Download Linux split artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ inputs.linux_artifact }}
+          path: dist-parts/linux
+
+      - name: Download Darwin split artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ inputs.darwin_artifact }}
+          path: dist-parts/darwin
+
+      - name: Merge split artifact directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist
+          mkdir -p dist
+          for part in linux darwin; do
+            if [ -d "dist-parts/${part}/dist" ]; then
+              cp -a "dist-parts/${part}/dist/." dist/
+            else
+              cp -a "dist-parts/${part}/." dist/
+            fi
+          done
+          test -n "$(find dist -mindepth 1 -maxdepth 1 -print -quit)"
+
+      - name: Read Vault-backed publisher credentials
+        uses: hashicorp/vault-action@v3
+        with:
+          url: ${{ inputs.vault_addr }}
+          method: jwt
+          path: ${{ inputs.vault_auth_path }}
+          role: ${{ inputs.vault_role }}
+          jwtGithubAudience: ${{ inputs.vault_audience }}
+          exportToken: true
+          secrets: |
+            kv/data/ci/release/shared/goreleaser-pro license_key | GORELEASER_KEY ;
+            kv/data/ci/github/homebrew-go-go-go/release-publisher-app app_id | HOMEBREW_APP_ID ;
+            kv/data/ci/github/homebrew-go-go-go/release-publisher-app private_key | HOMEBREW_APP_PRIVATE_KEY ;
+            kv/data/ci/release/shared/fury-go-go-golems token | FURY_TOKEN
+
+      - name: Mask publisher credentials
+        shell: bash
+        env:
+          GORELEASER_KEY: ${{ env.GORELEASER_KEY }}
+          HOMEBREW_APP_ID: ${{ env.HOMEBREW_APP_ID }}
+          HOMEBREW_APP_PRIVATE_KEY: ${{ env.HOMEBREW_APP_PRIVATE_KEY }}
+          FURY_TOKEN: ${{ env.FURY_TOKEN }}
+        run: |
+          set -euo pipefail
+          for value in "${GORELEASER_KEY}" "${HOMEBREW_APP_ID}" "${HOMEBREW_APP_PRIVATE_KEY}" "${FURY_TOKEN}"; do
+            test -n "${value}"
+            echo "::add-mask::${value}"
+          done
+
+      - name: Mint Homebrew publisher App token
+        id: homebrew-app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ env.HOMEBREW_APP_ID }}
+          private-key: ${{ env.HOMEBREW_APP_PRIVATE_KEY }}
+          owner: ${{ inputs.homebrew_owner }}
+          repositories: ${{ inputs.homebrew_repository }}
+
+      - name: Export Homebrew publisher token
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::add-mask::${{ steps.homebrew-app-token.outputs.token }}"
+          echo "TAP_GITHUB_TOKEN=${{ steps.homebrew-app-token.outputs.token }}" >> "$GITHUB_ENV"
+
+      - name: Publish merged release
+        uses: goreleaser/goreleaser-action@v7
+        with:
+          distribution: goreleaser-pro
+          version: "~> v2"
+          args: continue --merge --config=${{ inputs.goreleaser_config }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GORELEASER_KEY: ${{ env.GORELEASER_KEY }}
+          TAP_GITHUB_TOKEN: ${{ env.TAP_GITHUB_TOKEN }}
+          FURY_TOKEN: ${{ env.FURY_TOKEN }}
