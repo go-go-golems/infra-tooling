@@ -610,7 +610,8 @@ be safe to run locally and must not read Vault secrets.
 detects drift between the Sqleton caller workflow, the shared workflow, and
 Terraform authorization before a release reaches GitHub Actions.
 
-**Commit (documentation/harness):** pending this diary entry's commit.
+**Commit (documentation/harness):** `9df29e2 test(infra): verify Sqleton
+release contract`.
 
 ### What I did
 

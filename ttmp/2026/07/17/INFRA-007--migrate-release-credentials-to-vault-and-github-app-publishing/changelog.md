@@ -22,3 +22,20 @@ Validated INFRA-007 with docmgr doctor and uploaded the index, design, diary, ta
 ### Related Files
 
 - /home/manuel/code/wesen/go-go-golems/infra-tooling/ttmp/2026/07/17/INFRA-007--migrate-release-credentials-to-vault-and-github-app-publishing/design-doc/01-vault-backed-release-credentials-and-github-app-publishing-design.md — Published primary design
+
+## 2026-07-17
+
+Implemented the Sqleton-first release credential migration foundation in three
+separately committed feature worktrees. Terraform commit `a56efca` adds the
+builder/publisher Vault roles and least-privilege credential profile; Sqleton
+commit `3b14bc5` uses GoReleaser Pro split builds and the reusable publisher;
+infra-tooling commits `38e5ff1`, `cf15ff3`, and `9df29e2` add the shared
+workflow, research sources, detailed implementation diary, and cross-repo
+contract harness. No Vault policy was applied and no secret was copied.
+
+### Related Files
+
+- .github/workflows/publish-goreleaser-release.yml — shared merge/publication workflow
+- scripts/check_sqleton_release_contract.sh — repeatable cross-repository contract check
+- sources/01-goreleaser-split-and-merge.md — official split/merge reference
+- sources/02-goreleaser-v2-deprecations.md — official configuration deprecation reference
