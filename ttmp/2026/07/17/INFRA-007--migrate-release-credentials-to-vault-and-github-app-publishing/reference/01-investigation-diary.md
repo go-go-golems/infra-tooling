@@ -596,6 +596,137 @@ rg -n 'secrets\\.(RELEASE_ACTION_PAT|GO_GO_GOLEMS_SIGN_KEY|GO_GO_GOLEMS_SIGN_PAS
 git commit -m "ci(release): split Sqleton build and Vault publish"
 ```
 
+## Step 5: Add a cross-repository release contract harness
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 3)
+
+**Assistant interpretation:** Make the first pilot repeatedly reviewable rather
+than relying on a single manual reading of three repositories. The harness must
+be safe to run locally and must not read Vault secrets.
+
+**Inferred user intent:** A later intern should have a concrete command that
+detects drift between the Sqleton caller workflow, the shared workflow, and
+Terraform authorization before a release reaches GitHub Actions.
+
+**Commit (documentation/harness):** pending this diary entry's commit.
+
+### What I did
+
+- Added
+  `scripts/check_sqleton_release_contract.sh` to INFRA-007.
+- Made the script accept explicit infra-tooling, Terraform, and Sqleton roots,
+  so it can test clean feature worktrees without assuming a user's directory
+  layout.
+- Checked caller invariants: `v*` trigger, split `GGOOS` values, builder and
+  publisher role names, shared-workflow reference, and absence of retired
+  GitHub secret references.
+- Checked shared-workflow invariants: approved `homebrew-fury` profile,
+  fixed Homebrew destination, fixed Vault credential fields, App-token mint,
+  and GoReleaser merge command.
+- Checked Terraform invariants: the builder policy reads the Pro license but
+  not Homebrew/Fury paths; the publisher policy derives paths from the
+  allowlisted profile map; and its role binds `job_workflow_ref`.
+- Ran the script against the three dedicated worktrees. It ended with
+  `Sqleton release contract: PASS`.
+- Related the script and both newly captured official sources to the ticket
+  index and re-ran `docmgr doctor` successfully.
+
+### Why
+
+The change is distributed across three repositories. Each file can look
+reasonable in isolation while the release fails because an artifact name,
+Vault role, tag pattern, or shared workflow reference differs. The harness
+turns the security architecture into a small set of executable assertions.
+Most importantly, it includes a negative assertion: a split builder must not
+gain publisher credential paths.
+
+### What worked
+
+The final command completed without reading a secret or contacting a remote
+service:
+
+```text
+bash .../check_sqleton_release_contract.sh \
+  /tmp/infra-tooling-release-vault-sqleton \
+  /tmp/terraform-release-vault-sqleton \
+  /tmp/sqleton-release-vault-sqleton
+Sqleton release contract: PASS
+```
+
+`docmgr doctor --ticket INFRA-007 --stale-after 30` also returned `All checks
+passed` after linking the sources and harness.
+
+### What didn't work
+
+The harness's first version expected the fully expanded publisher paths inside
+the rendered `vault_policy.release_publish` HCL block. Terraform correctly
+derives those paths through
+`local.release_credential_profiles[each.value.profile].secret_paths`, so the
+first run reported:
+
+```text
+contract violation: publisher policy is missing kv/data/ci/release/shared/goreleaser-pro
+```
+
+The check was corrected to assert both parts of the real representation: the
+policy must reference the allowlisted profile map, and that map must contain
+each required path. The second run passed. This was a harness expectation bug,
+not a policy defect.
+
+### What I learned
+
+Terraform's declarative indirection is part of the authorization design. A
+static test should verify the indirection rather than flattening it into a
+different mental model. The map is what prevents a workflow input from
+selecting an arbitrary Vault path, and the policy's reference to the map is
+what makes the map authoritative.
+
+### What was tricky to build
+
+The script deliberately uses only file inspection. Running `terraform plan`
+would additionally require remote state, Vault credentials, and Kubernetes
+configuration; running a GitHub workflow would require currently absent
+credential paths and could publish real artifacts. The harness instead covers
+the contractual gaps that must be correct before either external action is
+safe.
+
+### What warrants a second pair of eyes
+
+- The harness detects intended current contracts, not every possible GitHub
+  Actions semantic error. A test release remains necessary after Vault
+  bootstrap.
+- As additional credential profiles are introduced, extend the script or
+  replace its profile checks with a typed parser so every profile is covered.
+
+### What should be done in the future
+
+- Add this script to a non-release CI workflow after the three feature
+  branches are integrated or expose it through an infra-tooling command.
+- Add an OIDC claim diagnostic that proves Vault's actual
+  `job_workflow_ref` observations match the policy's expected value.
+
+### Code review instructions
+
+- Read the negative builder-policy assertion first; it guards the central
+  least-privilege property.
+- Verify every string asserted by the script matches the intended public
+  workflow contract, not merely the current implementation accidentally.
+- Run the command with a modified, deliberately unsafe fixture (for example,
+  add `FURY_TOKEN` to a build job) to confirm the failure is understandable.
+
+### Technical details
+
+```text
+bash ttmp/2026/07/17/INFRA-007--.../scripts/check_sqleton_release_contract.sh \
+  /tmp/infra-tooling-release-vault-sqleton \
+  /tmp/terraform-release-vault-sqleton \
+  /tmp/sqleton-release-vault-sqleton
+docmgr doc relate --ticket INFRA-007 --file-note ...
+docmgr doctor --ticket INFRA-007 --stale-after 30
+```
+
 ## Quick Reference
 
 <!-- Provide copy/paste-ready content, API contracts, or quick-look tables -->

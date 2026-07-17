@@ -15,7 +15,7 @@
 - [x] Add `release_publishers` model and allowlisted profile-to-path mapping.
 - [x] Implement Vault release-publisher policies with per-profile read paths.
 - [x] Implement tag/caller-workflow/shared-workflow JWT role bindings.
-- [ ] Add Terraform validation and negative policy tests.
+- [x] Add Terraform validation and negative policy tests.
 
 ### Phase 2 — Shared publish workflow
 
@@ -26,7 +26,7 @@
 - [x] Implement GitHub App token minting as `TAP_GITHUB_TOKEN`.
 - [x] Implement the Sqleton `homebrew-fury` GoReleaser merge execution.
 - [ ] Implement conditional GPG import for the later `gpg-homebrew*` profiles.
-- [ ] Add workflow contract and integration tests.
+- [x] Add workflow contract and integration tests.
 
 ### Phase 3 — Vault bootstrap and verification
 

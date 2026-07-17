@@ -12,6 +12,8 @@ Owners: []
 RelatedFiles:
     - Path: repo://.github/workflows/publish-goreleaser-release.yml
       Note: Reusable Vault-backed merge publication workflow.
+    - Path: repo://ttmp/2026/07/17/INFRA-007--migrate-release-credentials-to-vault-and-github-app-publishing/scripts/check_sqleton_release_contract.sh
+      Note: Cross-repository static contract and least-privilege negative checks.
     - Path: repo://ttmp/2026/07/17/INFRA-007--migrate-release-credentials-to-vault-and-github-app-publishing/sources/01-goreleaser-split-and-merge.md
       Note: Official GoReleaser Pro split/merge source captured with Defuddle.
     - Path: repo://ttmp/2026/07/17/INFRA-007--migrate-release-credentials-to-vault-and-github-app-publishing/sources/02-goreleaser-v2-deprecations.md
@@ -22,6 +24,7 @@ LastUpdated: 2026-07-17T17:21:34.284068781-04:00
 WhatFor: Track platform work to centralize release credential access in Vault.
 WhenToUse: Use when planning or reviewing release workflow credential migration.
 ---
+
 
 
 
