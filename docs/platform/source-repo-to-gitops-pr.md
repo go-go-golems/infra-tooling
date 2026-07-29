@@ -150,7 +150,8 @@ The shared workflow depends on two different credential paths:
   - automatically available in GitHub Actions workflows
 - GitHub Actions OIDC token
   - requested by the caller workflow through `permissions.id-token: write`
-  - presented to Vault through `hashicorp/vault-action@v3`
+  - presented to Vault through the immutable `hashicorp/vault-action`
+    `v4.0.0` commit, which runs on Node 24
   - exchanged at Vault `auth/github-actions` for a short-lived Vault token
 - Vault-stored GitOps PR token
   - read from a repo-specific KV v2 data path such as `kv/data/ci/github/my-app/gitops-pr-token`

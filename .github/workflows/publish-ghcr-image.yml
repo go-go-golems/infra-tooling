@@ -260,7 +260,7 @@ jobs:
 
       - name: Read GitOps PR token from Vault
         if: inputs.gitops_pr_token_source == 'vault'
-        uses: hashicorp/vault-action@v3
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4.0.0
         with:
           url: ${{ inputs.vault_addr }}
           method: jwt
@@ -283,7 +283,7 @@ jobs:
 
       - name: Read GitHub App credentials from Vault
         if: inputs.gitops_pr_token_source == 'github_app'
-        uses: hashicorp/vault-action@v3
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4.0.0
         with:
           url: ${{ inputs.vault_addr }}
           method: jwt
