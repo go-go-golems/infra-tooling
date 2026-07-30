@@ -65,7 +65,7 @@ require "shared workflow fixes the Homebrew owner" 'homebrew_owner=go-go-golems'
 require "shared workflow fixes the Homebrew repository" 'homebrew_repository=homebrew-go-go-go' "${shared_workflow}"
 require "shared workflow profile fixes the GoReleaser license path" 'goreleaser_secret=kv/data/ci/release/shared/goreleaser-pro' "${shared_workflow}"
 require "shared workflow mints an App token" 'uses: actions/create-github-app-token@v2' "${shared_workflow}"
-require "shared workflow merges split artifacts" 'args: continue --merge --config=${{ inputs.goreleaser_config }}' "${shared_workflow}"
+require "shared workflow merges split artifacts" 'args: continue --merge' "${shared_workflow}"
 
 # Terraform: isolate the build policy text and verify it cannot read publisher
 # credentials. The publisher policy must explicitly allow all three paths.

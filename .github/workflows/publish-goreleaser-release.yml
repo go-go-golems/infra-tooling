@@ -19,6 +19,14 @@ on:
       vault_role:
         required: true
         type: string
+      # Retained temporarily for the existing Sqleton caller. Approved profile
+      # selection, not either caller value, fixes the actual publication target.
+      homebrew_owner:
+        required: false
+        type: string
+      homebrew_repository:
+        required: false
+        type: string
       vault_addr:
         required: false
         type: string
@@ -228,7 +236,7 @@ jobs:
         with:
           distribution: goreleaser-pro
           version: "~> v2"
-          args: continue --merge --config=${{ inputs.goreleaser_config }}
+          args: continue --merge
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GORELEASER_KEY: ${{ env.GORELEASER_KEY }}
