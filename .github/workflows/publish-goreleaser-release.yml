@@ -19,14 +19,6 @@ on:
       vault_role:
         required: true
         type: string
-      homebrew_owner:
-        required: false
-        type: string
-        default: go-go-golems
-      homebrew_repository:
-        required: false
-        type: string
-        default: homebrew-go-go-go
       vault_addr:
         required: false
         type: string
@@ -39,6 +31,10 @@ on:
         required: false
         type: string
         default: https://vault.yolo.scapegoat.dev
+      release_environment:
+        required: false
+        type: string
+        default: release
 
 permissions:
   contents: write
@@ -47,50 +43,71 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.release_environment }}
 
     steps:
-      - name: Validate publication contract
+      - name: Resolve approved credential profile
+        id: profile
         shell: bash
         env:
-          LINUX_ARTIFACT: ${{ inputs.linux_artifact }}
-          DARWIN_ARTIFACT: ${{ inputs.darwin_artifact }}
-          GORELEASER_CONFIG: ${{ inputs.goreleaser_config }}
           CREDENTIAL_PROFILE: ${{ inputs.credential_profile }}
-          VAULT_ROLE: ${{ inputs.vault_role }}
-          HOMEBREW_OWNER: ${{ inputs.homebrew_owner }}
-          HOMEBREW_REPOSITORY: ${{ inputs.homebrew_repository }}
         run: |
           set -euo pipefail
-
-          for artifact in "${LINUX_ARTIFACT}" "${DARWIN_ARTIFACT}"; do
-            if [[ ! "${artifact}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
-              echo "artifact names must be simple GitHub artifact identifiers" >&2
-              exit 1
-            fi
-          done
-
-          if [[ "${GORELEASER_CONFIG}" = /* || "${GORELEASER_CONFIG}" = *".."* ]]; then
-            echo "goreleaser_config must be a relative repository path without .." >&2
-            exit 1
-          fi
-
-          if [[ -z "${VAULT_ROLE}" ]]; then
-            echo "vault_role is required" >&2
-            exit 1
-          fi
-
           case "${CREDENTIAL_PROFILE}" in
-            homebrew-fury) ;;
+            homebrew-fury)
+              homebrew_owner=go-go-golems
+              homebrew_repository=homebrew-go-go-go
+              goreleaser_secret=kv/data/ci/release/shared/goreleaser-pro
+              homebrew_app_secret=kv/data/ci/github/homebrew-go-go-go/release-publisher-app
+              fury_secret=kv/data/ci/release/shared/fury-go-go-golems
+              gpg_fingerprint=
+              signing=none
+              ;;
+            hyperslop-homebrew-fury-gpg)
+              homebrew_owner=hyperslop-systems
+              homebrew_repository=homebrew
+              goreleaser_secret=kv/data/ci/release/shared/goreleaser-pro
+              homebrew_app_secret=kv/data/ci/github/hyperslop-systems/homebrew-publisher-app
+              fury_secret=kv/data/ci/release/hyperslop-systems/fury
+              gpg_fingerprint=7B1437943AA1681D5C16AF8FD812D9E6956B8EAF
+              signing=gpg
+              ;;
             *)
               echo "unsupported credential_profile: ${CREDENTIAL_PROFILE}" >&2
               exit 1
               ;;
           esac
 
-          if [[ "${HOMEBREW_OWNER}/${HOMEBREW_REPOSITORY}" != "go-go-golems/homebrew-go-go-go" ]]; then
-            echo "the approved Homebrew publisher target is go-go-golems/homebrew-go-go-go" >&2
+          {
+            echo "homebrew_owner=${homebrew_owner}"
+            echo "homebrew_repository=${homebrew_repository}"
+            echo "goreleaser_secret=${goreleaser_secret}"
+            echo "homebrew_app_secret=${homebrew_app_secret}"
+            echo "fury_secret=${fury_secret}"
+            echo "gpg_fingerprint=${gpg_fingerprint}"
+            echo "signing=${signing}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Validate publication contract
+        shell: bash
+        env:
+          LINUX_ARTIFACT: ${{ inputs.linux_artifact }}
+          DARWIN_ARTIFACT: ${{ inputs.darwin_artifact }}
+          GORELEASER_CONFIG: ${{ inputs.goreleaser_config }}
+          VAULT_ROLE: ${{ inputs.vault_role }}
+        run: |
+          set -euo pipefail
+          for artifact in "${LINUX_ARTIFACT}" "${DARWIN_ARTIFACT}"; do
+            if [[ ! "${artifact}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+              echo "artifact names must be simple GitHub artifact identifiers" >&2
+              exit 1
+            fi
+          done
+          if [[ "${GORELEASER_CONFIG}" = /* || "${GORELEASER_CONFIG}" = *".."* ]]; then
+            echo "goreleaser_config must be a relative repository path without .." >&2
             exit 1
           fi
+          test -n "${VAULT_ROLE}"
 
       - name: Check out caller repository
         uses: actions/checkout@v7
@@ -101,9 +118,7 @@ jobs:
         shell: bash
         env:
           GORELEASER_CONFIG: ${{ inputs.goreleaser_config }}
-        run: |
-          set -euo pipefail
-          test -f "${GORELEASER_CONFIG}"
+        run: test -f "${GORELEASER_CONFIG}"
 
       - name: Download Linux split artifacts
         uses: actions/download-artifact@v8
@@ -142,10 +157,23 @@ jobs:
           jwtGithubAudience: ${{ inputs.vault_audience }}
           exportToken: true
           secrets: |
-            kv/data/ci/release/shared/goreleaser-pro license_key | GORELEASER_KEY ;
-            kv/data/ci/github/homebrew-go-go-go/release-publisher-app app_id | HOMEBREW_APP_ID ;
-            kv/data/ci/github/homebrew-go-go-go/release-publisher-app private_key | HOMEBREW_APP_PRIVATE_KEY ;
-            kv/data/ci/release/shared/fury-go-go-golems token | FURY_TOKEN
+            ${{ steps.profile.outputs.goreleaser_secret }} license_key | GORELEASER_KEY ;
+            ${{ steps.profile.outputs.homebrew_app_secret }} app_id | HOMEBREW_APP_ID ;
+            ${{ steps.profile.outputs.homebrew_app_secret }} private_key | HOMEBREW_APP_PRIVATE_KEY ;
+            ${{ steps.profile.outputs.fury_secret }} token | FURY_TOKEN ;
+
+      - name: Read GPG signing credentials
+        if: steps.profile.outputs.signing == 'gpg'
+        uses: hashicorp/vault-action@v3
+        with:
+          url: ${{ inputs.vault_addr }}
+          method: jwt
+          path: ${{ inputs.vault_auth_path }}
+          role: ${{ inputs.vault_role }}
+          jwtGithubAudience: ${{ inputs.vault_audience }}
+          secrets: |
+            kv/data/ci/release/hyperslop-systems/gpg-signing private_key | GPG_PRIVATE_KEY ;
+            kv/data/ci/release/hyperslop-systems/gpg-signing passphrase | GPG_PASSPHRASE ;
 
       - name: Mask publisher credentials
         shell: bash
@@ -154,12 +182,30 @@ jobs:
           HOMEBREW_APP_ID: ${{ env.HOMEBREW_APP_ID }}
           HOMEBREW_APP_PRIVATE_KEY: ${{ env.HOMEBREW_APP_PRIVATE_KEY }}
           FURY_TOKEN: ${{ env.FURY_TOKEN }}
+          GPG_PRIVATE_KEY: ${{ env.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ env.GPG_PASSPHRASE }}
+          SIGNING: ${{ steps.profile.outputs.signing }}
         run: |
           set -euo pipefail
           for value in "${GORELEASER_KEY}" "${HOMEBREW_APP_ID}" "${HOMEBREW_APP_PRIVATE_KEY}" "${FURY_TOKEN}"; do
             test -n "${value}"
             echo "::add-mask::${value}"
           done
+          if [[ "${SIGNING}" = gpg ]]; then
+            for value in "${GPG_PRIVATE_KEY}" "${GPG_PASSPHRASE}"; do
+              test -n "${value}"
+              echo "::add-mask::${value}"
+            done
+          fi
+
+      - name: Import GPG signing key
+        id: import_gpg
+        if: steps.profile.outputs.signing == 'gpg'
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ env.GPG_PRIVATE_KEY }}
+          passphrase: ${{ env.GPG_PASSPHRASE }}
+          fingerprint: ${{ steps.profile.outputs.gpg_fingerprint }}
 
       - name: Mint Homebrew publisher App token
         id: homebrew-app-token
@@ -167,8 +213,8 @@ jobs:
         with:
           app-id: ${{ env.HOMEBREW_APP_ID }}
           private-key: ${{ env.HOMEBREW_APP_PRIVATE_KEY }}
-          owner: ${{ inputs.homebrew_owner }}
-          repositories: ${{ inputs.homebrew_repository }}
+          owner: ${{ steps.profile.outputs.homebrew_owner }}
+          repositories: ${{ steps.profile.outputs.homebrew_repository }}
 
       - name: Export Homebrew publisher token
         shell: bash
@@ -186,5 +232,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GORELEASER_KEY: ${{ env.GORELEASER_KEY }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
           TAP_GITHUB_TOKEN: ${{ env.TAP_GITHUB_TOKEN }}
           FURY_TOKEN: ${{ env.FURY_TOKEN }}

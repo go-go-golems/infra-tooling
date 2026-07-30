@@ -60,9 +60,10 @@ forbid "caller retains a long-lived release secret" 'secrets\.(RELEASE_ACTION_PA
 
 # Shared publisher: fixed paths and a fixed Homebrew target prevent workflow
 # inputs from being turned into a generic Vault or GitHub-App proxy.
-require "shared workflow validates the supported profile" 'homebrew-fury) ;;' "${shared_workflow}"
-require "shared workflow fixes the Homebrew target" 'go-go-golems/homebrew-go-go-go' "${shared_workflow}"
-require "shared workflow reads the GoReleaser license" 'kv/data/ci/release/shared/goreleaser-pro license_key | GORELEASER_KEY' "${shared_workflow}"
+require "shared workflow validates the supported profile" 'homebrew-fury)' "${shared_workflow}"
+require "shared workflow fixes the Homebrew owner" 'homebrew_owner=go-go-golems' "${shared_workflow}"
+require "shared workflow fixes the Homebrew repository" 'homebrew_repository=homebrew-go-go-go' "${shared_workflow}"
+require "shared workflow profile fixes the GoReleaser license path" 'goreleaser_secret=kv/data/ci/release/shared/goreleaser-pro' "${shared_workflow}"
 require "shared workflow mints an App token" 'uses: actions/create-github-app-token@v2' "${shared_workflow}"
 require "shared workflow merges split artifacts" 'args: continue --merge --config=${{ inputs.goreleaser_config }}' "${shared_workflow}"
 
