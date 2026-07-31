@@ -165,7 +165,7 @@ The workflow supports three `gitops_pr_token_source` modes. Use `github_app`:
 | Mode | What it reads | Status |
 |---|---|---|
 | `github_app` | App id + private key at `kv/data/ci/github/<repo>/gitops-pr-app`, exchanged for a short-lived installation token | **Current.** Use this. |
-| `vault` | A long-lived PAT at `kv/data/ci/github/<repo>/gitops-pr-token` | Deprecated. The PAT expires and fails at the GitHub API, not at Vault, so the log shows a successful Vault read followed by `Bad credentials`. |
+| `vault` | A long-lived PAT at `kv/data/ci/github/<repo>/gitops-pr-token` | Deprecated. The PAT expires, and because the Vault read succeeds the failure appears far from its cause — see below. |
 | `secret` | A long-lived PAT in a source-repo GitHub secret | Deprecated, oldest. |
 
 `github_app` mode requires all four of `vault_role`, `gitops_app_secret_path`,
@@ -173,7 +173,35 @@ The workflow supports three `gitops_pr_token_source` modes. Use `github_app`:
 the last two are missing.
 
 `TF-012-GITOPS-GITHUB-APP-MIGRATION` (terraform repo, 2026-07-17) migrated ten workflows
-off PAT mode and deleted the corresponding `gitops-pr-token` paths.
+off PAT mode and deleted the corresponding `gitops-pr-token` paths. To move a repository
+that is still on PAT mode, follow
+[github-app-gitops-pr-migration-playbook.md](../go-go-golems/playbooks/github-app-gitops-pr-migration-playbook.md).
+
+### What an expired PAT looks like
+
+The Vault steps succeed, so the log reads as if credential retrieval worked. The failure
+lands at **`git clone`**, not at the GitHub API: `open_gitops_pr.py` embeds the token in the
+clone URL (`https://x-access-token:<token>@github.com/...`) and clones the GitOps repo before
+it ever calls `gh`. Two messages have been observed at that step:
+
+```text
+remote: Invalid username or token. Password authentication is not supported for Git operations.
+```
+
+```text
+remote: Bad credentials
+```
+
+The first is what the Glazed deployment produced on 2026-07-17 and is the symptom the
+migration playbook documents; the second is what the publish-vault incident produced on
+2026-06-01. Either means the credential is dead. Confirm it in one step rather than debugging
+the clone:
+
+```bash
+GH_TOKEN=<token> gh api user
+```
+
+`github_app` mode removes this failure mode: the token is minted per run and cannot be stale.
 
 Caller workflows must grant OIDC permission:
 
