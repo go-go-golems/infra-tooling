@@ -153,16 +153,55 @@ The shared workflow depends on two different credential paths:
   - presented to Vault through the immutable `hashicorp/vault-action`
     `v4.0.0` commit, which runs on Node 24
   - exchanged at Vault `auth/github-actions` for a short-lived Vault token
-- Vault-stored GitOps PR token
-  - read from a repo-specific KV v2 data path such as `kv/data/ci/github/my-app/gitops-pr-token`
+- Vault-stored GitHub App credential
+  - read from a repo-specific KV v2 data path such as `kv/data/ci/github/my-app/gitops-pr-app`
+  - exchanged for a GitHub App installation token scoped to the GitOps repo, valid for
+    the length of one run
   - exported as `GITOPS_PR_TOKEN` for the packaged `open-gitops-pr` action
   - used by the action to clone, push, and open pull requests
 
-The default shared workflow path is now `gitops_pr_token_source: vault`. When
-`open_gitops_pr` is true, callers must provide `vault_role` and
-`vault_secret_path`. The legacy `gitops_pr_token_source: secret` mode still
-exists only for deliberate migration work; new repositories should not store a
-long-lived `GITOPS_PR_TOKEN` directly as a source-repo GitHub secret.
+The workflow supports three `gitops_pr_token_source` modes. Use `github_app`:
+
+| Mode | What it reads | Status |
+|---|---|---|
+| `github_app` | App id + private key at `kv/data/ci/github/<repo>/gitops-pr-app`, exchanged for a short-lived installation token | **Current.** Use this. |
+| `vault` | A long-lived PAT at `kv/data/ci/github/<repo>/gitops-pr-token` | Deprecated. The PAT expires, and because the Vault read succeeds the failure appears far from its cause — see below. |
+| `secret` | A long-lived PAT in a source-repo GitHub secret | Deprecated, oldest. |
+
+`github_app` mode requires all four of `vault_role`, `gitops_app_secret_path`,
+`gitops_app_owner`, and `gitops_app_repositories`. The preflight check rejects the run if
+the last two are missing.
+
+`TF-012-GITOPS-GITHUB-APP-MIGRATION` (terraform repo, 2026-07-17) migrated ten workflows
+off PAT mode and deleted the corresponding `gitops-pr-token` paths. To move a repository
+that is still on PAT mode, follow
+[github-app-gitops-pr-migration-playbook.md](../go-go-golems/playbooks/github-app-gitops-pr-migration-playbook.md).
+
+### What an expired PAT looks like
+
+The Vault steps succeed, so the log reads as if credential retrieval worked. The failure
+lands at **`git clone`**, not at the GitHub API: `open_gitops_pr.py` embeds the token in the
+clone URL (`https://x-access-token:<token>@github.com/...`) and clones the GitOps repo before
+it ever calls `gh`. Two messages have been observed at that step:
+
+```text
+remote: Invalid username or token. Password authentication is not supported for Git operations.
+```
+
+```text
+remote: Bad credentials
+```
+
+The first is what the Glazed deployment produced on 2026-07-17 and is the symptom the
+migration playbook documents; the second is what the publish-vault incident produced on
+2026-06-01. Either means the credential is dead. Confirm it in one step rather than debugging
+the clone:
+
+```bash
+GH_TOKEN=<token> gh api user
+```
+
+`github_app` mode removes this failure mode: the token is minted per run and cannot be stale.
 
 Caller workflows must grant OIDC permission:
 
@@ -182,9 +221,11 @@ jobs:
     uses: go-go-golems/infra-tooling/.github/workflows/publish-ghcr-image.yml@main
     secrets: inherit
     with:
-      gitops_pr_token_source: vault
+      gitops_pr_token_source: github_app
       vault_role: my-app-gitops-pr
-      vault_secret_path: kv/data/ci/github/my-app/gitops-pr-token
+      gitops_app_secret_path: kv/data/ci/github/my-app/gitops-pr-app
+      gitops_app_owner: wesen
+      gitops_app_repositories: 2026-03-27--hetzner-k3s
       open_gitops_pr: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
 ```
 
