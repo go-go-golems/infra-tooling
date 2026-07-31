@@ -156,6 +156,26 @@ jobs:
               echo "owner=hyperslop-systems" >> "$GITHUB_OUTPUT"
               echo "repositories=pbui,hyperslop-cli" >> "$GITHUB_OUTPUT"
               ;;
+            # The other two pbui-family Go services. Each names its OWN Vault
+            # role — the roles differ only in their bound repository claim, and
+            # sharing one would let any of these repositories mint the others'
+            # token. They read the same shared App credential and receive the
+            # same installation scope, because they import the same private
+            # modules.
+            turboproof-go)
+              echo "enabled=true" >> "$GITHUB_OUTPUT"
+              echo "vault_role=turboproof-private-dependencies" >> "$GITHUB_OUTPUT"
+              echo "secret_path=kv/data/ci/github/hyperslop-systems/private-dependencies-app" >> "$GITHUB_OUTPUT"
+              echo "owner=hyperslop-systems" >> "$GITHUB_OUTPUT"
+              echo "repositories=pbui,hyperslop-cli" >> "$GITHUB_OUTPUT"
+              ;;
+            agentlogic-go)
+              echo "enabled=true" >> "$GITHUB_OUTPUT"
+              echo "vault_role=agentlogic-private-dependencies" >> "$GITHUB_OUTPUT"
+              echo "secret_path=kv/data/ci/github/hyperslop-systems/private-dependencies-app" >> "$GITHUB_OUTPUT"
+              echo "owner=hyperslop-systems" >> "$GITHUB_OUTPUT"
+              echo "repositories=pbui,hyperslop-cli" >> "$GITHUB_OUTPUT"
+              ;;
             *)
               echo "Unsupported private_dependencies_profile: ${PROFILE}" >&2
               exit 1
