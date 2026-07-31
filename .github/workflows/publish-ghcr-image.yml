@@ -27,6 +27,11 @@ on:
         required: false
         type: string
         default: go.sum
+      private_dependencies_profile:
+        description: Allowlisted private dependency credential profile.
+        required: false
+        type: string
+        default: ""
       image_name:
         required: false
         type: string
@@ -133,6 +138,68 @@ jobs:
       - name: Check out caller repository
         uses: actions/checkout@v6
 
+      - name: Resolve private dependency profile
+        id: private-dependencies
+        shell: bash
+        env:
+          PROFILE: ${{ inputs.private_dependencies_profile }}
+        run: |
+          set -euo pipefail
+          case "${PROFILE}" in
+            "")
+              echo "enabled=false" >> "$GITHUB_OUTPUT"
+              ;;
+            datalab-go)
+              echo "enabled=true" >> "$GITHUB_OUTPUT"
+              echo "vault_role=datalab-private-dependencies" >> "$GITHUB_OUTPUT"
+              echo "secret_path=kv/data/ci/github/hyperslop-systems/private-dependencies-app" >> "$GITHUB_OUTPUT"
+              echo "owner=hyperslop-systems" >> "$GITHUB_OUTPUT"
+              echo "repositories=pbui,hyperslop-cli" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Unsupported private_dependencies_profile: ${PROFILE}" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Read private dependency App credentials
+        if: steps.private-dependencies.outputs.enabled == 'true'
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4.0.0
+        with:
+          url: ${{ inputs.vault_addr }}
+          method: jwt
+          path: ${{ inputs.vault_auth_path }}
+          role: ${{ steps.private-dependencies.outputs.vault_role }}
+          jwtGithubAudience: ${{ inputs.vault_audience }}
+          secrets: |
+            ${{ steps.private-dependencies.outputs.secret_path }} app_id | PRIVATE_DEPENDENCY_APP_ID ;
+            ${{ steps.private-dependencies.outputs.secret_path }} private_key | PRIVATE_DEPENDENCY_APP_PRIVATE_KEY
+
+      - name: Mint private dependency token
+        if: steps.private-dependencies.outputs.enabled == 'true'
+        id: private-dependency-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ env.PRIVATE_DEPENDENCY_APP_ID }}
+          private-key: ${{ env.PRIVATE_DEPENDENCY_APP_PRIVATE_KEY }}
+          owner: ${{ steps.private-dependencies.outputs.owner }}
+          repositories: ${{ steps.private-dependencies.outputs.repositories }}
+
+      - name: Configure private Go module authentication
+        if: steps.private-dependencies.outputs.enabled == 'true'
+        shell: bash
+        env:
+          PRIVATE_DEPENDENCY_TOKEN: ${{ steps.private-dependency-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          git config --global \
+            url."https://x-access-token:${PRIVATE_DEPENDENCY_TOKEN}@github.com/".insteadOf \
+            "https://github.com/"
+          {
+            echo "GOPRIVATE=github.com/hyperslop-systems/*"
+            echo "GONOSUMDB=github.com/hyperslop-systems/*"
+          } >> "$GITHUB_ENV"
+
       - name: Set up Go
         if: inputs.setup_go
         uses: actions/setup-go@v6
@@ -156,9 +223,11 @@ jobs:
           fi
           image_tag="sha-${GITHUB_SHA::7}"
           image_ref="${image_name}:${image_tag}"
-          echo "image_name=${image_name}" >> "$GITHUB_OUTPUT"
-          echo "image_tag=${image_tag}" >> "$GITHUB_OUTPUT"
-          echo "image_ref=${image_ref}" >> "$GITHUB_OUTPUT"
+          {
+            echo "image_name=${image_name}"
+            echo "image_tag=${image_tag}"
+            echo "image_ref=${image_ref}"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -184,6 +253,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and optionally push image
+        if: steps.private-dependencies.outputs.enabled != 'true'
         uses: docker/build-push-action@v7
         with:
           context: ${{ inputs.build_context }}
@@ -192,6 +262,21 @@ jobs:
           push: ${{ inputs.push_image }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and optionally push image with private dependencies
+        if: steps.private-dependencies.outputs.enabled == 'true'
+        uses: docker/build-push-action@v7
+        with:
+          context: ${{ inputs.build_context }}
+          file: ${{ inputs.dockerfile }}
+          platforms: ${{ inputs.platforms }}
+          push: ${{ inputs.push_image }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          secrets: |
+            github_token=${{ steps.private-dependency-token.outputs.token }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
