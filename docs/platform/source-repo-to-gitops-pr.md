@@ -153,16 +153,27 @@ The shared workflow depends on two different credential paths:
   - presented to Vault through the immutable `hashicorp/vault-action`
     `v4.0.0` commit, which runs on Node 24
   - exchanged at Vault `auth/github-actions` for a short-lived Vault token
-- Vault-stored GitOps PR token
-  - read from a repo-specific KV v2 data path such as `kv/data/ci/github/my-app/gitops-pr-token`
+- Vault-stored GitHub App credential
+  - read from a repo-specific KV v2 data path such as `kv/data/ci/github/my-app/gitops-pr-app`
+  - exchanged for a GitHub App installation token scoped to the GitOps repo, valid for
+    the length of one run
   - exported as `GITOPS_PR_TOKEN` for the packaged `open-gitops-pr` action
   - used by the action to clone, push, and open pull requests
 
-The default shared workflow path is now `gitops_pr_token_source: vault`. When
-`open_gitops_pr` is true, callers must provide `vault_role` and
-`vault_secret_path`. The legacy `gitops_pr_token_source: secret` mode still
-exists only for deliberate migration work; new repositories should not store a
-long-lived `GITOPS_PR_TOKEN` directly as a source-repo GitHub secret.
+The workflow supports three `gitops_pr_token_source` modes. Use `github_app`:
+
+| Mode | What it reads | Status |
+|---|---|---|
+| `github_app` | App id + private key at `kv/data/ci/github/<repo>/gitops-pr-app`, exchanged for a short-lived installation token | **Current.** Use this. |
+| `vault` | A long-lived PAT at `kv/data/ci/github/<repo>/gitops-pr-token` | Deprecated. The PAT expires and fails at the GitHub API, not at Vault, so the log shows a successful Vault read followed by `Bad credentials`. |
+| `secret` | A long-lived PAT in a source-repo GitHub secret | Deprecated, oldest. |
+
+`github_app` mode requires all four of `vault_role`, `gitops_app_secret_path`,
+`gitops_app_owner`, and `gitops_app_repositories`. The preflight check rejects the run if
+the last two are missing.
+
+`TF-012-GITOPS-GITHUB-APP-MIGRATION` (terraform repo, 2026-07-17) migrated ten workflows
+off PAT mode and deleted the corresponding `gitops-pr-token` paths.
 
 Caller workflows must grant OIDC permission:
 
@@ -182,9 +193,11 @@ jobs:
     uses: go-go-golems/infra-tooling/.github/workflows/publish-ghcr-image.yml@main
     secrets: inherit
     with:
-      gitops_pr_token_source: vault
+      gitops_pr_token_source: github_app
       vault_role: my-app-gitops-pr
-      vault_secret_path: kv/data/ci/github/my-app/gitops-pr-token
+      gitops_app_secret_path: kv/data/ci/github/my-app/gitops-pr-app
+      gitops_app_owner: wesen
+      gitops_app_repositories: 2026-03-27--hetzner-k3s
       open_gitops_pr: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
 ```
 
