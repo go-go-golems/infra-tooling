@@ -188,6 +188,31 @@ jobs:
       open_gitops_pr: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
 ```
 
+## Private Go Dependencies
+
+A repository that imports a private `github.com/hyperslop-systems/*` module passes one more
+input:
+
+```yaml
+      private_dependencies_profile: <name>-go
+```
+
+Profiles are an allowlist inside the shared workflow, not a free-form string; an unrecognised
+name fails the run rather than silently skipping authentication. The profile resolves to a
+Vault role, the shared App credential path, and the repositories the minted token may read.
+
+Two things this input does **not** do, both of which have caused failures:
+
+- It configures the runner only. A `docker build` runs in its own BuildKit context and does
+  not inherit the runner's git configuration or `$GITHUB_ENV`. The workflow passes the token
+  in as a BuildKit secret named `github_token`, and the Dockerfile must mount it.
+- It does not help workflows that do not call this one. `test`, `lint` and the scanners need
+  their own setup, usually a local composite action.
+
+Full procedure, including the Vault role and policy, the Dockerfile pattern, and the
+pull-request exposure to be aware of:
+[private-go-module-authentication-playbook.md](../go-go-golems/playbooks/private-go-module-authentication-playbook.md).
+
 ## The `deploy/gitops-targets.json` Contract
 
 For image-based deployments the target metadata should match the example in
