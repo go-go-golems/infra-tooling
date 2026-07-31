@@ -154,6 +154,40 @@ jobs:
 Order matters. `setup-private-go` must run **before** `actions/setup-go` if that step has
 `cache: true`, because restoring the module cache resolves dependencies.
 
+### Which jobs need it: more than the ones that obviously build
+
+"Every workflow that compiles Go" undersells it. Anything that **typechecks** needs to
+resolve the module, and most such tools do not look like builds. Onboarding turboproof left
+four jobs red for this reason, and each reported it differently — only the first names the
+cause:
+
+| Job | What it says when the credential is missing |
+|---|---|
+| `go build` / `go test` | ``could not read Username for `https://github.com` `` |
+| `golangci-lint` | `could not import <pkg> … (typecheck)`, **plus cascading errors that name innocent files** — an import reported as "imported and not used" while it is used a few lines down |
+| `govulncheck` | `There are errors with the provided package patterns` |
+| `gosec` | `package <pkg> has type errors, skipping SSA analysis, no ssa result` |
+| CodeQL (Go) | fails during autobuild; datalab, agentlogic and turboproof all run the step in this job |
+| `docker build` | needs the credential a different way — see the next section |
+
+The golangci-lint case is the expensive one to debug, because the cascading errors are
+plausible on their own. A reviewer chasing "unused import" will not find it, since the import
+is genuinely used; the typecheck simply never got far enough to see the file properly.
+
+### A missing credential can still go green
+
+This is the part that turns a five-minute fix into an afternoon. A job with **no** credential
+can pass, if a sibling job in the same workflow run has already warmed `setup-go`'s module
+cache. The cache is keyed on `go.sum`, not on which job populated it, so a lint job with no
+`id-token: write` can find the private module already downloaded by a test job that has it.
+
+turboproof's `golangci-lint` passed on every pull request that way and then failed on the
+first push to `main`, where no cache existed yet. Nothing about the workflow had changed.
+
+The consequence for review: **a green lint job is not evidence that the job is configured
+correctly.** Check the workflow file, not the run. The reliable test is a branch with a cold
+cache, which in practice means the first push after the `go.sum` changes.
+
 ## The Docker build needs the credential separately
 
 This is the step that catches people: the four steps above configure the **runner**, and a
@@ -398,6 +432,39 @@ warning above.
 The profile name is not in the shared workflow's `case`. It is an allowlist; add an arm in
 `infra-tooling` rather than passing an arbitrary string.
 
+> [!warning] Re-running the failed run will not pick up the new arm
+> A workflow that calls a reusable workflow by branch (`…/publish-ghcr-image.yml@main`)
+> resolves that ref **when the run starts**. Re-running an old run reuses the version resolved
+> then, so a run that failed before your `infra-tooling` merge keeps failing afterwards with
+> the identical message, however many times it is re-run.
+>
+> This reads exactly like "the merge did not work". It is not: only a **new** run — a fresh
+> push, a new pull request event, or a `workflow_dispatch` — sees the new arm. Confirm by
+> comparing the run's start time against the merge time before debugging anything else.
+
+### The role does not exist, or names a repository that no longer pushes
+
+Two variants, with two different Vault messages:
+
+```text
+{"errors":["role \"<repo>-private-dependencies\" could not be found"]}
+{"errors":["error validating claims: claim \"repository\" does not match any associated bound claim values"]}
+```
+
+The first means the role was never created — its declaration file may exist in git while the
+bootstrap script was never run, or neither exists. The second usually means the repository was
+**renamed or moved between owners** after the role was written: `agentlogic` bound
+`wesen/agentlogic` and kept failing after moving to `hyperslop-systems`, exactly as `datalab`
+had after `go-go-golems/go-go-datadrop`. A rename leaves a role bound to a name that no longer
+pushes, and nothing fails until the next build.
+
+Check what is live rather than what is in git:
+
+```bash
+vault read -format=json auth/github-actions/role/<repo>-private-dependencies |
+  jq '.data.bound_claims'
+```
+
 ## Known gap
 
 `datalab-private-dependencies` and the policy granting
@@ -409,6 +476,17 @@ code, and a Vault restore would not recreate them.
 Any new role added by following this playbook should be committed to
 `wesen/2026-03-27--hetzner-k3s/vault/` as described above, and `datalab`'s should be
 backfilled to match.
+
+**Partially closed, 2026-07-31.** `turboproof-private-dependencies` and
+`agentlogic-private-dependencies` are now declared in
+`wesen/2026-03-27--hetzner-k3s/vault/{policies,roles}/github-actions/`, along with the two
+matching `-gitops-pr` roles. `datalab`'s remain undeclared.
+
+The gap is not theoretical. turboproof's role had **no file and no Vault object**, so the
+repository never had a green build from the day it was created; the failure was a Vault
+`role could not be found` that named the role but not the fact that nobody had ever made it.
+Because a role that exists only in Vault is invisible to review, the absence of one is
+invisible too.
 
 ## Related
 
