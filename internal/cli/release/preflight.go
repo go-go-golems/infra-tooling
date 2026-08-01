@@ -75,6 +75,7 @@ func runPreflight(s *preflightSettings) preflightResult {
 		checkGoReleaserPreflight(repo, goreleaserPath, add)
 	}
 	checkGenerateFrontendPreflight(repo, goreleaserPath, add)
+	checkContainerCGOPreflight(repo, add)
 	checkDocsctlWorkflowPreflight(repo, add)
 	if len(res.Findings) == 0 && s.Verbose {
 		add("info", "preflight_clean", "No release preflight findings", "", "")
@@ -98,8 +99,31 @@ func checkGoReleaserPreflight(repo, path string, add func(string, string, string
 			add("error", "goreleaser_missing_main", "GoReleaser main path does not exist: "+mainPath, path, "Point main to an existing command directory such as ./cmd/<binary>.")
 		}
 	}
-	if strings.Contains(body, "CGO_ENABLED=0") && moduleMentions(repo, "tree-sitter") {
-		add("error", "cgo_disabled_with_tree_sitter", "GoReleaser disables CGO but go.mod references tree-sitter packages", path, "Enable CGO for release builds and configure cross-compilers where needed.")
+	checkCGODisabledPreflight(repo, path, body, add)
+}
+
+func checkContainerCGOPreflight(repo string, add func(string, string, string, string, string)) {
+	path := firstExisting(repo, "Dockerfile")
+	if path == "" {
+		return
+	}
+	bodyBytes, err := os.ReadFile(path)
+	if err != nil {
+		add("error", "read_dockerfile", err.Error(), path, "Ensure the Dockerfile is readable.")
+		return
+	}
+	checkCGODisabledPreflight(repo, path, string(bodyBytes), add)
+}
+
+func checkCGODisabledPreflight(repo, path, body string, add func(string, string, string, string, string)) {
+	if !strings.Contains(body, "CGO_ENABLED=0") {
+		return
+	}
+	if moduleMentions(repo, "tree-sitter") {
+		add("error", "cgo_disabled_with_tree_sitter", "Build disables CGO but go.mod references tree-sitter packages", path, "Enable CGO for release builds and configure cross-compilers where needed.")
+	}
+	if moduleMentions(repo, "github.com/go-go-golems/glazed") {
+		add("error", "cgo_disabled_with_glazed", "Build disables CGO for a Glazed-based tool", path, "Glazed-based release builds must enable CGO; use a matching native builder/runtime and configure cross-compilers where needed.")
 	}
 }
 

@@ -32,6 +32,31 @@ func TestRunPreflightDetectsCGODisabledTreeSitter(t *testing.T) {
 	assertFinding(t, res.Findings, "cgo_disabled_with_tree_sitter")
 }
 
+func TestRunPreflightDetectsCGODisabledGlazed(t *testing.T) {
+	repo := t.TempDir()
+	writeFile(t, repo, "go.mod", "module example.com/tool\nrequire github.com/go-go-golems/glazed v1.3.6\n")
+	writeFile(t, repo, "cmd/tool/main.go", "package main\nfunc main() {}\n")
+	writeFile(t, repo, ".goreleaser.yaml", "version: 2\nbuilds:\n  - env:\n      - CGO_ENABLED=0\n    main: ./cmd/tool\n")
+
+	res := runPreflight(&preflightSettings{Repo: repo})
+	if res.OK {
+		t.Fatalf("expected preflight to fail: %#v", res.Findings)
+	}
+	assertFinding(t, res.Findings, "cgo_disabled_with_glazed")
+}
+
+func TestRunPreflightDetectsCGODisabledGlazedDockerBuild(t *testing.T) {
+	repo := t.TempDir()
+	writeFile(t, repo, "go.mod", "module example.com/tool\nrequire github.com/go-go-golems/glazed v1.3.6\n")
+	writeFile(t, repo, "Dockerfile", "FROM golang:1.26\nRUN CGO_ENABLED=0 go build -o /out/tool ./cmd/tool\n")
+
+	res := runPreflight(&preflightSettings{Repo: repo})
+	if res.OK {
+		t.Fatalf("expected preflight to fail: %#v", res.Findings)
+	}
+	assertFinding(t, res.Findings, "cgo_disabled_with_glazed")
+}
+
 func TestRunPreflightWarnsForFrontendGenerateWithoutInstall(t *testing.T) {
 	repo := t.TempDir()
 	writeFile(t, repo, "go.mod", "module example.com/tool\n")

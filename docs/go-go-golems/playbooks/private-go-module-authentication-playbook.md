@@ -238,6 +238,25 @@ Four things that matter:
   instruction keeps it out. `go mod download` runs before the removal, and `go build` after
   it, using the module cache.
 
+> [!warning] Glazed-based container builds must enable CGO
+> The `CGO_ENABLED=0` line above is a minimal static-build example, not a default for
+> applications on this platform. Build **Glazed-based tools** with `CGO_ENABLED=1`.
+> Deployed Glazed applications can include SQLite-backed extensions such as
+> `github.com/mattn/go-sqlite3`; a CGO-disabled build may compile successfully but fail at
+> startup with the driver's stub error. Use a builder with a C compiler and a runtime compatible
+> with its C library (for example, a Debian/Bookworm builder and Debian/Bookworm runtime):
+>
+> ```dockerfile
+> FROM golang:1.26.5-bookworm AS builder
+> # gcc is present in the standard Go Bookworm image.
+> RUN CGO_ENABLED=1 GOWORK=off go build -o /out/<binary> ./cmd/<binary>
+> ```
+>
+> The release preflight rejects `CGO_ENABLED=0` in either `.goreleaser.yaml` or a root
+> `Dockerfile` when `go.mod` imports `github.com/go-go-golems/glazed`. Cross-compiled release
+> targets need the corresponding C cross-compiler rather than silently falling back to a
+> CGO-disabled binary.
+
 Local builds need the secret too:
 
 ```bash
