@@ -143,7 +143,7 @@ func docsctlInventory(workspace string, include, exclude, packages, commands, ex
 				packageName = override
 			}
 			workflow := detectDocsWorkflow(repoPath)
-			exportCommand := fmt.Sprintf("GOWORK=off go run %s help export --format sqlite --output-path .docsctl/help.sqlite", cmdDir)
+			exportCommand := fmt.Sprintf("GOWORK=off go run %s help export --export-mode sqlite --output-path .docsctl/help.sqlite", cmdDir)
 			if override, ok := exportCommandOverrides[repo]; ok {
 				exportCommand = override
 			}
@@ -180,7 +180,7 @@ func validateDocsctlCandidate(ctx context.Context, c docsctlCandidate, timeout t
 	sqlitePath := filepath.Join(tmp, "help.sqlite")
 	exportCommand := c.ExportCommand
 	if exportCommand == "" {
-		exportCommand = fmt.Sprintf("GOWORK=off go run %s help export --format sqlite --output-path %s", c.CmdDir, shellQuote(sqlitePath))
+		exportCommand = fmt.Sprintf("GOWORK=off go run %s help export --export-mode sqlite --output-path %s", c.CmdDir, shellQuote(sqlitePath))
 	} else {
 		exportCommand = rewriteDocsctlOutputPath(exportCommand, sqlitePath)
 	}
