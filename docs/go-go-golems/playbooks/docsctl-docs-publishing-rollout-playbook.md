@@ -99,7 +99,7 @@ Collect these facts for the repository:
 | Numeric repository ID | GitHub GraphQL `repository.databaseId` | `802670903` |
 | Docs workflow path | Exact file name under `.github/workflows/` that calls `publish-docsctl.yml` | `.github/workflows/publish-docs.yaml` |
 | Release tag pattern | Inspect workflow `on.push.tags` | `v*` |
-| Export command | Run command help locally | `GOWORK=off go run ./cmd/pinocchio help export --format sqlite --output-path .docsctl/help.sqlite` |
+| Export command | Run command help locally | `GOWORK=off go run ./cmd/pinocchio help export --export-mode sqlite --output-path .docsctl/help.sqlite` |
 | Go version source | Usually `go.mod` | `go.mod` |
 
 Run this from the target repo or with explicit owner/name:
@@ -158,7 +158,7 @@ Try the export command locally:
 
 ```bash
 mkdir -p .docsctl
-GOWORK=off go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
+GOWORK=off go run ./cmd/<package> help export --export-mode sqlite --output-path .docsctl/help.sqlite
 test -s .docsctl/help.sqlite
 ```
 
@@ -211,7 +211,7 @@ jobs:
     with:
       package_name: <package>
       package_version: ${{ github.ref_name }}
-      export_command: GOWORK=off go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
+      export_command: GOWORK=off go run ./cmd/<package> help export --export-mode sqlite --output-path .docsctl/help.sqlite
       sqlite_path: .docsctl/help.sqlite
       docsctl_install_command: go install github.com/go-go-golems/glazed/cmd/docsctl@latest
       vault_role: docsctl-<package>-publisher
@@ -228,7 +228,7 @@ Without job-level `id-token: write`, `hashicorp/vault-action` cannot request a G
 For nested command modules, keep the reusable workflow's final `test -s .docsctl/help.sqlite` in the repository root by doing directory changes in a subshell:
 
 ```yaml
-export_command: mkdir -p .docsctl && (cd cmd/<package> && GOWORK=off go run . help export --format sqlite --output-path ../../.docsctl/help.sqlite)
+export_command: mkdir -p .docsctl && (cd cmd/<package> && GOWORK=off go run . help export --export-mode sqlite --output-path ../../.docsctl/help.sqlite)
 ```
 
 ## Step 3: decide whether docs must wait for release artifacts
@@ -334,7 +334,7 @@ Checklist before opening:
 
 ```bash
 go test ./...
-GOWORK=off go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
+GOWORK=off go run ./cmd/<package> help export --export-mode sqlite --output-path .docsctl/help.sqlite
 test -s .docsctl/help.sqlite
 docsctl validate \
   --file .docsctl/help.sqlite \
@@ -492,7 +492,7 @@ Use this table for each repository:
 |---|---:|---|
 | Identify package name and command path |  |  |
 | Record GitHub numeric repository ID |  |  |
-| Prove local `help export --format sqlite` |  |  |
+| Prove local `help export --export-mode sqlite` |  |  |
 | Validate SQLite with `docsctl validate --package <package> --version v0.0.0-local --file .docsctl/help.sqlite` |  |  |
 | Choose docs workflow shape: separate `.github/workflows/publish-docs.yaml` or release-coupled job |  |  |
 | Confirm exact docs workflow filename for Vault `workflow_ref` |  |  |
@@ -533,7 +533,7 @@ jobs:
     with:
       package_name: <package>
       package_version: ${{ github.ref_name }}
-      export_command: GOWORK=off go run ./cmd/<package> help export --format sqlite --output-path .docsctl/help.sqlite
+      export_command: GOWORK=off go run ./cmd/<package> help export --export-mode sqlite --output-path .docsctl/help.sqlite
       sqlite_path: .docsctl/help.sqlite
       docsctl_install_command: go install github.com/go-go-golems/glazed/cmd/docsctl@latest
       vault_role: docsctl-<package>-publisher

@@ -115,7 +115,7 @@ jobs:
     with:
       package_name: tool
       package_version: ${{ github.ref_name }}
-      export_command: GOWORK=off go run ./cmd/tool help export --format sqlite --output-path .docsctl/help.sqlite
+      export_command: GOWORK=off go run ./cmd/tool help export --export-mode sqlite --output-path .docsctl/help.sqlite
       vault_role: docsctl-tool-publisher
       vault_token_role: docsctl-tool-publisher
 `)
@@ -144,7 +144,7 @@ jobs:
     with:
       package_name: tool
       package_version: ${{ github.ref_name }}
-      export_command: GOWORK=off go run ./cmd/tool help export --format sqlite --output-path .docsctl/help.sqlite
+      export_command: GOWORK=off go run ./cmd/tool help export --export-mode sqlite --output-path .docsctl/help.sqlite
       vault_role: docsctl-tool-publisher
       vault_token_role: docsctl-tool-publisher
 `)
